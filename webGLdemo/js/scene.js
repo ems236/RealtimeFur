@@ -53,10 +53,7 @@ class Scene
             this.programInfo.uniformLocations.modelMatrix,
             false,
             this.modelMatrix);
-        this.gl.uniformMatrix4fv(
-            this.programInfo.uniformLocations.viewMatrix,
-            false,
-            this.camera.viewMatrix());
+        this.setViewTransform();
     }
 
     redraw()
@@ -74,5 +71,82 @@ class Scene
             const vertexCount = 4;
             this.gl.drawArrays(this.gl.TRIANGLE_STRIP, offset, vertexCount);
         }
+    }
+
+    mousedown(type, x, y)
+    {
+        this.x = x;
+        this.y = y;
+
+        if(type == 1)
+        {
+            this.leftMouseDown = true;
+        }
+
+        if(type == 2)
+        {
+            this.middleMouseDown = true;
+        }
+
+        if(type == 3)
+        {
+            this.rightMouseDown = true;
+        }
+    }
+
+    mouseup(type)
+    {
+        if(type == 1)
+        {
+            this.leftMouseDown = false;
+        }
+
+        if(type == 2)
+        {
+            this.middleMouseDown = false;
+        }
+
+        if(type == 3)
+        {
+            this.rightMouseDown = false;
+        }
+    }
+
+    
+    anyMouseDown()
+    {
+        return this.rightMouseDown || this.middleMouseDown || this.leftMouseDown;
+    }
+
+    mousemove(x, y)
+    {
+        var xchange = x - this.x;
+        var ychange = y - this.y;
+
+        this.x = x;
+        this.y = y;
+
+        if(this.leftMouseDown)
+        {
+            console.log("left is down");
+            this.camera.changeLatitude(ychange);
+            this.camera.changeLongitude(xchange);
+            this.setViewTransform();
+
+        }
+        if(this.rightMouseDown)
+        {
+            console.log("right is down");
+            this.camera.changeRadius(ychange);
+            this.setViewTransform();
+        }
+    }
+
+    setViewTransform()
+    {
+        this.gl.uniformMatrix4fv(
+            this.programInfo.uniformLocations.viewMatrix,
+            false,
+            this.camera.viewMatrix());
     }
 }

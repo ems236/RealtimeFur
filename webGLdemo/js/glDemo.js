@@ -3,7 +3,7 @@ $(document).ready(function(){
 });
 
 const PI = 3.14159;
-
+var currentScene;
 function clamp(val, min, max) 
 {
     if(val > max)
@@ -17,10 +17,47 @@ function clamp(val, min, max)
     return val;
 }
 
+function bindMouseEvents(canvas)
+{
+    canvas.on("mousedown", function(event){
+        if(currentScene)
+        {
+            if(!currentScene.anyMouseDown())
+            {
+                canvas.on("mousemove", function(event){
+                    if(currentScene)
+                    {
+                        currentScene.mousemove(event.pageX, event.pageY);
+                        currentScene.redraw();
+                    }
+                });
+            }
+
+            currentScene.mousedown(event.which, event.pageX, event.pageY);
+            event.preventDefault();
+        }
+    });
+
+    $(document).on("mouseup", function(event){
+        if(currentScene)
+        {
+            currentScene.mouseup(event.which);
+
+            if(!currentScene.anyMouseDown())
+            {
+                canvas.off("mousemove");
+            }
+        }
+    });
+
+    canvas.on("contextmenu", function(event) {event.preventDefault();});
+}
+
 function main()
 {
-    const canvas = $("#glCanvas")[0];
-    const gl = canvas.getContext("webgl");
+    const canvas = $("#glCanvas");
+    bindMouseEvents(canvas);
+    const gl = canvas[0].getContext("webgl");
 
     // Only continue if WebGL is available and working
     if (gl === null) {
@@ -48,8 +85,8 @@ function main()
     var buffers = initBuffers(gl)
 
     console.log(programInfo);
-    var scene = new Scene(gl, buffers, programInfo);
-    scene.redraw();
+    currentScene = new Scene(gl, buffers, programInfo);
+    currentScene.redraw();
 }
 
 function initBuffers(gl) 

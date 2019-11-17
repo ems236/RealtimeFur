@@ -17,6 +17,7 @@ class Camera
 
         var currentPos = this.position();
 
+        //console.log(this.)
         console.log(currentPos);
 
         var n = vec3.create();
@@ -43,23 +44,27 @@ class Camera
     position()
     {
         var x = this.radius * Math.sin(this.latitude) * Math.cos(this.longitude);
-        var y = this.radius * Math.cos(this.longitude);
+        var y = this.radius * Math.cos(this.latitude);
         var z = this.radius * Math.sin(this.latitude) * Math.sin(this.longitude);
 
         return vec3.fromValues(x, y, z);
     }
 
-    changeLatitude(isPositive)
+    changeLatitude(amount)
     {
         const step = 0.05;
-        const sign = isPositive ? 1.0 : -1.0;
-        this.latitude = clamp(this.latitude + (sign * step), 0, PI);
+        this.latitude = clamp(this.latitude + (amount * step), 0, PI);
     }
 
-    changeLongitude(isPositive)
+    changeLongitude(amount)
     {
         const step = 0.05;
-        const sign = isPositive ? 1.0 : -1.0;
-        this.longitude = this.longitude + (sign * step) % 2 * PI;
+        this.longitude = this.longitude + (amount * step) % 2 * PI;
+    }
+
+    changeRadius(amount)
+    {
+        const step = 0.05;
+        this.radius = Math.min(0.01, this.radius + step * amount);
     }
 }
