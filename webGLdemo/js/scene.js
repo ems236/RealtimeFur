@@ -22,7 +22,7 @@ class Scene
         //Should make an object class if we make more objects
         this.modelMatrix = mat4.create();
 
-        this.camera = new Camera(vec3.fromValues(0, 0, 6), vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0))
+        this.camera = new Camera(6, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0))
         
         {
             const numComponents = 2;  // pull out 2 values per iteration

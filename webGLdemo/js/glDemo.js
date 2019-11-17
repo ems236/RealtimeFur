@@ -2,6 +2,21 @@ $(document).ready(function(){
     main();
 });
 
+const PI = 3.14159;
+
+function clamp(val, min, max) 
+{
+    if(val > max)
+    {
+        return max;
+    }
+    if(val < min)
+    {
+        return min;
+    }
+    return val;
+}
+
 function main()
 {
     const canvas = $("#glCanvas")[0];
