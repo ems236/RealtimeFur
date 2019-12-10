@@ -82,7 +82,7 @@ function main()
         },
     };
 
-    var buffers = initBuffers(gl)
+    var buffers = initBuffers(gl);
 
     console.log(programInfo);
     currentScene = new Scene(gl, buffers, programInfo);
