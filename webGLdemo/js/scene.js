@@ -128,7 +128,7 @@ class Scene
 
         if(this.leftMouseDown)
         {
-            console.log("left is down");
+            //console.log("left is down");
             this.camera.changeLatitude(ychange);
             this.camera.changeLongitude(xchange);
             this.setViewTransform();
@@ -136,7 +136,7 @@ class Scene
         }
         if(this.rightMouseDown)
         {
-            console.log("right is down");
+            //console.log("right is down");
             this.camera.changeRadius(ychange);
             this.setViewTransform();
         }

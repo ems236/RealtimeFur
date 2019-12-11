@@ -18,7 +18,7 @@ class Camera
         var currentPos = this.position();
 
         //console.log(this.)
-        console.log(currentPos);
+        //console.log(currentPos);
 
         var n = vec3.create();
         vec3.subtract(n, currentPos, this.lookat);
