@@ -54,6 +54,11 @@ class Scene
             this.programInfo.uniformLocations.modelMatrix,
             false,
             this.modelMatrix);
+
+        this.gl.activeTexture(gl.TEXTURE0);
+        this.gl.bindTexture(gl.TEXTURE_2D, texture);
+        this.gl.uniform1i(load_texture(gl, "abstract"), 0);
+        
         this.setViewTransform();
     }
 

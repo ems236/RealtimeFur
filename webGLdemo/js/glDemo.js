@@ -66,7 +66,7 @@ function main()
     }
 
     //get shaders going
-    const shaderProgram = attachShaders(gl, simpleVertexShader, whiteFragmentSharder);
+    const shaderProgram = attachShaders(gl, simpleVertexShader, textureFragmentSharder);
     const programInfo = 
     {
         program: shaderProgram,
@@ -79,11 +79,11 @@ function main()
           projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
           modelMatrix: gl.getUniformLocation(shaderProgram, 'uModelMatrix'),
           viewMatrix: gl.getUniformLocation(shaderProgram, 'uViewMatrix'),
+          cube_texture: gl.getUniformLocation(shaderProgram, 'cube_texture'),
         },
     };
 
     var buffers = initBuffers(gl);
-    load_texture(gl, "abstract");
     console.log(programInfo);
     currentScene = new Scene(gl, buffers, programInfo);
     currentScene.redraw();

@@ -8,18 +8,30 @@ var simpleVertexShader = `
     uniform mat4 uViewMatrix;
     uniform mat4 uProjectionMatrix;
 
+    varying vec2 texture_coords;
     void main() {
-      gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aVertexPosition;
+        gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aVertexPosition;
+        texture_coords = aVertexPosition.xy;
     }
 `
 
 var whiteFragmentSharder = `
     void main() 
     {
-    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
     }
 `
 
+var textureFragmentSharder = `
+    void main() 
+    {
+        uniform sampler2D cube_texture;
+        
+        varying vec2 texture_coords;
+
+        gl_FragColor = texture(cube_texture, texture_coords);
+    }
+`
 
 function compileShader(gl, type, source) 
 {
