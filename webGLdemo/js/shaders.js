@@ -23,12 +23,11 @@ var whiteFragmentSharder = `
 `
 
 var textureFragmentSharder = `
+    uniform sampler2D cube_texture;
+    varying vec2 texture_coords;
+
     void main() 
     {
-        uniform sampler2D cube_texture;
-        
-        varying vec2 texture_coords;
-
         gl_FragColor = texture(cube_texture, texture_coords);
     }
 `
