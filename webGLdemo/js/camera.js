@@ -65,6 +65,6 @@ class Camera
     changeRadius(amount)
     {
         const step = 0.05;
-        this.radius = Math.min(0.01, this.radius + step * amount);
+        this.radius = Math.max(0.01, this.radius + step * amount);
     }
 }
