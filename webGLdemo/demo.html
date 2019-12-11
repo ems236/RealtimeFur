@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html charset="utf-08">
     <head>
-        <meta charset="utf-8" />
+		<meta charset="utf-8"/> 
+        <style>
+            .hidden{
+                display: none;
+            }
+        </style>
     </head>
     <body>
     <canvas id="glCanvas" width="640" height="480"></canvas>
@@ -14,14 +19,15 @@
     <script src="js/shaders.js"></script>
     <script src="js/scene.js"></script>
     <script src="js/camera.js"></script>
-
+    <script src="js/texture_loader.js"></script>
+	
+	<img src="textures/testabstract.jpg" id="abstract" class="hidden" crossorigin="*"/>
     <!--<script>
         var camera, scene, renderer;
         var geometry, material, mesh;
 
         init();
         animate();
-
         function init() {
             camera = new THREE.PerspectiveCamera(
                 70, window.innerWidth / window.InnerHeight,
