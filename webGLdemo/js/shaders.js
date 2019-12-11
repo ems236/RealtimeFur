@@ -9,6 +9,7 @@ var simpleVertexShader = `
     uniform mat4 uProjectionMatrix;
 
     varying vec2 texture_coords;
+
     void main() {
         gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aVertexPosition;
         texture_coords = aVertexPosition.xy;
@@ -23,12 +24,14 @@ var whiteFragmentSharder = `
 `
 
 var textureFragmentSharder = `
+    precision mediump float;
     uniform sampler2D cube_texture;
     varying vec2 texture_coords;
 
     void main() 
     {
-        gl_FragColor = texture(cube_texture, texture_coords);
+        vec4 color = texture2D(cube_texture, vec2(0,0));
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
     }
 `
 
