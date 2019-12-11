@@ -30,7 +30,7 @@ var textureFragmentSharder = `
 
     void main() 
     {
-        vec4 color = texture2D(cube_texture, vec2(0,0));
+        vec4 color = texture2D(cube_texture, texture_coords);
         gl_FragColor = color;
     }
 `
