@@ -22,16 +22,17 @@ class Scene
         //Should make an object class if we make more objects
         this.modelMatrix = mat4.create();
 
-        this.camera = new Camera(6, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0))
+        this.camera = new Camera(6, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
         
         {
-            const numComponents = 2;  // pull out 2 values per iteration
+            const numComponents = 3;  // pull out 2 values per iteration
             const type = gl.FLOAT;    // the data in the buffer is 32bit floats
             const normalize = false;  // don't normalize
             const stride = 0;         // how many bytes to get from one set of values to the next
             const offset = 0;         // how many bytes inside the buffer to start from
             this.gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
-            console.log(this.programInfo);
+            this.gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
+            //console.log(this.programInfo);
             this.gl.vertexAttribPointer(
                 this.programInfo.attribLocations.vertexPosition,
                 numComponents,
@@ -40,7 +41,7 @@ class Scene
                 stride,
                 offset);
     
-            this.gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+            this.gl.enableVertexAttribArray(this.programInfo.attribLocations.vertexPosition);
         }
 
         this.gl.useProgram(this.programInfo.program);
@@ -66,10 +67,13 @@ class Scene
         // Clear the canvas before we start drawing on it.
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
+        //this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFER, this.buffers.indices);
         {
             const offset = 0;
-            const vertexCount = 4;
-            this.gl.drawArrays(this.gl.TRIANGLE_STRIP, offset, vertexCount);
+            const type = this.gl.UNSIGNED_SHORT;
+            const vertexCount = 36;
+            //this.gl.drawArrays(this.gl.TRIANGLE_STRIP, offset, vertexCount);
+            this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
         }
     }
 
@@ -148,5 +152,9 @@ class Scene
             this.programInfo.uniformLocations.viewMatrix,
             false,
             this.camera.viewMatrix());
+    }
+
+    loadSceneOBJ(filename) {
+
     }
 }
