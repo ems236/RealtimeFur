@@ -26,6 +26,7 @@ class Scene
         
         this.loadAttributeBuffers();
         this.initializeShaderProgram();
+        this.setShellCount(10);
         this.setViewDependentTransforms();
     }
 
@@ -127,18 +128,27 @@ class Scene
             const vertexCount = 36;
 
             //Draw the base.
+            this.setCurrentShell(0);
             this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
             
-            for(var shell_number = 1; shell_number <= this.shell_count; shell_number++)
+            for(var shell_number = 1; shell_number <= this.shellCount; shell_number++)
             {
-
+                this.setCurrentShell(shell_number);
+                //Load alpha texture
+                this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
             }
         }
     }
 
     setShellCount(shells)
     {
-        this.shell_count = shells;
+        this.shellCount = shells;
+        this.gl.uniform1f(this.programInfo.uniformLocations.shellCount, shells);
+    }
+
+    setCurrentShell(shell)
+    {
+        this.gl.uniform1f(this.programInfo.uniformLocations.currentShell, shell);
     }
 
     mousedown(type, x, y)

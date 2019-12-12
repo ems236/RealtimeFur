@@ -28,16 +28,23 @@ var shellVertexShader = `
     uniform mat4 uProjectionMatrix;
     uniform mat4 uNormalMatrix;
 
-    uniform float uDisplacement;
+    uniform float uCurrentShell;
+    uniform float uShellCount;
 
     varying vec2 texture_coords;
     varying vec3 normal;
+    varying float alpha;
 
     void main() {
-        gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aVertexPosition;
+        vec4 base_position = uProjectionMatrix * uViewMatrix * uModelMatrix * aVertexPosition;
         
         texture_coords = aTexCoords;
         normal = (uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz;
+
+        alpha = 1.0 - uCurrentShell / uShellCount;
+
+        vec4 displacement = vec4(normal * aFurLength * (uCurrentShell / uShellCount), 0.0);
+        gl_Position = base_position + displacement;
     }
 `
 
@@ -56,11 +63,12 @@ var textureFragmentSharder = `
 
     varying vec2 texture_coords;
     varying vec3 normal;
+    varying float alpha;
 
     void main() 
     {
         vec4 color = texture2D(uColorTexture, texture_coords);
-        gl_FragColor = color;
+        gl_FragColor = vec4(color.rgb, alpha);
     }
 `
 

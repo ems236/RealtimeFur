@@ -85,6 +85,8 @@ function main()
           normalMatrix: gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
           colorTexture: gl.getUniformLocation(shaderProgram, 'uColorTexture'),
           shellAlphaTexture: gl.getUniformLocation(shaderProgram, 'uShellAlphaTexture'),
+          shellCount: gl.getUniformLocation(shaderProgram, 'uShellCount'),
+          currentShell: gl.getUniformLocation(shaderProgram, 'uCurrentShell'),
         }
     };
 
