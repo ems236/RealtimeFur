@@ -27,7 +27,7 @@ class Scene
         {
             var numComponents = 3;  // pull out 2 values per iteration
             const type = gl.FLOAT;    // the data in the buffer is 32bit floats
-            const normalize = false;  // don't normalize
+            var normalize = false;  // don't normalize
             const stride = 0;         // how many bytes to get from one set of values to the next
             const offset = 0;         // how many bytes inside the buffer to start from
             this.gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
@@ -72,7 +72,7 @@ class Scene
         this.gl.bindTexture(gl.TEXTURE_2D, load_texture(gl, this, "testabstract.jpg"));
         this.gl.uniform1i(this.programInfo.uniformLocations.cube_texture, 0);
         
-        this.setViewTransform();
+        this.setViewDependentTransforms();
     }
 
     redraw()
@@ -152,22 +152,39 @@ class Scene
             //console.log("left is down");
             this.camera.changeLatitude(ychange);
             this.camera.changeLongitude(xchange);
-            this.setViewTransform();
+            this.setViewDependentTransforms();
 
         }
         if(this.rightMouseDown)
         {
             //console.log("right is down");
             this.camera.changeRadius(ychange);
-            this.setViewTransform();
+            this.setViewDependentTransforms();
         }
     }
 
-    setViewTransform()
+    setViewDependentTransforms()
     {
+        var viewMatrix = this.camera.viewMatrix();
         this.gl.uniformMatrix4fv(
             this.programInfo.uniformLocations.viewMatrix,
             false,
-            this.camera.viewMatrix());
+            viewMatrix);
+
+        this.gl.uniformMatrix4fv(
+            this.programInfo.uniformLocations.normalMatrix,
+            false,
+            this.normalMatrix(this.modelMatrix, viewMatrix));
+    }
+
+    normalMatrix(modelMatrix, viewMatrix)
+    {
+        var normalMat = mat4.create();
+        var modelViewMatrix = mat4.create();
+        mat4.multiply(modelMatrix, viewMatrix, modelMatrix);
+        mat4.inverse(normalMat, modelViewMatrix);
+        mat4.transpose(normalMat, normalMat);
+
+        return normalMat;
     }
 }

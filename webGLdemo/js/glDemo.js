@@ -66,7 +66,7 @@ function main()
     }
 
     //get shaders going
-    const shaderProgram = attachShaders(gl, simpleVertexShader, textureFragmentSharder);
+    const shaderProgram = attachShaders(gl, shellVertexShader, textureFragmentSharder);
     const programInfo = 
     {
         program: shaderProgram,
@@ -74,13 +74,15 @@ function main()
         {
           vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
           texCoords: gl.getAttribLocation(shaderProgram, 'texCoords'),
+          vertexNormal: gl.getAttribLocation(shaderProgram, 'aVertexNormal'),
         },
         uniformLocations: 
         {
           projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
           modelMatrix: gl.getUniformLocation(shaderProgram, 'uModelMatrix'),
           viewMatrix: gl.getUniformLocation(shaderProgram, 'uViewMatrix'),
-          cube_texture: gl.getUniformLocation(shaderProgram, 'cube_texture')
+          normalMatrix: gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
+          cube_texture: gl.getUniformLocation(shaderProgram, 'cube_texture'),
         }
     };
 

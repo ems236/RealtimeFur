@@ -17,6 +17,25 @@ var simpleVertexShader = `
     }
 `
 
+var shellVertexShader = `
+    attribute vec4 aVertexPosition;
+    attribute vec2 texCoords;
+    attribute vec3 aVertexNormal;
+
+    uniform mat4 uModelMatrix;
+    uniform mat4 uViewMatrix;
+    uniform mat4 uProjectionMatrix;
+    uniform mat4 uNormalMatrix;
+
+
+    varying vec2 texture_coords;
+
+    void main() {
+        gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aVertexPosition;
+        texture_coords = texCoords;
+    }
+`
+
 var whiteFragmentSharder = `
     void main() 
     {
