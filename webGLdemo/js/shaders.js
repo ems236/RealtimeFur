@@ -19,8 +19,9 @@ var simpleVertexShader = `
 
 var shellVertexShader = `
     attribute vec4 aVertexPosition;
-    attribute vec2 atexCoords;
+    attribute vec2 aTexCoords;
     attribute vec3 aVertexNormal;
+    attribute float aFurLength;
 
     uniform mat4 uModelMatrix;
     uniform mat4 uViewMatrix;
@@ -35,7 +36,7 @@ var shellVertexShader = `
     void main() {
         gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aVertexPosition;
         
-        texture_coords = atexCoords;
+        texture_coords = aTexCoords;
         normal = (uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz;
     }
 `

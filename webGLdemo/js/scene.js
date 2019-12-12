@@ -76,6 +76,19 @@ class Scene
             offset,
         )
         gl.enableVertexAttribArray(this.programInfo.attribLocations.texCoords);
+
+        numComponents = 1;
+        normalize = false;
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.furLength);
+        gl.vertexAttribPointer(
+            this.programInfo.attribLocations.furLength,
+            numComponents,
+            type,
+            normalize,
+            stride,
+            offset,
+        )
+        gl.enableVertexAttribArray(this.programInfo.attribLocations.furLength);
     }
 
     initializeShaderProgram()
@@ -116,11 +129,16 @@ class Scene
             //Draw the base.
             this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
             
-            for(var shell_number = 0; shell_number < this.shell_count; shell_number++)
+            for(var shell_number = 1; shell_number <= this.shell_count; shell_number++)
             {
 
             }
         }
+    }
+
+    setShellCount(shells)
+    {
+        this.shell_count = shells;
     }
 
     mousedown(type, x, y)

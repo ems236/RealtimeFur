@@ -73,8 +73,9 @@ function main()
         attribLocations: 
         {
           vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-          texCoords: gl.getAttribLocation(shaderProgram, 'atexCoords'),
+          texCoords: gl.getAttribLocation(shaderProgram, 'aTexCoords'),
           vertexNormal: gl.getAttribLocation(shaderProgram, 'aVertexNormal'),
+          furLength: gl.getAttribLocation(shaderProgram, 'aFurLength'),
         },
         uniformLocations: 
         {
@@ -246,19 +247,27 @@ function initBuffers(gl)
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tex_coords), gl.STATIC_DRAW);
 
 
-    // Now pass the list of positions into WebGL to build the
-    // shape. We do this by creating a Float32Array from the
-    // JavaScript array, then use it to fill the current buffer.
-  
-    //gl.bufferData(gl.ARRAY_BUFFER,
-    //              new Float32Array(positions),
-    //              gl.STATIC_DRAW);
-  
+    const furLengthBuffer = gl.createBuffer();
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, furLengthBuffer);
+    const furLengths = 
+    [
+        0.2, 0.7, 0.3, 0.1,    // front
+        0.2, 0.7, 0.3, 0.1,    // back
+        0.2, 0.7, 0.3, 0.1,     // top
+        0.2, 0.7, 0.3, 0.1,     // bottom
+        0.2, 0.7, 0.3, 0.1,     // right
+        0.2, 0.7, 0.3, 0.1,     // left
+    ];
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(furLengths), gl.STATIC_DRAW);
+
     return {
         position: positionBuffer,
         normal: normalBuffer,
         color: colorBuffer,
         indices: indexBuffer,
         texCoords: textureCoordBuffer,
+        furLength: furLengthBuffer,
     };
 }
