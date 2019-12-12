@@ -43,8 +43,21 @@ class Scene
     
             this.gl.enableVertexAttribArray(this.programInfo.attribLocations.vertexPosition);
 
+            numComponents = 3;
+            normalize = true;
+            this.gl.bindBuffer(gl.ARRAY_BUFFER, buffers.normal);
+            this.gl.vertexAttribPointer(
+                this.programInfo.attribLocations.vertexNormal,
+                numComponents,
+                type,
+                normalize,
+                stride,
+                offset
+            );
+            this.gl.enableVertexAttribArray(this.programInfo.attribLocations.vertexNormal);
 
-            var numComponents = 2;
+            numComponents = 2;
+            normalize = false;
             this.gl.bindBuffer(gl.ARRAY_BUFFER, buffers.texCoords);
             this.gl.vertexAttribPointer(
                 this.programInfo.attribLocations.texCoords,
@@ -181,8 +194,8 @@ class Scene
     {
         var normalMat = mat4.create();
         var modelViewMatrix = mat4.create();
-        mat4.multiply(modelMatrix, viewMatrix, modelMatrix);
-        mat4.inverse(normalMat, modelViewMatrix);
+        mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
+        mat4.invert(normalMat, modelViewMatrix);
         mat4.transpose(normalMat, normalMat);
 
         return normalMat;

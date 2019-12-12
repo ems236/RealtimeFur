@@ -29,10 +29,13 @@ var shellVertexShader = `
 
 
     varying vec2 texture_coords;
+    varying vec3 normal;
 
     void main() {
         gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aVertexPosition;
+        
         texture_coords = texCoords;
+        normal = (uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz;
     }
 `
 
@@ -46,7 +49,9 @@ var whiteFragmentSharder = `
 var textureFragmentSharder = `
     precision mediump float;
     uniform sampler2D cube_texture;
+
     varying vec2 texture_coords;
+    varying vec3 normal;
 
     void main() 
     {
