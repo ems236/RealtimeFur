@@ -56,7 +56,7 @@ class Scene
             this.modelMatrix);
 
         this.gl.activeTexture(gl.TEXTURE0);
-        this.gl.bindTexture(gl.TEXTURE_2D, load_texture(gl, "abstract"));
+        this.gl.bindTexture(gl.TEXTURE_2D, load_texture(gl, this, "testabstract.jpg"));
         this.gl.uniform1i(this.programInfo.uniformLocations.cube_texture, 0);
         
         this.setViewTransform();
