@@ -72,7 +72,6 @@ class Scene
         // Clear the canvas before we start drawing on it.
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-        //this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFER, this.buffers.indices);
         {
             const offset = 0;
             const type = this.gl.UNSIGNED_SHORT;
@@ -157,9 +156,5 @@ class Scene
             this.programInfo.uniformLocations.viewMatrix,
             false,
             this.camera.viewMatrix());
-    }
-
-    loadSceneOBJ(filename) {
-
     }
 }
