@@ -27,6 +27,7 @@ var shellVertexShader = `
     uniform mat4 uProjectionMatrix;
     uniform mat4 uNormalMatrix;
 
+    uniform float uDisplacement;
 
     varying vec2 texture_coords;
     varying vec3 normal;
@@ -48,14 +49,16 @@ var whiteFragmentSharder = `
 
 var textureFragmentSharder = `
     precision mediump float;
-    uniform sampler2D cube_texture;
+    
+    uniform sampler2D uColorTexture;
+    uniform sampler2D uShellAlphaTexture;
 
     varying vec2 texture_coords;
     varying vec3 normal;
 
     void main() 
     {
-        vec4 color = texture2D(cube_texture, texture_coords);
+        vec4 color = texture2D(uColorTexture, texture_coords);
         gl_FragColor = color;
     }
 `

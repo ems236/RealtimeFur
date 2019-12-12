@@ -82,7 +82,8 @@ function main()
           modelMatrix: gl.getUniformLocation(shaderProgram, 'uModelMatrix'),
           viewMatrix: gl.getUniformLocation(shaderProgram, 'uViewMatrix'),
           normalMatrix: gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
-          cube_texture: gl.getUniformLocation(shaderProgram, 'cube_texture'),
+          colorTexture: gl.getUniformLocation(shaderProgram, 'uColorTexture'),
+          shellAlphaTexture: gl.getUniformLocation(shaderProgram, 'uShellAlphaTexture'),
         }
     };
 
