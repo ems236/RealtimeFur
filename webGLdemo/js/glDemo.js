@@ -73,7 +73,7 @@ function main()
         attribLocations: 
         {
           vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-          texCoords: gl.getAttribLocation(shaderProgram, 'texCoords'),
+          texCoords: gl.getAttribLocation(shaderProgram, 'atexCoords'),
           vertexNormal: gl.getAttribLocation(shaderProgram, 'aVertexNormal'),
         },
         uniformLocations: 
