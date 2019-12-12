@@ -80,8 +80,8 @@ function main()
           projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
           modelMatrix: gl.getUniformLocation(shaderProgram, 'uModelMatrix'),
           viewMatrix: gl.getUniformLocation(shaderProgram, 'uViewMatrix'),
-          cube_texture: gl.getUniformLocation(shaderProgram, 'cube_texture'),
-        },
+          cube_texture: gl.getUniformLocation(shaderProgram, 'cube_texture')
+        }
     };
 
     var buffers = initBuffers(gl);
