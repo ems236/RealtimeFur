@@ -118,7 +118,7 @@ class Scene
         this.gl.clearDepth(1.0);                 // Clear everything
         this.gl.enable(this.gl.DEPTH_TEST);           // Enable depth testing
         this.gl.depthFunc(this.gl.LEQUAL);            // Near things obscure far things
-    
+
         // Clear the canvas before we start drawing on it.
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
@@ -130,6 +130,10 @@ class Scene
             //Draw the base.
             this.setCurrentShell(0);
             this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
+            
+            this.gl.enable(this.gl.BLEND);
+            this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+
             
             for(var shell_number = 1; shell_number <= this.shellCount; shell_number++)
             {
