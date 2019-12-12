@@ -25,7 +25,7 @@ class Scene
         this.camera = new Camera(6, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
         
         {
-            const numComponents = 3;  // pull out 2 values per iteration
+            var numComponents = 3;  // pull out 2 values per iteration
             const type = gl.FLOAT;    // the data in the buffer is 32bit floats
             const normalize = false;  // don't normalize
             const stride = 0;         // how many bytes to get from one set of values to the next
@@ -42,6 +42,19 @@ class Scene
                 offset);
     
             this.gl.enableVertexAttribArray(this.programInfo.attribLocations.vertexPosition);
+
+
+            var numComponents = 2;
+            this.gl.bindBuffer(gl.ARRAY_BUFFER, buffers.texCoords);
+            this.gl.vertexAttribPointer(
+                this.programInfo.attribLocations.texCoords,
+                numComponents,
+                type,
+                normalize,
+                stride,
+                offset,
+            )
+            this.gl.enableVertexAttribArray(this.programInfo.attribLocations.texCoords);
         }
 
         this.gl.useProgram(this.programInfo.program);

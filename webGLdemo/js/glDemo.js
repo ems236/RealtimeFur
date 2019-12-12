@@ -73,6 +73,7 @@ function main()
         attribLocations: 
         {
           vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+          texCoords: gl.getAttribLocation(shaderProgram, 'texCoords'),
         },
         uniformLocations: 
         {
@@ -181,6 +182,23 @@ function initBuffers(gl)
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 
+    
+    
+    const textureCoordBuffer = gl.createBuffer();
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
+    const tex_coords = 
+    [
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,    // front
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,    // back
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,     // top
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,     // bottom
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,     // right
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,     // left
+    ];
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tex_coords), gl.STATIC_DRAW);
+
 
     // Now pass the list of positions into WebGL to build the
     // shape. We do this by creating a Float32Array from the
@@ -193,6 +211,7 @@ function initBuffers(gl)
     return {
         position: positionBuffer,
         color: colorBuffer,
-        indices: indexBuffer
+        indices: indexBuffer,
+        texCoords: textureCoordBuffer,
     };
 }

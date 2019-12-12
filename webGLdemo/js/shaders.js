@@ -3,6 +3,7 @@
 
 var simpleVertexShader = `
     attribute vec4 aVertexPosition;
+    attribute vec2 texCoords;
 
     uniform mat4 uModelMatrix;
     uniform mat4 uViewMatrix;
@@ -12,7 +13,7 @@ var simpleVertexShader = `
 
     void main() {
         gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aVertexPosition;
-        texture_coords = aVertexPosition.xy;
+        texture_coords = texCoords;
     }
 `
 
