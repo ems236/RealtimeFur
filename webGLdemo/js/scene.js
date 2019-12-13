@@ -144,6 +144,13 @@ class Scene
         }
     }
 
+    debugReadPixelColor(x, y)
+    {
+        var pixels = new Uint8Array(4);
+        this.gl.readPixels(320, 240, 1, 1, this.gl.RGBA, this.gl.UNSIGNED_BYTE, pixels);
+        console.log(pixels);
+    }
+
     setShellCount(shells)
     {
         this.shellCount = shells;
