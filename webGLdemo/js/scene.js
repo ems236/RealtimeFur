@@ -23,7 +23,9 @@ class Scene
         this.modelMatrix = mat4.create();
 
         this.camera = new Camera(6, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
-        
+
+        this.baseFurData = generateFurMap(256, 5); 
+
         this.loadAttributeBuffers();
         this.initializeShaderProgram();
         this.setShellCount(10);
@@ -109,7 +111,8 @@ class Scene
 
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, load_texture(gl, this, "testabstract.jpg"));
-        gl.uniform1i(this.programInfo.uniformLocations.colorTtexture, 0);
+        gl.uniform1i(this.programInfo.uniformLocations.colorTexture, 0);
+        gl.uniform1i(this.programInfo.uniformLocations.shellAlphaTexture, 1);
     }
 
     redraw()
@@ -155,11 +158,30 @@ class Scene
     {
         this.shellCount = shells;
         this.gl.uniform1f(this.programInfo.uniformLocations.shellCount, shells);
+        this.initializeFurTextures();
+    }
+
+    initializeFurTextures()
+    {
+        this.shellTextures = [];
+        console.log(this.baseFurData);
+        for(var shellNumber = 0; shellNumber < this.shellCount; shellNumber++)
+        {
+            var lowPassFiltered = sampleFur(25 + 230 * (shellNumber / this.setShellCount), this.baseFurData);
+            //console.log(lowPassFiltered);
+            this.shellTextures.push(singleChannelTexture(this.gl, lowPassFiltered));
+        }
     }
 
     setCurrentShell(shell)
     {
         this.gl.uniform1f(this.programInfo.uniformLocations.currentShell, shell);
+        this.gl.activeTexture(this.gl.TEXTURE1);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.shellTextures[shell - 1]);
+
+        //I don't know why this matters but it definitely does.
+        //No display when this is not done.
+        this.gl.activeTexture(this.gl.TEXTURE0);
     }
 
     mousedown(type, x, y)

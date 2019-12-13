@@ -29,3 +29,21 @@ function load_texture(gl, scene, image_name)
 
     return texture;
 }
+
+function singleChannelTexture(gl, data)
+{
+    const texture = gl.createTexture();
+    const level = 0;
+    const internalFormat = gl.ALPHA;
+    const width = 1;
+    const height = 1;
+    const border = 0;
+    const srcFormat = gl.ALPHA;
+    const srcType = gl.UNSIGNED_BYTE;
+
+    const byteData = new Uint8Array(data);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+                width, height, border, srcFormat, srcType,
+                byteData);
+}

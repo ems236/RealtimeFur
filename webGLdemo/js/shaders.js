@@ -41,8 +41,6 @@ var shellVertexShader = `
         texture_coords = aTexCoords;
         normal = (uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz;
 
-        alpha = 1.0 - (uCurrentShell / uShellCount);
-
         vec4 displacement = vec4(normal * aFurLength * (uCurrentShell / uShellCount), 0.0);
         //vec4 displacement = vec4(normal * 0.0, 0.0);
         gl_Position = uProjectionMatrix * (base_position + displacement);
@@ -61,16 +59,26 @@ var textureFragmentSharder = `
     
     uniform sampler2D uColorTexture;
     uniform sampler2D uShellAlphaTexture;
+    uniform highp float uCurrentShell;
 
     varying vec2 texture_coords;
     varying vec3 normal;
-    varying float alpha;
 
     void main() 
     {
         vec4 color = texture2D(uColorTexture, texture_coords);
+        
+        //This is a one channel texture and I think the call always returns a vec4?
+        
+        float alpha = 1.0;
+        if(uCurrentShell > 0.0)
+        {
+            alpha = texture2D(uShellAlphaTexture, texture_coords).r;
+        }
         //gl_FragColor = vec4(abs(normal.x), abs(normal.y), abs(normal.z), 1.0);
 
+
+        //gl_FragColor = texture2D(uShellAlphaTexture, texture_coords).rrrr;
         gl_FragColor = vec4(color.rgb, alpha);
     }
 `
