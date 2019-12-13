@@ -48,7 +48,6 @@ function generateFurMap(mapSize, kernelSize) {
 function guassBlur5x5Noise(noiseSize)
 {
     var noise = [];
-    console.log(noise);
     for (var i = 0; i < noiseSize; i++) {
         noise.push([]);
         for (var j = 0; j < noiseSize; j++) 
@@ -97,8 +96,11 @@ function bound(val, min, max)
     return Math.max(min, Math.min(val, max));
 }
 
-function sampleFur(threshold, opmap) {
-    return opmap.map(out => {
-        return out.map(item => item > threshold ? item : 0);
-    });
+function sampleFur(threshold, data) {
+    return data.map(row => 
+        {
+            var filtered = row.map(item => item > threshold ? 255 : 0);
+            return filtered;
+        }
+    );
 }
