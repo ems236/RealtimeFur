@@ -66,21 +66,27 @@ function main()
     }
 
     //get shaders going
-    const shaderProgram = attachShaders(gl, simpleVertexShader, textureFragmentSharder);
+    const shaderProgram = attachShaders(gl, shellVertexShader, textureFragmentSharder);
     const programInfo = 
     {
         program: shaderProgram,
         attribLocations: 
         {
           vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-          texCoords: gl.getAttribLocation(shaderProgram, 'texCoords'),
+          texCoords: gl.getAttribLocation(shaderProgram, 'aTexCoords'),
+          vertexNormal: gl.getAttribLocation(shaderProgram, 'aVertexNormal'),
+          furLength: gl.getAttribLocation(shaderProgram, 'aFurLength'),
         },
         uniformLocations: 
         {
           projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
           modelMatrix: gl.getUniformLocation(shaderProgram, 'uModelMatrix'),
           viewMatrix: gl.getUniformLocation(shaderProgram, 'uViewMatrix'),
-          cube_texture: gl.getUniformLocation(shaderProgram, 'cube_texture')
+          normalMatrix: gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
+          colorTexture: gl.getUniformLocation(shaderProgram, 'uColorTexture'),
+          shellAlphaTexture: gl.getUniformLocation(shaderProgram, 'uShellAlphaTexture'),
+          shellCount: gl.getUniformLocation(shaderProgram, 'uShellCount'),
+          currentShell: gl.getUniformLocation(shaderProgram, 'uCurrentShell'),
         }
     };
 
@@ -144,6 +150,49 @@ function initBuffers(gl)
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
+    const normalBuffer = gl.createBuffer(); 
+    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+    const normals = [
+        // front
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+
+        // back
+        0.0, 0.0, -1.0,
+        0.0, 0.0, -1.0,
+        0.0, 0.0, -1.0,
+        0.0, 0.0, -1.0,
+
+        // Top face
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+
+        // Bottom face
+        0.0, -1.0, 0.0,
+        0.0, -1.0, 0.0,
+        0.0, -1.0, 0.0,
+        0.0, -1.0, 0.0,
+
+        // right
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+
+        // left
+        -1.0, 0.0, 0.0,
+        -1.0, 0.0, 0.0,
+        -1.0, 0.0, 0.0,
+        -1.0, 0.0, 0.0,
+    ];
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+
+
     // in 3D, we also need to specify an index array
     // since we're just rendering a cube...
     const indexBuffer = gl.createBuffer();
@@ -200,18 +249,27 @@ function initBuffers(gl)
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tex_coords), gl.STATIC_DRAW);
 
 
-    // Now pass the list of positions into WebGL to build the
-    // shape. We do this by creating a Float32Array from the
-    // JavaScript array, then use it to fill the current buffer.
-  
-    //gl.bufferData(gl.ARRAY_BUFFER,
-    //              new Float32Array(positions),
-    //              gl.STATIC_DRAW);
-  
+    const furLengthBuffer = gl.createBuffer();
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, furLengthBuffer);
+    const furLengths = 
+    [
+        0.2, 0.7, 0.3, 0.1,    // front
+        0.2, 0.7, 0.3, 0.1,    // back
+        0.2, 0.7, 0.3, 0.1,     // top
+        0.2, 0.7, 0.3, 0.1,     // bottom
+        0.2, 0.7, 0.3, 0.1,     // right
+        0.2, 0.7, 0.3, 0.1,     // left
+    ];
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(furLengths), gl.STATIC_DRAW);
+
     return {
         position: positionBuffer,
+        normal: normalBuffer,
         color: colorBuffer,
         indices: indexBuffer,
         texCoords: textureCoordBuffer,
+        furLength: furLengthBuffer,
     };
 }

@@ -24,55 +24,92 @@ class Scene
 
         this.camera = new Camera(6, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
         
-        {
-            var numComponents = 3;  // pull out 2 values per iteration
-            const type = gl.FLOAT;    // the data in the buffer is 32bit floats
-            const normalize = false;  // don't normalize
-            const stride = 0;         // how many bytes to get from one set of values to the next
-            const offset = 0;         // how many bytes inside the buffer to start from
-            this.gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
-            this.gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
-            //console.log(this.programInfo);
-            this.gl.vertexAttribPointer(
-                this.programInfo.attribLocations.vertexPosition,
-                numComponents,
-                type,
-                normalize,
-                stride,
-                offset);
-    
-            this.gl.enableVertexAttribArray(this.programInfo.attribLocations.vertexPosition);
+        this.loadAttributeBuffers();
+        this.initializeShaderProgram();
+        this.setShellCount(10);
+        this.setViewDependentTransforms();
+    }
 
+    loadAttributeBuffers()
+    {
+        const gl = this.gl;
 
-            var numComponents = 2;
-            this.gl.bindBuffer(gl.ARRAY_BUFFER, buffers.texCoords);
-            this.gl.vertexAttribPointer(
-                this.programInfo.attribLocations.texCoords,
-                numComponents,
-                type,
-                normalize,
-                stride,
-                offset,
-            )
-            this.gl.enableVertexAttribArray(this.programInfo.attribLocations.texCoords);
-        }
+        var numComponents = 3;  // pull out 2 values per iteration
+        const type = gl.FLOAT;    // the data in the buffer is 32bit floats
+        var normalize = false;  // don't normalize
+        const stride = 0;         // how many bytes to get from one set of values to the next
+        const offset = 0;         // how many bytes inside the buffer to start from
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.position);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
+        //console.log(this.programInfo);
+        gl.vertexAttribPointer(
+            this.programInfo.attribLocations.vertexPosition,
+            numComponents,
+            type,
+            normalize,
+            stride,
+            offset);
 
-        this.gl.useProgram(this.programInfo.program);
+        gl.enableVertexAttribArray(this.programInfo.attribLocations.vertexPosition);
 
-        this.gl.uniformMatrix4fv(
+        numComponents = 3;
+        normalize = true;
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.normal);
+        gl.vertexAttribPointer(
+            this.programInfo.attribLocations.vertexNormal,
+            numComponents,
+            type,
+            normalize,
+            stride,
+            offset
+        );
+        gl.enableVertexAttribArray(this.programInfo.attribLocations.vertexNormal);
+
+        numComponents = 2;
+        normalize = false;
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.texCoords);
+        gl.vertexAttribPointer(
+            this.programInfo.attribLocations.texCoords,
+            numComponents,
+            type,
+            normalize,
+            stride,
+            offset,
+        )
+        gl.enableVertexAttribArray(this.programInfo.attribLocations.texCoords);
+
+        numComponents = 1;
+        normalize = false;
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.furLength);
+        gl.vertexAttribPointer(
+            this.programInfo.attribLocations.furLength,
+            numComponents,
+            type,
+            normalize,
+            stride,
+            offset,
+        )
+        gl.enableVertexAttribArray(this.programInfo.attribLocations.furLength);
+    }
+
+    initializeShaderProgram()
+    {
+        const gl = this.gl;
+
+        gl.useProgram(this.programInfo.program);
+
+        gl.uniformMatrix4fv(
             this.programInfo.uniformLocations.projectionMatrix,
             false,
             this.projectionMatrix);
-        this.gl.uniformMatrix4fv(
+        gl.uniformMatrix4fv(
             this.programInfo.uniformLocations.modelMatrix,
             false,
             this.modelMatrix);
 
-        this.gl.activeTexture(gl.TEXTURE0);
-        this.gl.bindTexture(gl.TEXTURE_2D, load_texture(gl, this, "testabstract.jpg"));
-        this.gl.uniform1i(this.programInfo.uniformLocations.cube_texture, 0);
-        
-        this.setViewTransform();
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, load_texture(gl, this, "testabstract.jpg"));
+        gl.uniform1i(this.programInfo.uniformLocations.colorTtexture, 0);
     }
 
     redraw()
@@ -81,7 +118,7 @@ class Scene
         this.gl.clearDepth(1.0);                 // Clear everything
         this.gl.enable(this.gl.DEPTH_TEST);           // Enable depth testing
         this.gl.depthFunc(this.gl.LEQUAL);            // Near things obscure far things
-    
+
         // Clear the canvas before we start drawing on it.
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
@@ -89,9 +126,33 @@ class Scene
             const offset = 0;
             const type = this.gl.UNSIGNED_SHORT;
             const vertexCount = 36;
-            //this.gl.drawArrays(this.gl.TRIANGLE_STRIP, offset, vertexCount);
+
+            //Draw the base.
+            this.setCurrentShell(0);
             this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
+            
+            this.gl.enable(this.gl.BLEND);
+            this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+
+            
+            for(var shell_number = 1; shell_number <= this.shellCount; shell_number++)
+            {
+                this.setCurrentShell(shell_number);
+                //Load alpha texture
+                this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
+            }
         }
+    }
+
+    setShellCount(shells)
+    {
+        this.shellCount = shells;
+        this.gl.uniform1f(this.programInfo.uniformLocations.shellCount, shells);
+    }
+
+    setCurrentShell(shell)
+    {
+        this.gl.uniform1f(this.programInfo.uniformLocations.currentShell, shell);
     }
 
     mousedown(type, x, y)
@@ -152,22 +213,39 @@ class Scene
             //console.log("left is down");
             this.camera.changeLatitude(ychange);
             this.camera.changeLongitude(xchange);
-            this.setViewTransform();
+            this.setViewDependentTransforms();
 
         }
         if(this.rightMouseDown)
         {
             //console.log("right is down");
             this.camera.changeRadius(ychange);
-            this.setViewTransform();
+            this.setViewDependentTransforms();
         }
     }
 
-    setViewTransform()
+    setViewDependentTransforms()
     {
+        var viewMatrix = this.camera.viewMatrix();
         this.gl.uniformMatrix4fv(
             this.programInfo.uniformLocations.viewMatrix,
             false,
-            this.camera.viewMatrix());
+            viewMatrix);
+
+        this.gl.uniformMatrix4fv(
+            this.programInfo.uniformLocations.normalMatrix,
+            false,
+            this.normalMatrix(this.modelMatrix, viewMatrix));
+    }
+
+    normalMatrix(modelMatrix, viewMatrix)
+    {
+        var normalMat = mat4.create();
+        var modelViewMatrix = mat4.create();
+        mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
+        mat4.invert(normalMat, modelViewMatrix);
+        mat4.transpose(normalMat, normalMat);
+
+        return normalMat;
     }
 }

@@ -17,6 +17,38 @@ var simpleVertexShader = `
     }
 `
 
+var shellVertexShader = `
+    attribute vec4 aVertexPosition;
+    attribute vec2 aTexCoords;
+    attribute vec3 aVertexNormal;
+    attribute float aFurLength;
+
+    uniform mat4 uModelMatrix;
+    uniform mat4 uViewMatrix;
+    uniform mat4 uProjectionMatrix;
+    uniform mat4 uNormalMatrix;
+
+    uniform float uCurrentShell;
+    uniform float uShellCount;
+
+    varying vec2 texture_coords;
+    varying vec3 normal;
+    varying float alpha;
+
+    void main() {
+        vec4 base_position = uViewMatrix * uModelMatrix * aVertexPosition;
+        
+        texture_coords = aTexCoords;
+        normal = (uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz;
+
+        alpha = 1.0 - (uCurrentShell / uShellCount);
+
+        vec4 displacement = vec4(normal * aFurLength * (uCurrentShell / uShellCount), 0.0);
+        //vec4 displacement = vec4(normal * 0.0, 0.0);
+        gl_Position = uProjectionMatrix * (base_position + displacement);
+    }
+`
+
 var whiteFragmentSharder = `
     void main() 
     {
@@ -26,13 +58,20 @@ var whiteFragmentSharder = `
 
 var textureFragmentSharder = `
     precision mediump float;
-    uniform sampler2D cube_texture;
+    
+    uniform sampler2D uColorTexture;
+    uniform sampler2D uShellAlphaTexture;
+
     varying vec2 texture_coords;
+    varying vec3 normal;
+    varying float alpha;
 
     void main() 
     {
-        vec4 color = texture2D(cube_texture, texture_coords);
-        gl_FragColor = color;
+        vec4 color = texture2D(uColorTexture, texture_coords);
+        //gl_FragColor = vec4(abs(normal.x), abs(normal.y), abs(normal.z), 1.0);
+
+        gl_FragColor = vec4(color.rgb, alpha);
     }
 `
 
