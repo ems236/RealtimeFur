@@ -18,24 +18,32 @@ function generateFurMap(mapSize, kernelSize) {
 
         // average over kernel
         var edge = Math.floor(kernelSize / 2);
-
+        console.log("edge: " + edge);
         for (var px = 0; px < toFilter.length; px++) {
             toFilter[px] = new Array(uniformNoise.length).fill(0);
             for (var py = 0; py < toFilter.length; py++) {
                 var count = 0;
 
-                for (var rtl = -edge; rtl <= edge; rtl++) {
-                    if ((rtl + py >= 0) && (rtl + py < kernelSize)) {
-                        for (var ttb = -edge; ttb <= edge; ttb++) {
-                            if ((ttb + px >= 0) && (ttb + px < kernelSize)) {
-                                toFilter[px][py] += uniformNoise[ttb + px][rtl + py];
-                                count++;
-                            }
+
+                for (var ttb = -edge; ttb <= edge; ttb++) {
+                    if (ttb + px < 0 || ttb + px >= kernelSize) {
+                        continue;
+                    }
+
+
+                    for (var rtl = -edge; rtl <= edge; rtl++) {
+                        if (rtl + py < 0 || rtl + py >= kernelSize) {
+                            continue;
                         }
+
+
+                        toFilter[px][py] += uniformNoise[ttb + px][rtl + py];
+                        count++;
                     }
                 }
 
-                toFilter[px][py] /= count;
+                if (count !== 0)
+                    toFilter[px][py] /= count;
 
             }
         }
