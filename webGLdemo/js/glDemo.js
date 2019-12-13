@@ -55,6 +55,7 @@ function bindMouseEvents(canvas)
 
 function main()
 {
+    genParticles(128, 5, 100);
     const canvas = $("#glCanvas");
     bindMouseEvents(canvas);
     const gl = canvas[0].getContext("webgl");
