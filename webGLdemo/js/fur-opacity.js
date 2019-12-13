@@ -26,13 +26,13 @@ function generateFurMap(mapSize, kernelSize) {
 
 
                 for (var ttb = -edge; ttb <= edge; ttb++) {
-                    if (ttb + px < 0 || ttb + px >= kernelSize) {
+                    if (ttb + px < 0 || ttb + px >= uniformNoise.length) {
                         continue;
                     }
 
 
                     for (var rtl = -edge; rtl <= edge; rtl++) {
-                        if (rtl + py < 0 || rtl + py >= kernelSize) {
+                        if (rtl + py < 0 || rtl + py >= uniformNoise.length) {
                             continue;
                         }
 
