@@ -66,31 +66,58 @@ function main()
     }
 
     //get shaders going
-    const shaderProgram = attachShaders(gl, shellVertexShader, textureFragmentSharder);
-    const programInfo = 
+    const baseShaderProgram = attachShaders(gl, baseVertexShader, baseFragmentShader);
+    const baseProgramInfo = 
     {
-        program: shaderProgram,
+        program: baseShaderProgram,
         attribLocations: 
         {
-          vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-          texCoords: gl.getAttribLocation(shaderProgram, 'aTexCoords'),
-          vertexNormal: gl.getAttribLocation(shaderProgram, 'aVertexNormal'),
-          furLength: gl.getAttribLocation(shaderProgram, 'aFurLength'),
+          vertexPosition: gl.getAttribLocation(baseShaderProgram, 'aVertexPosition'),
+          texCoords: gl.getAttribLocation(baseShaderProgram, 'aTexCoords'),
+          vertexNormal: gl.getAttribLocation(baseShaderProgram, 'aVertexNormal'),
         },
         uniformLocations: 
         {
-          projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
-          modelMatrix: gl.getUniformLocation(shaderProgram, 'uModelMatrix'),
-          viewMatrix: gl.getUniformLocation(shaderProgram, 'uViewMatrix'),
-          normalMatrix: gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
-          colorTexture: gl.getUniformLocation(shaderProgram, 'uColorTexture'),
-          shellAlphaTexture: gl.getUniformLocation(shaderProgram, 'uShellAlphaTexture'),
-          shellCount: gl.getUniformLocation(shaderProgram, 'uShellCount'),
-          currentShell: gl.getUniformLocation(shaderProgram, 'uCurrentShell'),
+          projectionMatrix: gl.getUniformLocation(baseShaderProgram, 'uProjectionMatrix'),
+          modelMatrix: gl.getUniformLocation(baseShaderProgram, 'uModelMatrix'),
+          viewMatrix: gl.getUniformLocation(baseShaderProgram, 'uViewMatrix'),
+          normalMatrix: gl.getUniformLocation(baseShaderProgram, 'uNormalMatrix'),
+          colorTexture: gl.getUniformLocation(baseShaderProgram, 'uColorTexture'),
+        }
+    };
+
+    const shellShaderProgram = attachShaders(gl, shellVertexShader, shellFragmentShader);
+    const shellProgramInfo = 
+    {
+        program: shellShaderProgram,
+        attribLocations: 
+        {
+          vertexPosition: gl.getAttribLocation(shellShaderProgram, 'aVertexPosition'),
+          texCoords: gl.getAttribLocation(shellShaderProgram, 'aTexCoords'),
+          vertexNormal: gl.getAttribLocation(shellShaderProgram, 'aVertexNormal'),
+          furLength: gl.getAttribLocation(shellShaderProgram, 'aFurLength'),
+        },
+        uniformLocations: 
+        {
+          projectionMatrix: gl.getUniformLocation(shellShaderProgram, 'uProjectionMatrix'),
+          modelMatrix: gl.getUniformLocation(shellShaderProgram, 'uModelMatrix'),
+          viewMatrix: gl.getUniformLocation(shellShaderProgram, 'uViewMatrix'),
+          normalMatrix: gl.getUniformLocation(shellShaderProgram, 'uNormalMatrix'),
+          colorTexture: gl.getUniformLocation(shellShaderProgram, 'uColorTexture'),
+          shellAlphaTexture: gl.getUniformLocation(shellShaderProgram, 'uShellAlphaTexture'),
+          shellCount: gl.getUniformLocation(shellShaderProgram, 'uShellCount'),
+          currentShell: gl.getUniformLocation(shellShaderProgram, 'uCurrentShell'),
         }
     };
 
     var buffers = initBuffers(gl);
+
+    const programInfo = 
+    {
+        baseProgramInfo: baseProgramInfo,
+        shellProgramInfo: shellProgramInfo,
+    }
+
     console.log(programInfo);
     currentScene = new Scene(gl, buffers, programInfo);
     currentScene.redraw();
