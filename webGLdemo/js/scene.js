@@ -163,15 +163,13 @@ class Scene
            
             this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
             
-            
             this.loadShellShaderProgram();
             for(var shell_number = 1; shell_number <= this.shellCount; shell_number++)
             {
                 this.setCurrentShell(shell_number);
                 //Load alpha texture
                 this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
-            }
-            
+            }  
         }
     }
 

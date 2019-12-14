@@ -40,8 +40,8 @@ var baseFragmentShader = `
     void main() 
     {
         vec4 color = texture2D(uColorTexture, texture_coords);
-        //gl_FragColor = vec4(color.rgb, 1.0);
-        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+        gl_FragColor = vec4(color.rgb, 1.0);
+        //gl_FragColor = vec4(1.0, 0.0, color.b, 1.0);
     }
 `
 
@@ -100,8 +100,8 @@ var shellFragmentShader = `
 
         //gl_FragColor = vec4(texture_coords, 0.0, 1.0);
         //gl_FragColor = vec4(color.aaa, 0.5);
-        //gl_FragColor = vec4(color.rgb, alpha);
-        gl_FragColor = vec4(1.0, 1.0, 1.0, alpha);
+        gl_FragColor = vec4(color.rgb, alpha);
+        //gl_FragColor = vec4(1.0, 1.0, 1.0, alpha);
         //gl_FragColor = vec4(texture2D(uShellAlphaTexture, texture_coords).rgb, alpha);
     }
 `
