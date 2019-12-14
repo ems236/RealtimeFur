@@ -112,3 +112,83 @@ function sampleFur(threshold, data) {
         }
     );
 }
+
+//Curliness and density range from 0 to 1.
+function finTextureData(size, density, curliness)
+{
+    //A particle system approach to generating texture data for the fins
+    var finData = [];
+    for(var row = 0; row < size; row++)
+    {
+        finData.push(new Array(size));
+        finData[row].fill(0);
+    }
+
+    for(var particleNumber = 0; particleNumber < density * size; particleNumber++)
+    {
+        var starty = randomInRange(0, size);
+        var startx = 0;
+
+        var normal = vec2.create();
+        vec2.set(normal, 1, 0);
+        var sign = Math.random() > 0.5 ? 1 : -1;
+
+        var curlDeviation = mat2.create();
+        //By last particle cast, the angle will have deviated to 2PI / curliness
+        mat2.fromRotation(curlDeviation, sign * (2 * 3.1415 * curliness) / size);
+
+        //As soon as it rotates by PI / 2, it's covered all the distance it's going to cover. 
+        //need to modify particle distance so the texture fills all the way to the end
+        var castDistance = 1;
+        if(curliness > 0.25)
+        {
+            castDistance = 4 * (1 / curliness);
+        }
+
+        //this essentially needs to rasterize which is not nice
+
+        for(var castNumber = 1; castNumber < size; castNumber++)
+        {
+            var endX = startx + castDistance * normal[0];
+            var endY = starty + castDistance * normal[1];
+
+            rasterize(startx, starty, endX, endY, finData);
+
+            startx = endX;
+            starty = endY;
+            //deviate the normal by some amount of curliness.
+            vec2.transformMat2(normal, normal, curlDeviation);
+        }
+    }
+}
+
+function rasterize(startx, starty, endx, endy, data)
+{
+    
+    if(starty = endy || (endx - startx) > (endy - starty))
+    {
+        var slope = (endx - startx) / (endy - starty);
+        var y = starty;
+        for(var x = Math.round(startx); x <=endx; x++)
+        {
+            data[x][Math.round(y)] = 255;
+            y += slope;
+        }
+    }
+    else
+    {
+        var inverseSlope = (endy - starty) / (endx - startx);
+        var x = startx;
+        for(var y = Math.round(starty); y <=endy; y++)
+        {
+            data[Math.round(x)][y] = 255;
+            
+            y += m;
+        }
+    }
+}
+
+function randomInRange(min, max)
+{
+    return Math.round(Math.random() * (max - min) + min);
+}
