@@ -113,20 +113,44 @@ function sampleFur(threshold, data) {
     );
 }
 
+function randomSample(data, count)
+{
+    var copy = data.slice(0);
+    var sample = [];
+    for(var i = 0; i < count; i++)
+    {
+        var rand = randomInRange(0, copy.length - 1);
+        sample.push(copy[rand]);
+        if(!copy[rand] && copy[rand] != 0)
+        {
+            var ayyy = "lmao";
+        }
+        copy.splice(rand, 1);
+    }
+
+    return sample;
+}
+
 //Curliness and density range from 0 to 1.
 function finTextureData(size, density, curliness)
 {
     //A particle system approach to generating texture data for the fins
     var finData = [];
+    var possibleStarts = [];
     for(var row = 0; row < size; row++)
     {
         finData.push(new Array(size));
         finData[row].fill(0);
+
+        possibleStarts.push(row);
     }
 
-    for(var particleNumber = 0; particleNumber < density * size; particleNumber++)
+    var particleCount = Math.round(density * size);
+    var startPoints = randomSample(possibleStarts, particleCount);
+
+    for(var particleNumber = 0; particleNumber < particleCount; particleNumber++)
     {
-        var starty = randomInRange(0, size);
+        var starty = startPoints[particleNumber];
         var startx = 0;
 
         var normal = vec2.create();
@@ -160,32 +184,46 @@ function finTextureData(size, density, curliness)
             vec2.transformMat2(normal, normal, curlDeviation);
         }
     }
+
+    return finData;
 }
 
 function rasterize(startx, starty, endx, endy, data)
 {
-    
-    if(starty = endy || (endx - startx) > (endy - starty))
+    if(Math.abs((endx - startx)) > Math.abs((endy - starty)))
     {
-        var slope = (endx - startx) / (endy - starty);
+        var slope = (endy - starty) / (endx - startx);
         var y = starty;
         for(var x = Math.round(startx); x <=endx; x++)
         {
-            data[x][Math.round(y)] = 255;
+            var ypos = Math.round(y);
+            if(isInRange(x, 0, data.length - 1) && isInRange(ypos, 0, data.length - 1))
+            {
+                data[x][ypos] = 255;
+            }
             y += slope;
         }
     }
     else
     {
-        var inverseSlope = (endy - starty) / (endx - startx);
+        var inverseSlope = (endx - startx) / (endy - starty);
         var x = startx;
         for(var y = Math.round(starty); y <=endy; y++)
         {
-            data[Math.round(x)][y] = 255;
+            var xpos = Math.round(x); 
             
-            y += m;
+            if(isInRange(xpos, 0, data.length - 1) && isInRange(y, 0, data.length - 1))
+            {
+                data[xpos][y] = 255;
+            }
+            x += inverseSlope;
         }
     }
+}
+
+function isInRange(val, min, max)
+{
+    return val >= min && val <= max;
 }
 
 function randomInRange(min, max)
