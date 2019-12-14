@@ -24,7 +24,8 @@ class Scene
 
         this.camera = new Camera(6, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
 
-        this.baseFurData = guassBlur5x5Noise(16); 
+        this.furDataSize = 512;
+        this.baseFurData = guassBlur5x5Noise(this.furDataSize); 
 
         this.loadAttributeBuffers();
         this.initializeShaderProgram();
@@ -99,7 +100,6 @@ class Scene
         const gl = this.gl;
 
         gl.useProgram(this.programInfo.program);
-
         gl.uniformMatrix4fv(
             this.programInfo.uniformLocations.projectionMatrix,
             false,
@@ -121,6 +121,8 @@ class Scene
         this.gl.clearDepth(1.0);                 // Clear everything
         this.gl.enable(this.gl.DEPTH_TEST);           // Enable depth testing
         this.gl.depthFunc(this.gl.LEQUAL);            // Near things obscure far things
+        this.gl.enable(this.gl.BLEND);
+        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
 
         // Clear the canvas before we start drawing on it.
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
@@ -134,9 +136,6 @@ class Scene
             this.setCurrentShell(0);
             this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
             
-            this.gl.enable(this.gl.BLEND);
-            this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-
             
             for(var shell_number = 1; shell_number <= this.shellCount; shell_number++)
             {
@@ -168,7 +167,7 @@ class Scene
         {
             var limit = 90 + 76 * (shellNumber / this.shellCount);
             var filtered = sampleFur(limit, this.baseFurData);
-            this.shellTextures.push(singleChannelTexture(this.gl, filtered));
+            this.shellTextures.push(textureFromData(this.gl, padAlphaData(filtered), this.furDataSize));
         }
     }
 
@@ -176,10 +175,8 @@ class Scene
     {
         this.gl.uniform1f(this.programInfo.uniformLocations.currentShell, shell);
         this.gl.activeTexture(this.gl.TEXTURE1);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.shellTextures[shell - 1]);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.shellTextures[Math.max(0, shell - 1)]);
 
-        console.log(this.shellTextures[shell - 1]);
-        
         //I don't know why this matters but it definitely does.
         //No display when this is not done.
         this.gl.activeTexture(this.gl.TEXTURE0);
