@@ -165,7 +165,9 @@ class Scene
         this.shellTextures = [];
         for(var shellNumber = 0; shellNumber < this.shellCount; shellNumber++)
         {
-            var limit = 90 + 76 * (shellNumber / this.shellCount);
+            const base = 127;
+            const max = 182;
+            var limit = base + (max - base) * (shellNumber / this.shellCount);
             var filtered = sampleFur(limit, this.baseFurData);
             this.shellTextures.push(textureFromData(this.gl, padAlphaData(filtered), this.furDataSize));
         }
