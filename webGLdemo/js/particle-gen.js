@@ -31,35 +31,8 @@ class Layer {
     }
 }
 
-function genParticles(boxDim, numLayers, numParts) {
-    var layers = {};
-    var area = boxDim * boxDim;
-
-    // init layers
-    for (var i = 0; i < numLayers; i++) {
-        layers[i] = {};
-        layers[i]['shell'] = new Array(area).fill(-1);
-        layers[i]['dirs'] = new Array(area).fill(-1);
-    }
-
-    //for (var px = 0; px < boxDim; px++) {
-    //    for (var py = 0; py < boxDim; py++) {
-    //    }
-    //}
-}
-
-function find_intersection(previousDir, nextDir) {
-   // P(t) = P_0 * t + P_1 * (1 - t)
-
-   // p_x = p_0x * t + p_1x * (1 - t)
-   // p_y = p_0y * t + p_1y * (1 - t)
-   // p_z = p_0z * t + p_1z * (1 - t)
-
-
-}
-
 function generateLayers(layerDist, layerDim, depth, threshold, previousLayers, allLayers) {
-    console.log(depth);
+    //console.log(depth);
     // base cases
     if (depth === 0) {
         return null;
@@ -144,5 +117,9 @@ function generateLayers(layerDist, layerDim, depth, threshold, previousLayers, a
 }
 
 function pGenFur(layerDist, layerDim, depth, threshold, previousLayers, allLayers) {
+    generateLayers(layerDist, layerDim, depth, threshold, previousLayers, allLayers);
 
+    allLayers.forEach( item => {
+        console.log(item);
+    });
 }

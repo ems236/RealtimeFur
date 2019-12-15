@@ -56,8 +56,8 @@ function bindMouseEvents(canvas)
 function main()
 {
     var allLayers = [];
-    generateLayers(2, 10, 10, 0.8, new Layer(), allLayers);
-    console.log(allLayers);
+    pGenFur(2, 10, 10, 0.8, new Layer(), allLayers);
+    //console.log(allLayers);
 
     const canvas = $("#glCanvas");
     bindMouseEvents(canvas);
