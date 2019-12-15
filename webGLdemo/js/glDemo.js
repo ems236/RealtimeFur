@@ -55,7 +55,10 @@ function bindMouseEvents(canvas)
 
 function main()
 {
-    genParticles(128, 5, 100);
+    var allLayers = [];
+    pGenFur(.5, 100, 10, 0.7, new Layer(), allLayers);
+    console.log(allLayers);
+
     const canvas = $("#glCanvas");
     bindMouseEvents(canvas);
     const gl = canvas[0].getContext("webgl");
@@ -102,15 +105,7 @@ function initBuffers(gl)
     const positionBuffer = gl.createBuffer(); 
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
   
-    // Now create an array of positions for the square.
-    //LOAD OBJ HERE
-    //const positions = [
-    //  -1.0,  1.0,
-    //   1.0,  1.0,
-    //  -1.0, -1.0,
-    //   1.0, -1.0,
-    //];
-
+    // Now create an array of positions for the cube.
     const positions = [
         // front
         -1.0, -1.0, 1.0,

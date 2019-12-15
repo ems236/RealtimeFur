@@ -134,7 +134,6 @@ class Scene
             this.gl.enable(this.gl.BLEND);
             this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
 
-            
             for(var shell_number = 1; shell_number <= this.shellCount; shell_number++)
             {
                 this.setCurrentShell(shell_number);
