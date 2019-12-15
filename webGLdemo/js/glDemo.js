@@ -180,13 +180,84 @@ function loadSphere()
         setTexCoord(1 - (theta / (2 * 3.14159) + 0.5), 1 - (phi / 3.14159), vertexIndex, texCoords);
     }
 
+    sharedTriangles = loadFinEdgeList(faces);
+
     return {
         position: positions,
         normal: normals,
         face: faces,
         texCoord: texCoords,
-        furLength: furLengths
+        furLength: furLengths,
+        sharedTringle: sharedTriangles
     }
+}
+
+function loadFinEdgeList(faces)
+{
+    var sharedTrianges = [];
+    for(var faceIndex = 0; faceIndex < faces.length / 3; faceIndex++)
+    {
+        var v1index = faces[faceIndex * 3];
+        var v2index = faces[faceIndex * 3 + 1];
+        var v3index = faces[faceIndex * 3 + 2];
+
+        var edges = [{v1: v1index, v2:v2index, v3:v3index}, {v1: v2index, v2:v3index, v3:v1index}, {v1: v1index, v2:v3index, v3:v2index}];
+        for(var edgeIndex = 0; edgeIndex < 3; edgeIndex++)
+        {
+            var edge = edges[edgeIndex];
+            var sharedTriangeV3 = sharedTriangle(faces, faceIndex + 1, edge.v1, edge.v2);
+            if(sharedTriangeV3)
+            {
+                sharedTrianges.push(
+                    {
+                        sharedv1: edge.v1,
+                        sharedv2: edge.v2,
+                        v3: edge.v3,
+                        v4: sharedTriangeV3     
+                    }
+                );
+            } 
+        }
+    }
+
+    return sharedTrianges;
+}
+
+function sharedTriangle(faces, startIndex, originalV1, originalV2)
+{
+    for(var faceIndex = startIndex; faceIndex < faces.length / 3; faceIndex++)
+    {
+        var v1index = faces[faceIndex * 3];
+        var v2index = faces[faceIndex * 3 + 1];
+        var v3index = faces[faceIndex * 3 + 2];
+
+        var matchedV1 = false;
+        var matchedV2 = false;
+        var newV3 = undefined;
+
+        for(var vertexIndexIndex = faceIndex * 3; vertexIndexIndex < faceIndex * 3 + 3; vertexIndexIndex++)
+        {
+            if(faces[vertexIndexIndex] == originalV1)
+            {
+                matchedV1 = true;
+            }
+            else if(faces[vertexIndexIndex] == originalV2)
+            {
+                matchedV2 = true;
+            }
+            else
+            {
+                newV3 = faces[vertexIndexIndex];
+            }
+        }
+
+        if(matchedV1 && matchedV2)
+        {
+            return newV3;
+        }
+    }
+
+    return undefined;
 }
 
 function getVertex(index, positions)

@@ -256,9 +256,8 @@ class Scene
     {
         //Loop through edges
         
-        //Add fins if an edge is not a shared edge
-        //Add fins if edge is shared, one triangle has edge away from view and one toward.
 
+        //Add fins if edge is shared, one triangle has edge away from view and one toward.
 
 
 
