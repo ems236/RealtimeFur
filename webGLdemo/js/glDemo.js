@@ -180,7 +180,7 @@ function loadSphere()
         setTexCoord(1 - (theta / (2 * 3.14159) + 0.5), 1 - (phi / 3.14159), vertexIndex, texCoords);
     }
 
-    sharedTriangles = loadFinEdgeList(faces);
+    sharedTriangles = loadFinEdgeList(faces, positions);
 
     return {
         position: positions,
@@ -188,7 +188,7 @@ function loadSphere()
         face: faces,
         texCoord: texCoords,
         furLength: furLengths,
-        sharedTringle: sharedTriangles
+        sharedTriangle: sharedTriangles
     }
 }
 
@@ -201,7 +201,7 @@ function loadFinEdgeList(faces, positions)
         var v2index = faces[faceIndex * 3 + 1];
         var v3index = faces[faceIndex * 3 + 2];
 
-        var norm1 = normalOf(v1index, v2index, v3index, positions);
+        var normal1 = normalOf(v1index, v2index, v3index, positions);
 
         var edges = [{v1: v1index, v2:v2index, v3:v3index}, {v1: v2index, v2:v3index, v3:v1index}, {v1: v1index, v2:v3index, v3:v2index}];
         for(var edgeIndex = 0; edgeIndex < 3; edgeIndex++)
@@ -211,7 +211,7 @@ function loadFinEdgeList(faces, positions)
 
             if(sharedTriangeV3)
             {
-                var normal2 = normalOf(edge.v1, edge.v2, sharedTriangeV3);
+                var normal2 = normalOf(edge.v1, edge.v2, sharedTriangeV3, positions);
                 sharedTrianges.push(
                     {
                         sharedv1: edge.v1,

@@ -1,4 +1,4 @@
-generateFins(eyeVec, normalMatrix, sharedTriangles, positions, normals, furLength)
+function generateFins(eyeVec, normalMatrix, sharedTriangles, positions, normals, furLength)
 {
     var finVertices = [];
     var finFaces = [];
@@ -28,7 +28,7 @@ generateFins(eyeVec, normalMatrix, sharedTriangles, positions, normals, furLengt
         positions: finVertices,
         faces: finFaces,
         texCoords: finTexCoords
-    };
+    }
 }
 
 function extrudeEdge(sharedTriangle, finVertices, finFaces, finTexCoords, positions, normals, furLength)
@@ -61,10 +61,7 @@ function extrudeEdge(sharedTriangle, finVertices, finFaces, finTexCoords, positi
 
 function uTexCoordsFor(v1, v2)
 {
-    var edge = vec3.create(); 
-    vec3.subtract(edge, v2, v1);
-
-    var edgeLength = vec3.magnitude(edge);
+    var edgeLength = vec3.distance(v1, v2);
     var start = randomInRange(0, 1 - edgeLength);
     return {
         left: start,

@@ -60,6 +60,9 @@ class Scene
         gl.bindBuffer(gl.ARRAY_BUFFER, furLengthBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.objectData.furLength), gl.STATIC_DRAW);
 
+        const finPositionBuffer = gl.createBuffer();
+        const finFaceBuffer = gl.createBuffer();
+        const finTexCoodBuffer = gl.createBuffer();
         
         this.buffers = {
             position: positionBuffer,
@@ -205,7 +208,7 @@ class Scene
             this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
             
             this.gl.depthMask(false);
-            //this.drawFins();
+            this.drawFins();
 
             this.loadShellShaderProgram();
             for(var shell_number = 1; shell_number <= this.shellCount; shell_number++)
@@ -256,17 +259,15 @@ class Scene
 
     drawFins()
     {
-        
-        //Loop through edges
-        var finVertices = [];
-        var finFaces = [];
+        var startTime = Date.now(); 
 
-        //Add fins if edge is shared, one triangle has edge away from view and one toward.
         var eyeVec3 = this.camera.position();
         var eyeVec = vec4.fromValues(eyeVec3[0], eyeVec3[1], eyeVec3[2], 0.0)
         var normalMatrix = this.currentNormalMatrix;
 
         var finData = generateFins(eyeVec, normalMatrix, this.objectData.sharedTriangle, this.objectData.position, this.objectData.normal, this.objectData.furLength);
+        console.log(finData);
+        console.log(Date.now() - startTime);
     }
 
     mousedown(type, x, y)
