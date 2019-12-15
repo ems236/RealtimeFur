@@ -114,27 +114,21 @@ function pGenFur(layerDist, layerDim, depth, threshold, previousLayers, allLayer
 
             // find_intersection(layerDist, previousLayers, newLayer);
             // find the intersection point
-            var t = -py / previousLayers.dirs[px][py][1];
+            var t = -layerDist / previousLayers.dirs[px][py][2];
 
             // only need the x,y values
             var x = Math.floor(px + previousLayers.dirs[px][py][0] * t);
             var y = Math.floor(py + previousLayers.dirs[px][py][1] * t);
 
-//            if (x < 0 || x >= layerDim || y < 0 || y >= layerDim) {
-//                continue;
-//            }
+            if (x < 0 || x >= layerDim || y < 0 || y >= layerDim) {
+                continue;
+            }
 
             newLayer.layer[x][y] = true;
             newLayer.dirs[x][y] = previousLayers.dirs[px][py];
         }
     }
 
-    //allLayers.push(previousLayers);
     allLayers.push(newLayer);
     return newLayer;
-}
-
-function bound(val, min, max)
-{
-    return Math.max(min, Math.min(val, max));
 }
