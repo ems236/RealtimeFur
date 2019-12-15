@@ -35,7 +35,7 @@ class Scene
 
     initializeBuffers(gl)
     {
-        const positionBuffer = gl.createBuffer(); 
+        const positionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.objectData.position), gl.STATIC_DRAW);
     
@@ -201,6 +201,8 @@ class Scene
            
             this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
             
+            this.drawFins();
+
             this.loadShellShaderProgram();
             for(var shell_number = 1; shell_number <= this.shellCount; shell_number++)
             {
@@ -246,6 +248,18 @@ class Scene
         //I don't know why this matters but it definitely does.
         //No display when this is not done.
         this.gl.activeTexture(this.gl.TEXTURE0);
+    }
+
+    drawFins()
+    {
+        //Loop through edges
+        
+        //Add fins if an edge is not a shared edge
+        //Add fins if edge is shared, one triangle has edge away from view and one toward.
+
+        
+
+
     }
 
     mousedown(type, x, y)
