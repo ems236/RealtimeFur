@@ -159,15 +159,17 @@ class Scene
     setViewDependentTransforms(programInfo)
     {
         var viewMatrix = this.camera.viewMatrix();
+        this.currentViewMatrix = viewMatrix;
         this.gl.uniformMatrix4fv(
             programInfo.uniformLocations.viewMatrix,
             false,
             viewMatrix);
 
+        this.currentNormalMatrix = this.normalMatrix(this.modelMatrix, viewMatrix);
         this.gl.uniformMatrix4fv(
             programInfo.uniformLocations.normalMatrix,
             false,
-            this.normalMatrix(this.modelMatrix, viewMatrix));
+            this.currentNormalMatrix);
     }
 
     normalMatrix(modelMatrix, viewMatrix)
@@ -254,13 +256,17 @@ class Scene
 
     drawFins()
     {
-        //Loop through edges
         
+        //Loop through edges
+        var finVertices = [];
+        var finFaces = [];
 
         //Add fins if edge is shared, one triangle has edge away from view and one toward.
+        var eyeVec3 = this.camera.position();
+        var eyeVec = vec4.fromValues(eyeVec3[0], eyeVec3[1], eyeVec3[2], 0.0)
+        var normalMatrix = this.currentNormalMatrix;
 
-
-
+        var finData = generateFins(eyeVec, normalMatrix, this.objectData.sharedTriangle, this.objectData.position, this.objectData.normal, this.objectData.furLength);
     }
 
     mousedown(type, x, y)
