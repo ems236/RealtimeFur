@@ -103,30 +103,40 @@ var shellFragmentShader = `
 
 var finVertexShader = `
     attribute vec4 aVertexPosition;
-    attribute vec2 aTexCoords;
+    attribute vec2 aFinTexCoords;
+    attribute vec2 aColorTexCoords;
 
     uniform mat4 uModelMatrix;
     uniform mat4 uViewMatrix;
     uniform mat4 uProjectionMatrix;
+    uniform mat4 uNormalMatrix;
 
-    varying vec2 texture_coords;
+    varying vec2 finTexCoords;
+    varying vec2 colorTexCoords;
 
     void main() 
     {
         vec4 base_position = uViewMatrix * uModelMatrix * aVertexPosition;
-        texture_coords = aTexCoords;
+        finTexCoords = aFinTexCoords;
+        colorTexCoords = aColorTexCoords;
         gl_Position = uProjectionMatrix * base_position;
     }
 `
 
 var finFragmentShader = `
-    varying vec2 texture_coords;
+    precision mediump float;
+
+    varying vec2 finTexCoords;
+    varying vec2 colorTexCoords;
 
     uniform sampler2D uFinTexture;
+    uniform sampler2D uColorTexture;
 
     void main()
     {
-        gl_FragColor = texture2D(uColorTexture, texture_coords);
+        vec3 color = texture2D(uColorTexture, colorTexCoords).rgb;
+        float alpha = texture2D(uFinTexture, finTexCoords).a;
+        gl_FragColor = vec4(color, alpha);
     }
 `
 

@@ -110,12 +110,34 @@ function main()
         }
     };
 
+    const finShaderProgram = attachShaders(gl, finVertexShader, finFragmentShader);
+    const finProgramInfo = 
+    {
+        program: finShaderProgram,
+        attribLocations:
+        {
+            vertexPosition: gl.getAttribLocation(finShaderProgram, 'aVertexPosition'),
+            finTexCoords: gl.getAttribLocation(finShaderProgram, 'aFinTexCoords'),
+            colorTexCoords: gl.getAttribLocation(finShaderProgram, 'aColorTexCoords'),
+        },
+        uniformLocations:
+        {
+            projectionMatrix: gl.getUniformLocation(finShaderProgram, 'uProjectionMatrix'),
+            modelMatrix: gl.getUniformLocation(finShaderProgram, 'uModelMatrix'),
+            viewMatrix: gl.getUniformLocation(finShaderProgram, 'uViewMatrix'),
+            normalMatrix: gl.getUniformLocation(finShaderProgram, 'uNormalMatrix'),
+            colorTexture: gl.getUniformLocation(finShaderProgram, 'uColorTexture'),
+            finTexture: gl.getUniformLocation(finShaderProgram, 'uFinTexture'),
+        }
+    }
+
     var objectData = loadSphere();
 
     const programInfo = 
     {
         baseProgramInfo: baseProgramInfo,
         shellProgramInfo: shellProgramInfo,
+        finProgramInfo: finProgramInfo,
     }
 
     console.log(programInfo);
@@ -287,6 +309,12 @@ function sharedTriangle(faces, startIndex, originalV1, originalV2)
     }
 
     return undefined;
+}
+
+function getTexCoords(index, texCoords)
+{
+    startIndex = 2 * index;
+    return {u: texCoords[startIndex], v: texCoords[startIndex + 1]};
 }
 
 function getVertex(index, positions)
