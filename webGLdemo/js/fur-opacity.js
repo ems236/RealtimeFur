@@ -121,10 +121,6 @@ function randomSample(data, count)
     {
         var rand = randomInRange(0, copy.length - 1);
         sample.push(copy[rand]);
-        if(!copy[rand] && copy[rand] != 0)
-        {
-            var ayyy = "lmao";
-        }
         copy.splice(rand, 1);
     }
 
