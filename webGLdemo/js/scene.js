@@ -1,9 +1,9 @@
 class Scene
 {
-    constructor(gl, buffers, programInfo)
+    constructor(gl, objectData, programInfo)
     {
         this.gl = gl;
-        this.buffers = buffers;
+        this.objectData = objectData;
         this.programInfo = programInfo;
 
         this.fieldOfView = 45 * Math.PI / 180;   // in radians
@@ -27,9 +27,47 @@ class Scene
         this.furDataSize = 512;
         this.baseFurData = guassBlur5x5Noise(this.furDataSize); 
 
+        this.initializeBuffers(this.gl);
         this.loadAttributeBuffers();
         this.initializeTexture();
         this.setShellCount(10);
+    }
+
+    initializeBuffers(gl)
+    {
+        const positionBuffer = gl.createBuffer(); 
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.objectData.position), gl.STATIC_DRAW);
+    
+
+        const normalBuffer = gl.createBuffer(); 
+        gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.objectData.normal), gl.STATIC_DRAW);
+    
+
+        const indexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.objectData.face),
+            gl.STATIC_DRAW);
+
+
+        const textureCoordBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.objectData.texCoord), gl.STATIC_DRAW);
+    
+    
+        const furLengthBuffer = gl.createBuffer();  
+        gl.bindBuffer(gl.ARRAY_BUFFER, furLengthBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.objectData.furLength), gl.STATIC_DRAW);
+
+        
+        this.buffers = {
+            position: positionBuffer,
+            normal: normalBuffer,
+            indices: indexBuffer,
+            texCoords: textureCoordBuffer,
+            furLength: furLengthBuffer,
+        };
     }
 
     setAttributeBuffer(gl, programLocations, buffer, numComponents, normalize)

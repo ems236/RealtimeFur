@@ -106,6 +106,35 @@ var shellFragmentShader = `
     }
 `
 
+var finVertexShader = `
+    attribute vec4 aVertexPosition;
+    attribute vec2 aTexCoords;
+
+    uniform mat4 uModelMatrix;
+    uniform mat4 uViewMatrix;
+    uniform mat4 uProjectionMatrix;
+
+    varying vec2 texture_coords;
+
+    void main() 
+    {
+        vec4 base_position = uViewMatrix * uModelMatrix * aVertexPosition;
+        texture_coords = aTexCoords;
+        gl_Position = uProjectionMatrix * base_position;
+    }
+`
+
+var finFragmentShader = `
+    varying vec2 texture_coords;
+
+    uniform sampler2D uFinTexture;
+
+    void main()
+    {
+        gl_FragColor = texture2D(uColorTexture, texture_coords);
+    }
+`
+
 function compileShader(gl, type, source) 
 {
     const shader = gl.createShader(type);
