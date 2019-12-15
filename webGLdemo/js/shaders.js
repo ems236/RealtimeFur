@@ -68,7 +68,7 @@ var shellVertexShader = `
         texture_coords = aTexCoords;
         normal = (uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz;
 
-        vec4 displacement = vec4(normal * aFurLength * (uCurrentShell / uShellCount), 0.0);
+        vec4 displacement = vec4(normalize(normal) * aFurLength * (uCurrentShell / uShellCount), 0.0);
         //vec4 displacement = vec4(normal * 0.0, 0.0);
         gl_Position = uProjectionMatrix * (base_position + displacement);
     }
