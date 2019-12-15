@@ -195,13 +195,13 @@ class Scene
         {
             const offset = 0;
             const type = this.gl.UNSIGNED_SHORT;
-            const vertexCount = 36;
+            const vertexCount = this.objectData.face.length;
 
             this.loadBaseShaderProgram();
            
             this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
             
-            this.drawFins();
+            //this.drawFins();
 
             this.loadShellShaderProgram();
             for(var shell_number = 1; shell_number <= this.shellCount; shell_number++)
@@ -257,7 +257,7 @@ class Scene
         //Add fins if an edge is not a shared edge
         //Add fins if edge is shared, one triangle has edge away from view and one toward.
 
-        
+
 
 
     }
