@@ -58,7 +58,7 @@ function find_intersection(previousDir, nextDir) {
 
 }
 
-function pGenFur(layerDist, layerDim, depth, threshold, previousLayers, allLayers) {
+function generateLayers(layerDist, layerDim, depth, threshold, previousLayers, allLayers) {
     console.log(depth);
     // base cases
     if (depth === 0) {
@@ -80,6 +80,16 @@ function pGenFur(layerDist, layerDim, depth, threshold, previousLayers, allLayer
                     continue;
                 }
 
+                var x = Math.random();
+                var y = Math.random();
+                var z = Math.random();
+
+                var mag = Math.sqrt(x * x + y * y + z * z);
+
+                x /= mag;
+                y /= mag;
+                z /= mag;
+
                 previousLayers.dirs[px].push([Math.random(), Math.random(), Math.random()]);
             }
         }
@@ -88,7 +98,7 @@ function pGenFur(layerDist, layerDim, depth, threshold, previousLayers, allLayer
         return previousLayers;
     }
 
-    previousLayers = pGenFur(layerDist, layerDim, depth - 1, threshold, previousLayers, allLayers);
+    previousLayers = generateLayers(layerDist, layerDim, depth - 1, threshold, previousLayers, allLayers);
 
     if (previousLayers == null) {
         console.log("uh oh something went wrong...");
@@ -131,4 +141,8 @@ function pGenFur(layerDist, layerDim, depth, threshold, previousLayers, allLayer
 
     allLayers.push(newLayer);
     return newLayer;
+}
+
+function pGenFur(layerDist, layerDim, depth, threshold, previousLayers, allLayers) {
+
 }
