@@ -53,13 +53,13 @@ class Camera
     changeLatitude(amount)
     {
         const step = 0.05;
-        this.latitude = clamp(this.latitude + (amount * step), 0, PI);
+        this.latitude = clamp(this.latitude + (amount * step), 0.00001, PI);
     }
 
     changeLongitude(amount)
     {
         const step = 0.05;
-        this.longitude = this.longitude + (amount * step) % 2 * PI;
+        this.longitude = this.longitude + (amount * step) % (2 * PI);
     }
 
     changeRadius(amount)

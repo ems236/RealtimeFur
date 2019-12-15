@@ -198,9 +198,11 @@ class Scene
             const vertexCount = this.objectData.face.length;
 
             this.loadBaseShaderProgram();
-           
+            this.gl.depthMask(true);
+
             this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
             
+            this.gl.depthMask(false);
             //this.drawFins();
 
             this.loadShellShaderProgram();

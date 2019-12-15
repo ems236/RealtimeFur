@@ -89,13 +89,8 @@ var shellFragmentShader = `
         vec4 color = texture2D(uColorTexture, texture_coords);
         
         
-        float alpha = 1.0;
-        if(uCurrentShell > 0.0)
-        {
-            alpha = texture2D(uShellAlphaTexture, texture_coords).a;
-            //alpha = 0.5;
-
-        }
+        float alpha = texture2D(uShellAlphaTexture, texture_coords).a;
+        
         //gl_FragColor = vec4(abs(normal.x), abs(normal.y), abs(normal.z), 1.0);
 
         //gl_FragColor = vec4(texture_coords, 0.0, 1.0);
