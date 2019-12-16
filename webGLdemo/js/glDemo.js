@@ -76,6 +76,10 @@ function bindInputEvents()
     $("#filter-fins").change(function()
     {
         currentScene.alphaBlendAllFins = this.checked;
+        if(this.checked)
+        {
+            currentScene.loadFins();
+        }
         currentScene.redraw();
     });
 }
@@ -127,14 +131,14 @@ function main()
         },
         uniformLocations: 
         {
-          projectionMatrix: gl.getUniformLocation(shellShaderProgram, 'uProjectionMatrix'),
-          modelMatrix: gl.getUniformLocation(shellShaderProgram, 'uModelMatrix'),
-          viewMatrix: gl.getUniformLocation(shellShaderProgram, 'uViewMatrix'),
-          normalMatrix: gl.getUniformLocation(shellShaderProgram, 'uNormalMatrix'),
-          colorTexture: gl.getUniformLocation(shellShaderProgram, 'uColorTexture'),
-          shellAlphaTexture: gl.getUniformLocation(shellShaderProgram, 'uShellAlphaTexture'),
-          shellCount: gl.getUniformLocation(shellShaderProgram, 'uShellCount'),
-          currentShell: gl.getUniformLocation(shellShaderProgram, 'uCurrentShell'),
+            projectionMatrix: gl.getUniformLocation(shellShaderProgram, 'uProjectionMatrix'),
+            modelMatrix: gl.getUniformLocation(shellShaderProgram, 'uModelMatrix'),
+            viewMatrix: gl.getUniformLocation(shellShaderProgram, 'uViewMatrix'),
+            normalMatrix: gl.getUniformLocation(shellShaderProgram, 'uNormalMatrix'),
+            colorTexture: gl.getUniformLocation(shellShaderProgram, 'uColorTexture'),
+            shellAlphaTexture: gl.getUniformLocation(shellShaderProgram, 'uShellAlphaTexture'),
+            shellCount: gl.getUniformLocation(shellShaderProgram, 'uShellCount'),
+            currentShell: gl.getUniformLocation(shellShaderProgram, 'uCurrentShell'),
         }
     };
 

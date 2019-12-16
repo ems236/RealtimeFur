@@ -1,4 +1,4 @@
-function generateFins(eyeVec, normalMatrix, sharedTriangles, objectData, shouldRenderAll)
+function generateFins(eyeVec, sharedTriangles, objectData, shouldRenderAll)
 {
     var finVertices = [];
     var finFaces = [];
@@ -12,12 +12,10 @@ function generateFins(eyeVec, normalMatrix, sharedTriangles, objectData, shouldR
 
 
         var norm1 = vec4.create();
-        vec4.transformMat4(norm1, sharedTriangle.norm1, normalMatrix);
-        vec4.normalize(norm1, norm1);
+        vec4.normalize(norm1, sharedTriangle.norm1);
 
         var norm2 = vec4.create();
-        vec4.transformMat4(norm2, sharedTriangle.norm2, normalMatrix);
-        vec4.normalize(norm2, norm2);
+        vec4.normalize(norm2, sharedTriangle.norm2);
 
         var norm1DotEye = vec4.dot(norm1, eyeVec);
         var norm2DotEye = vec4.dot(norm2, eyeVec);
