@@ -112,3 +112,121 @@ function sampleFur(threshold, data) {
         }
     );
 }
+
+function randomSample(data, count)
+{
+    var copy = data.slice(0);
+    var sample = [];
+    for(var i = 0; i < count; i++)
+    {
+        var rand = randomInRange(0, copy.length - 1);
+        sample.push(copy[rand]);
+        if(!copy[rand] && copy[rand] != 0)
+        {
+            var ayyy = "lmao";
+        }
+        copy.splice(rand, 1);
+    }
+
+    return sample;
+}
+
+//Curliness and density range from 0 to 1.
+function finTextureData(size, density, curliness)
+{
+    //A particle system approach to generating texture data for the fins
+    var finData = [];
+    var possibleStarts = [];
+    for(var row = 0; row < size; row++)
+    {
+        finData.push(new Array(size));
+        finData[row].fill(0);
+
+        possibleStarts.push(row);
+    }
+
+    var particleCount = Math.round(density * size);
+    var startPoints = randomSample(possibleStarts, particleCount);
+
+    for(var particleNumber = 0; particleNumber < particleCount; particleNumber++)
+    {
+        var starty = startPoints[particleNumber];
+        var startx = 0;
+
+        var normal = vec2.create();
+        vec2.set(normal, 1, 0);
+        var sign = Math.random() > 0.5 ? 1 : -1;
+
+        var curlDeviation = mat2.create();
+        //By last particle cast, the angle will have deviated to 2PI / curliness
+        mat2.fromRotation(curlDeviation, sign * (2 * 3.1415 * curliness) / size);
+
+        //As soon as it rotates by PI / 2, it's covered all the distance it's going to cover. 
+        //need to modify particle distance so the texture fills all the way to the end
+        var castDistance = 1;
+        if(curliness > 0.25)
+        {
+            castDistance = 4 * (1 / curliness);
+        }
+
+        //this essentially needs to rasterize which is not nice
+
+        for(var castNumber = 1; castNumber < size; castNumber++)
+        {
+            var endX = startx + castDistance * normal[0];
+            var endY = starty + castDistance * normal[1];
+
+            rasterize(startx, starty, endX, endY, finData);
+
+            startx = endX;
+            starty = endY;
+            //deviate the normal by some amount of curliness.
+            vec2.transformMat2(normal, normal, curlDeviation);
+        }
+    }
+
+    return finData;
+}
+
+function rasterize(startx, starty, endx, endy, data)
+{
+    if(Math.abs((endx - startx)) > Math.abs((endy - starty)))
+    {
+        var slope = (endy - starty) / (endx - startx);
+        var y = starty;
+        for(var x = Math.round(startx); x <=endx; x++)
+        {
+            var ypos = Math.round(y);
+            if(isInRange(x, 0, data.length - 1) && isInRange(ypos, 0, data.length - 1))
+            {
+                data[x][ypos] = 255;
+            }
+            y += slope;
+        }
+    }
+    else
+    {
+        var inverseSlope = (endx - startx) / (endy - starty);
+        var x = startx;
+        for(var y = Math.round(starty); y <=endy; y++)
+        {
+            var xpos = Math.round(x); 
+            
+            if(isInRange(xpos, 0, data.length - 1) && isInRange(y, 0, data.length - 1))
+            {
+                data[xpos][y] = 255;
+            }
+            x += inverseSlope;
+        }
+    }
+}
+
+function isInRange(val, min, max)
+{
+    return val >= min && val <= max;
+}
+
+function randomInRange(min, max)
+{
+    return Math.round(Math.random() * (max - min) + min);
+}
