@@ -273,7 +273,7 @@ class Scene
             vertexCount = this.finElementCount;
             this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
             
-            
+
             vertexCount = this.objectData.face.length;
             this.loadShellShaderProgram();
             this.loadBaseShellAttributeBuffers();
@@ -327,17 +327,15 @@ class Scene
 
     loadFins()
     {
-        var startTime = Date.now(); 
-
-        var eyeVec3 = this.camera.position();
-        var eyeVec = vec4.fromValues(eyeVec3[0], eyeVec3[1], eyeVec3[2], 0.0)
+        //var startTime = Date.now(); 
+        var eyeVec = vec4.fromValues(0, 0, 1, 0.0)
         var normalMatrix = this.currentNormalMatrix;
 
         var finData = generateFins(eyeVec, normalMatrix, this.objectData.sharedTriangle, this.objectData);
         this.finElementCount = finData.faces.length;
         this.resetFinBuffers(this.gl, finData);
 
-        console.log(Date.now() - startTime);
+        //console.log(Date.now() - startTime);
     }
 
     mousedown(type, x, y)
