@@ -53,8 +53,62 @@ function generateFurMap(mapSize, kernelSize) {
     return filteredNoise;
 }
 
-function sampleFur(threshold, opmap) {
-    return opmap.map(out => {
-        return out.map(item => item > threshold ? item : 0);
-    });
+function guassBlur5x5Noise(noiseSize)
+{
+    var noise = [];
+    for (var i = 0; i < noiseSize; i++) {
+        noise.push([]);
+        for (var j = 0; j < noiseSize; j++) 
+        {
+            var rand = Math.random() * 255;
+            noise[i].push(rand);
+        }
+    }
+
+    var kernel = [[1, 4, 6, 4, 1], [4, 16, 24, 16, 4], [6, 24, 36, 24, 6], [4, 16, 24, 16, 4], [1, 4, 6, 4, 1]];
+    var scale = 256.0;
+
+    var filteredNoise = [];
+    for(var row = 0; row < noiseSize; row++)
+    {
+        filteredNoise.push(noise[row].slice(0));
+    }
+
+    for(var x = 0; x < noiseSize; x++)
+    {
+        for(var y = 0; y < noiseSize; y++)
+        {
+            var sum = 0;
+
+            for(var xOffset = -2; xOffset <= 2; xOffset++)
+            {
+                for(var yOffset = -2; yOffset <= 2; yOffset++)
+                {
+                    var kernelVal = kernel[xOffset + 2][yOffset + 2];
+                    var pointx = bound(x + xOffset, 0, noiseSize - 1);
+                    var pointy = bound(y + yOffset, 0, noiseSize - 1);
+
+                    sum += kernelVal * noise[pointx][pointy];
+                }
+            }
+
+            filteredNoise[x][y] = bound(sum / scale, 0, 255);
+        }
+    }
+    
+    return filteredNoise;
+}
+
+function bound(val, min, max)
+{
+    return Math.max(min, Math.min(val, max));
+}
+
+function sampleFur(threshold, data) {
+    return data.map(row => 
+        {
+            var filtered = row.map(item => item > threshold ? 255 : 0);
+            return filtered;
+        }
+    );
 }
