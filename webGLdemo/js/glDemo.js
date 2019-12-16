@@ -72,6 +72,12 @@ function bindInputEvents()
         currentScene.shouldDrawFins = this.checked;
         currentScene.redraw();
     });
+
+    $("#filter-fins").change(function()
+    {
+        currentScene.shouldFilterFins = this.checked;
+        currentScene.redraw();
+    });
 }
 
 function main()

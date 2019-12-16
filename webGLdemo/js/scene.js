@@ -28,6 +28,7 @@ class Scene
         this.shouldDrawFins = true;
         this.shouldDrawShells = true;
         this.shouldDrawBase = true;
+        this.shouldFilterFins = true;
 
         this.furDataSize = 512;
         this.baseFurData = guassBlur5x5Noise(this.furDataSize);
