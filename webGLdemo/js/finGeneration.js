@@ -47,6 +47,9 @@ function isSillhouette(norm1DotEye, norm2DotEye)
 
 function extrudeEdge(sharedTriangle, finVertices, finFaces, finTexCoords, colorTexCoords, finNormals, objectData)
 {
+    //Fins look longer than shells because they don't really fade so much, so shorten them a bit.
+    const FIN_LENGTH_MODIFIER = 0.75;
+
     //Draw the fin
     var startIndex = finVertices.length / 3;
             
@@ -54,7 +57,7 @@ function extrudeEdge(sharedTriangle, finVertices, finFaces, finTexCoords, colorT
     var v1 = getVertex(sharedTriangle.sharedv1, objectData.position);
     var v1FurOffset = vec3.create();
     vec3.normalize(v1FurOffset, v1);
-    vec3.scale(v1FurOffset, v1FurOffset, objectData.furLength[sharedTriangle.sharedv1]);
+    vec3.scale(v1FurOffset, v1FurOffset, objectData.furLength[sharedTriangle.sharedv1] * FIN_LENGTH_MODIFIER);
     var v3 = vec3.create();
     vec3.add(v3, v1, v1FurOffset);
 
@@ -62,7 +65,7 @@ function extrudeEdge(sharedTriangle, finVertices, finFaces, finTexCoords, colorT
     var v2 = getVertex(sharedTriangle.sharedv2, objectData.position);
     var v2FurOffset = vec3.create();
     vec3.normalize(v2FurOffset, v2);
-    vec3.scale(v2FurOffset, v2FurOffset, objectData.furLength[sharedTriangle.sharedv2]);
+    vec3.scale(v2FurOffset, v2FurOffset, objectData.furLength[sharedTriangle.sharedv2] * FIN_LENGTH_MODIFIER);
     var v4 = vec3.create();
     vec3.add(v4, v2, v2FurOffset);
 
