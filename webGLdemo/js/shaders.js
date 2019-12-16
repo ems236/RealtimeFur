@@ -137,6 +137,7 @@ var finFragmentShader = `
         vec3 color = texture2D(uColorTexture, colorTexCoords).rgb;
         float alpha = texture2D(uFinTexture, finTexCoords).a;
         gl_FragColor = vec4(color, alpha);
+        //gl_FragColor = texture2D(uFinTexture, finTexCoords);
     }
 `
 

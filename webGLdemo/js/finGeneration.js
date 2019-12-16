@@ -74,7 +74,7 @@ function extrudeEdge(sharedTriangle, finVertices, finFaces, finTexCoords, colorT
 
 function uTexCoordsFor(v1, v2)
 {
-    var edgeLength = vec3.distance(v1, v2);
+    var edgeLength = vec3.distance(v1, v2) * 3;
     var start = randomInRange(0, 1 - edgeLength);
     return {
         left: start,

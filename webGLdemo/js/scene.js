@@ -25,7 +25,9 @@ class Scene
         this.camera = new Camera(6, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
 
         this.furDataSize = 512;
-        this.baseFurData = guassBlur5x5Noise(this.furDataSize); 
+        this.baseFurData = guassBlur5x5Noise(this.furDataSize);
+        this.finTextureSize = 128;
+        this.finTextureRaw = finTextureData(this.finTextureSize, 0.2, 0.0);
 
         this.finBuffers = {
             position: gl.createBuffer(),
@@ -36,6 +38,7 @@ class Scene
 
         this.initializeBuffers(this.gl);
         this.initializeTexture();
+        this.initializeFinTexture()
         this.setShellCount(10);
     }
 
@@ -253,6 +256,7 @@ class Scene
             const type = this.gl.UNSIGNED_SHORT;
             var vertexCount = this.objectData.face.length;
 
+            
             this.loadBaseShellAttributeBuffers();
 
             this.loadBaseShaderProgram();
@@ -273,7 +277,7 @@ class Scene
             vertexCount = this.finElementCount;
             this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
             
-
+            
             vertexCount = this.objectData.face.length;
             this.loadShellShaderProgram();
             this.loadBaseShellAttributeBuffers();
@@ -336,6 +340,18 @@ class Scene
         this.resetFinBuffers(this.gl, finData);
 
         //console.log(Date.now() - startTime);
+    }
+
+    initializeFinTexture()
+    {
+        const gl = this.gl;
+
+        var finTexture = textureFromData(gl, padAlphaData(this.finTextureRaw), this.finTextureSize);
+
+        gl.activeTexture(gl.TEXTURE2);
+        gl.bindTexture(gl.TEXTURE_2D, finTexture);
+
+        gl.activeTexture(gl.TEXTURE0);
     }
 
     mousedown(type, x, y)
