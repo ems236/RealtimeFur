@@ -58,19 +58,57 @@ var shellVertexShader = `
 
     uniform float uCurrentShell;
     uniform float uShellCount;
+    uniform vec3 uWindSource;
+    uniform float uWindIntensity;
 
     varying vec2 texture_coords;
     varying vec3 normal;
+
+    const float MAX_ITERATIONS = 100.0;
+
+    float PI = 3.14159;
+    vec2 shellDisplacement(vec3 windVector, vec3 normal)
+    {
+        float shellDistance = aFurLength / uShellCount;
+        float windIntensity = length(windVector) * uWindIntensity;
+        
+        float windDisplacement = 0.0;
+        float normalDisplacement = 0.0;
+        for(float shellNumber = 1.0; shellNumber <= MAX_ITERATIONS; shellNumber += 1.0)
+        {
+            if(shellNumber > uShellCount)
+            {
+                return vec2(windDisplacement, normalDisplacement);
+            }
+
+            float angle = (windIntensity * PI * shellNumber) / (2.0 * uShellCount);
+
+            windDisplacement = windDisplacement + (shellDistance * sin(angle)); 
+            normalDisplacement = normalDisplacement + (shellDistance * cos(angle));
+        }
+
+        return vec2(0.0, 0.0);
+    }
 
     void main() {
         vec4 base_position = uViewMatrix * uModelMatrix * aVertexPosition;
         
         texture_coords = aTexCoords;
-        normal = (uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz;
+        normal = normalize((uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz);
 
-        vec4 displacement = vec4(normalize(normal) * aFurLength * (uCurrentShell / uShellCount), 0.0);
-        //vec4 displacement = vec4(normal * 0.0, 0.0);
-        gl_Position = uProjectionMatrix * (base_position + displacement);
+        vec3 windVector = normalize((uViewMatrix * vec4(uWindSource, 0.0)).xyz * -1.0);
+        //Projection of wind onto normal
+        vec3 vertexWindVector = windVector - (normal * (dot(windVector, normal)));
+
+        vec2 displacementMultipliers = shellDisplacement(vertexWindVector, normal); 
+
+        vec3 displacement = windVector * displacementMultipliers.x + normal * displacementMultipliers.y;
+        
+        vec4 oldDisplacement = vec4(normalize(normal) * aFurLength * (uCurrentShell / uShellCount), 0.0);
+
+        gl_Position = uProjectionMatrix * (base_position + oldDisplacement);
+        //gl_Position = uProjectionMatrix * (base_position + vec4(displacement, 0.0));
+        //gl_Position = uProjectionMatrix * base_position;
     }
 `
 

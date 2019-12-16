@@ -41,7 +41,11 @@ class Scene
         this.shouldDrawBase = true;
         this.alphaBlendAllFins = true;
 
+        //Called because alpha blending all fins is the default and fins don't need to be reloaded every time if you do it that way
         this.loadFins();
+
+        this.windSource = vec3.create();
+        this.windIntensity = 0.0;
 
         this.initializeBuffers(this.gl);
         this.initializeTexture();
@@ -221,6 +225,8 @@ class Scene
         this.loadBaseUniforms(shellProgramInfo);
 
         this.gl.uniform1f(shellProgramInfo.uniformLocations.shellCount, this.shellCount);
+        this.gl.uniform3f(shellProgramInfo.uniformLocations.windSource, this.windSource[0], this.windSource[1], this.windSource[2]);
+        this.gl.uniform1f(shellProgramInfo.uniformLocations.windIntensity, this.windIntensity);
         this.gl.uniform1i(shellProgramInfo.uniformLocations.shellAlphaTexture, 1);
     }
 
