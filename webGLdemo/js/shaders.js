@@ -68,7 +68,7 @@ var shellVertexShader = `
         texture_coords = aTexCoords;
         normal = (uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz;
 
-        vec4 displacement = vec4(normal * aFurLength * (uCurrentShell / uShellCount), 0.0);
+        vec4 displacement = vec4(normalize(normal) * aFurLength * (uCurrentShell / uShellCount), 0.0);
         //vec4 displacement = vec4(normal * 0.0, 0.0);
         gl_Position = uProjectionMatrix * (base_position + displacement);
     }
@@ -89,13 +89,8 @@ var shellFragmentShader = `
         vec4 color = texture2D(uColorTexture, texture_coords);
         
         
-        float alpha = 1.0;
-        if(uCurrentShell > 0.0)
-        {
-            alpha = texture2D(uShellAlphaTexture, texture_coords).a;
-            //alpha = 0.5;
-
-        }
+        float alpha = texture2D(uShellAlphaTexture, texture_coords).a;
+        
         //gl_FragColor = vec4(abs(normal.x), abs(normal.y), abs(normal.z), 1.0);
 
         //gl_FragColor = vec4(texture_coords, 0.0, 1.0);
@@ -108,30 +103,41 @@ var shellFragmentShader = `
 
 var finVertexShader = `
     attribute vec4 aVertexPosition;
-    attribute vec2 aTexCoords;
+    attribute vec2 aFinTexCoords;
+    attribute vec2 aColorTexCoords;
 
     uniform mat4 uModelMatrix;
     uniform mat4 uViewMatrix;
     uniform mat4 uProjectionMatrix;
+    uniform mat4 uNormalMatrix;
 
-    varying vec2 texture_coords;
+    varying vec2 finTexCoords;
+    varying vec2 colorTexCoords;
 
     void main() 
     {
         vec4 base_position = uViewMatrix * uModelMatrix * aVertexPosition;
-        texture_coords = aTexCoords;
+        finTexCoords = aFinTexCoords;
+        colorTexCoords = aColorTexCoords;
         gl_Position = uProjectionMatrix * base_position;
     }
 `
 
 var finFragmentShader = `
-    varying vec2 texture_coords;
+    precision mediump float;
+
+    varying vec2 finTexCoords;
+    varying vec2 colorTexCoords;
 
     uniform sampler2D uFinTexture;
+    uniform sampler2D uColorTexture;
 
     void main()
     {
-        gl_FragColor = texture2D(uColorTexture, texture_coords);
+        vec3 color = texture2D(uColorTexture, colorTexCoords).rgb;
+        float alpha = texture2D(uFinTexture, finTexCoords).a;
+        gl_FragColor = vec4(color, alpha);
+        //gl_FragColor = texture2D(uFinTexture, finTexCoords);
     }
 `
 

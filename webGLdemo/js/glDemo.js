@@ -110,12 +110,34 @@ function main()
         }
     };
 
+    const finShaderProgram = attachShaders(gl, finVertexShader, finFragmentShader);
+    const finProgramInfo = 
+    {
+        program: finShaderProgram,
+        attribLocations:
+        {
+            vertexPosition: gl.getAttribLocation(finShaderProgram, 'aVertexPosition'),
+            finTexCoords: gl.getAttribLocation(finShaderProgram, 'aFinTexCoords'),
+            colorTexCoords: gl.getAttribLocation(finShaderProgram, 'aColorTexCoords'),
+        },
+        uniformLocations:
+        {
+            projectionMatrix: gl.getUniformLocation(finShaderProgram, 'uProjectionMatrix'),
+            modelMatrix: gl.getUniformLocation(finShaderProgram, 'uModelMatrix'),
+            viewMatrix: gl.getUniformLocation(finShaderProgram, 'uViewMatrix'),
+            normalMatrix: gl.getUniformLocation(finShaderProgram, 'uNormalMatrix'),
+            colorTexture: gl.getUniformLocation(finShaderProgram, 'uColorTexture'),
+            finTexture: gl.getUniformLocation(finShaderProgram, 'uFinTexture'),
+        }
+    }
+
     var objectData = loadSphere();
 
     const programInfo = 
     {
         baseProgramInfo: baseProgramInfo,
         shellProgramInfo: shellProgramInfo,
+        finProgramInfo: finProgramInfo,
     }
 
     console.log(programInfo);
@@ -160,7 +182,7 @@ function loadSphere()
         vec3.subtract(e2, v2, v3);
 
         var normal = vec3.create();
-        normal = vec3.cross(normal, e2, e1);
+        vec3.cross(normal, e2, e1);
 
         addNormal(normal, v1index, normals);
         addNormal(normal, v2index, normals);
@@ -169,7 +191,7 @@ function loadSphere()
 
     for(var vertexIndex = 0; vertexIndex < positions.length / 3; vertexIndex++)
     {
-        furLengths[vertexIndex] = 0.4;
+        furLengths[vertexIndex] = 0.2;
         
         //Spherical coords
         var position = getVertex(vertexIndex, positions);
@@ -180,13 +202,119 @@ function loadSphere()
         setTexCoord(1 - (theta / (2 * 3.14159) + 0.5), 1 - (phi / 3.14159), vertexIndex, texCoords);
     }
 
+    sharedTriangles = loadFinEdgeList(faces, positions);
+
     return {
         position: positions,
         normal: normals,
         face: faces,
         texCoord: texCoords,
-        furLength: furLengths
+        furLength: furLengths,
+        sharedTriangle: sharedTriangles
     }
+}
+
+function loadFinEdgeList(faces, positions)
+{
+    var sharedTrianges = [];
+    for(var faceIndex = 0; faceIndex < faces.length / 3; faceIndex++)
+    {
+        var v1index = faces[faceIndex * 3];
+        var v2index = faces[faceIndex * 3 + 1];
+        var v3index = faces[faceIndex * 3 + 2];
+
+        var normal1 = normalOf(v1index, v2index, v3index, positions);
+
+        var edges = [{v1: v1index, v2:v2index, v3:v3index}, {v1: v2index, v2:v3index, v3:v1index}, {v1: v1index, v2:v3index, v3:v2index}];
+        for(var edgeIndex = 0; edgeIndex < 3; edgeIndex++)
+        {
+            var edge = edges[edgeIndex];
+            var sharedTriangeV3 = sharedTriangle(faces, faceIndex + 1, edge.v1, edge.v2);
+
+            if(sharedTriangeV3)
+            {
+                var normal2 = normalOf(edge.v1, edge.v2, sharedTriangeV3, positions);
+                sharedTrianges.push(
+                    {
+                        sharedv1: edge.v1,
+                        sharedv2: edge.v2,
+                        norm1: normal1,
+                        norm2: normal2,
+                        v3: edge.v3,
+                        v4: sharedTriangeV3  
+                    }
+                );
+            } 
+        }
+    }
+
+    return sharedTrianges;
+}
+
+function normalOf(v1index, v2index, v3index, positions)
+{
+    var v1 = getVertex(v1index, positions);
+    var v2 = getVertex(v2index, positions);
+    var v3 = getVertex(v3index, positions);
+
+    var e1 = vec3.create();
+    vec3.subtract(e1, v2, v1);
+
+    var e2 = vec3.create();
+    vec3.subtract(e2, v2, v3);
+
+    var normal = vec3.create();
+    vec3.cross(normal, e2, e1);
+
+    if(vec3.dot(normal, v1) < 0)
+    {
+        vec3.scale(normal, normal, -1);
+    }
+
+    return vec4.fromValues(normal[0], normal[1], normal[2], 0.0);
+}
+
+function sharedTriangle(faces, startIndex, originalV1, originalV2)
+{
+    for(var faceIndex = startIndex; faceIndex < faces.length / 3; faceIndex++)
+    {
+        var v1index = faces[faceIndex * 3];
+        var v2index = faces[faceIndex * 3 + 1];
+        var v3index = faces[faceIndex * 3 + 2];
+
+        var matchedV1 = false;
+        var matchedV2 = false;
+        var newV3 = undefined;
+
+        for(var vertexIndexIndex = faceIndex * 3; vertexIndexIndex < faceIndex * 3 + 3; vertexIndexIndex++)
+        {
+            if(faces[vertexIndexIndex] == originalV1)
+            {
+                matchedV1 = true;
+            }
+            else if(faces[vertexIndexIndex] == originalV2)
+            {
+                matchedV2 = true;
+            }
+            else
+            {
+                newV3 = faces[vertexIndexIndex];
+            }
+        }
+
+        if(matchedV1 && matchedV2)
+        {
+            return newV3;
+        }
+    }
+
+    return undefined;
+}
+
+function getTexCoords(index, texCoords)
+{
+    startIndex = 2 * index;
+    return {u: texCoords[startIndex], v: texCoords[startIndex + 1]};
 }
 
 function getVertex(index, positions)
