@@ -1,4 +1,4 @@
-function generateFins(eyeVec, normalMatrix, sharedTriangles, objectData, shouldFilter)
+function generateFins(eyeVec, normalMatrix, sharedTriangles, objectData, shouldRenderAll)
 {
     var finVertices = [];
     var finFaces = [];
@@ -23,7 +23,7 @@ function generateFins(eyeVec, normalMatrix, sharedTriangles, objectData, shouldF
         var norm2DotEye = vec4.dot(norm2, eyeVec);
         
         //Should also add a threshold for dot prod.
-        if(!shouldFilter || isSillhouette(norm1DotEye, norm2DotEye))
+        if(shouldRenderAll || isSillhouette(norm1DotEye, norm2DotEye))
         {
             extrudeEdge(sharedTriangle, finVertices, finFaces, finTexCoords, colorTexCoords, finNormals, objectData);
         }
@@ -40,7 +40,7 @@ function generateFins(eyeVec, normalMatrix, sharedTriangles, objectData, shouldF
 
 function isSillhouette(norm1DotEye, norm2DotEye)
 {
-    const SILLHOUETTE_THRESHOLD = 0.1;
+    const SILLHOUETTE_THRESHOLD = 0.7;
     var isEitherBelowThreshold = Math.abs(norm1DotEye) < SILLHOUETTE_THRESHOLD || Math.abs(norm2DotEye) < SILLHOUETTE_THRESHOLD;
     return norm1DotEye > 0 != norm2DotEye > 0 || isEitherBelowThreshold;
 }

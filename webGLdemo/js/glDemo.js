@@ -75,7 +75,7 @@ function bindInputEvents()
 
     $("#filter-fins").change(function()
     {
-        currentScene.shouldFilterFins = this.checked;
+        currentScene.alphaBlendAllFins = this.checked;
         currentScene.redraw();
     });
 }
