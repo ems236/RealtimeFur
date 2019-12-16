@@ -191,7 +191,7 @@ function loadSphere()
 
     for(var vertexIndex = 0; vertexIndex < positions.length / 3; vertexIndex++)
     {
-        furLengths[vertexIndex] = 0.4;
+        furLengths[vertexIndex] = 0.2;
         
         //Spherical coords
         var position = getVertex(vertexIndex, positions);
