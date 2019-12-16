@@ -1,24 +1,77 @@
 ﻿<!DOCTYPE html>
-<html charset="utf-08">
+<html>
     <head>
-		<meta charset="utf-8"/> 
+        <meta charset="utf-8"/> 
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <style>
             .hidden{
                 display: none;
             }
 
-            body{
+            div.row
+            {
+                margin-left: 0px;
+            }
+
+            #main{
                 background-color: black;
+                overflow-x: hidden;
             }
         </style>
     </head>
     <body>
-    <canvas id="glCanvas" width="640" height="480"></canvas>
+        <div id="main">
+            <canvas id="glCanvas" width="640" height="480"></canvas>
+        </div>
+        <div class="container-fluid">
+            <div class="row"> 
+                <div class="form-group">
+                    <h4>General Controls</h4>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="draw-base" checked/>
+                        <label class="form-check-label" for="draw-base">
+                            Render Base Model
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="draw-shells" checked/>
+                        <label class="form-check-label" for="draw-shells">
+                            Render Shells
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="draw-fins" checked/>
+                        <label class="form-check-label" for="draw-fins">
+                            Render Fins
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group" id="shell-controls">
+                    <h4>Shell Controls</h4> 
+                    
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group" id="fin-controls">
+                    <h4>Fin Controls</h4>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="filter-fins" checked/>
+                        <label class="form-check-label" for="draw-base">
+                            Alpha Blend Non-Sillhouette Fins
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
     <!--External utilities-->
     <script src="js/gl-matrix.js"></script>
     <script src="js/jquery-3.4.1.min.js"></script>
-    <!--<script src="js/three.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
     <!--Internal-->
     <script src="js/glDemo.js"></script>
@@ -27,7 +80,8 @@
     <script src="js/camera.js"></script>
     <script src="js/texture_loader.js"></script>
     <script src="js/fur-opacity.js"></script>
-	
-	<!--<img src="http://ems236.github.io/RenderingFur/webGLdemo/textures/testabstract.jpg" id="abstract" class="hidden" crossorigin="*"/>-->
+    <script src="js/sphere.js"></script>
+    <script src="js/finGeneration.js"></script>
+
     </body>
 </html>
