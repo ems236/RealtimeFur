@@ -145,6 +145,7 @@ function main()
         attribLocations:
         {
             vertexPosition: gl.getAttribLocation(finShaderProgram, 'aVertexPosition'),
+            vertexNormal: gl.getAttribLocation(finShaderProgram, 'aVertexNormal'),
             finTexCoords: gl.getAttribLocation(finShaderProgram, 'aFinTexCoords'),
             colorTexCoords: gl.getAttribLocation(finShaderProgram, 'aColorTexCoords'),
         },
@@ -251,7 +252,7 @@ function loadFinEdgeList(faces, positions)
         var v2index = faces[faceIndex * 3 + 1];
         var v3index = faces[faceIndex * 3 + 2];
 
-        var normal1 = normalOf(v1index, v2index, v3index, positions);
+        var normal1 = normalOfPositions(v1index, v2index, v3index, positions);
 
         var edges = [{v1: v1index, v2:v2index, v3:v3index}, {v1: v2index, v2:v3index, v3:v1index}, {v1: v1index, v2:v3index, v3:v2index}];
         for(var edgeIndex = 0; edgeIndex < 3; edgeIndex++)
@@ -261,7 +262,9 @@ function loadFinEdgeList(faces, positions)
 
             if(sharedTriangeV3)
             {
-                var normal2 = normalOf(edge.v1, edge.v2, sharedTriangeV3, positions);
+                var normal2 = normalOfPositions(edge.v1, edge.v2, sharedTriangeV3, positions);
+                var currentFinNormal = finNormal(edge.v1, edge.v2, positions);
+                vec4.normalize(currentFinNormal, currentFinNormal);
                 sharedTrianges.push(
                     {
                         sharedv1: edge.v1,
@@ -269,7 +272,8 @@ function loadFinEdgeList(faces, positions)
                         norm1: normal1,
                         norm2: normal2,
                         v3: edge.v3,
-                        v4: sharedTriangeV3  
+                        v4: sharedTriangeV3,
+                        finNormal: currentFinNormal,
                     }
                 );
             } 
@@ -279,12 +283,26 @@ function loadFinEdgeList(faces, positions)
     return sharedTrianges;
 }
 
-function normalOf(v1index, v2index, v3index, positions)
+function normalOfPositions(v1index, v2index, v3index, positions)
 {
     var v1 = getVertex(v1index, positions);
     var v2 = getVertex(v2index, positions);
     var v3 = getVertex(v3index, positions);
 
+    return normalOf(v1, v2, v3);
+}
+
+function finNormal(v1index, v2index, positions)
+{
+    var v1 = getVertex(v1index, positions);
+    var v2 = getVertex(v2index, positions);
+    var v3 = vec3.fromValues(0, 0, 0);
+
+    return normalOf(v1, v2, v3);
+}
+
+function normalOf(v1, v2, v3)
+{
     var e1 = vec3.create();
     vec3.subtract(e1, v2, v1);
 

@@ -105,6 +105,7 @@ var finVertexShader = `
     attribute vec4 aVertexPosition;
     attribute vec2 aFinTexCoords;
     attribute vec2 aColorTexCoords;
+    attribute vec3 aVertexNormal;
 
     uniform mat4 uModelMatrix;
     uniform mat4 uViewMatrix;
@@ -113,12 +114,18 @@ var finVertexShader = `
 
     varying vec2 finTexCoords;
     varying vec2 colorTexCoords;
+    varying float alphaModifier;
 
     void main() 
     {
         vec4 base_position = uViewMatrix * uModelMatrix * aVertexPosition;
         finTexCoords = aFinTexCoords;
         colorTexCoords = aColorTexCoords;
+
+        vec3 normal = (uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz;
+        vec3 eyeVec = vec3(0, 0, 1);
+        alphaModifier = max(0.0, 2.0 * abs(dot(normalize(normal), eyeVec)) - 1.0);
+        //alphaModifier = 1.0;
         gl_Position = uProjectionMatrix * base_position;
     }
 `
@@ -128,6 +135,7 @@ var finFragmentShader = `
 
     varying vec2 finTexCoords;
     varying vec2 colorTexCoords;
+    varying highp float alphaModifier; 
 
     uniform sampler2D uFinTexture;
     uniform sampler2D uColorTexture;
@@ -135,7 +143,7 @@ var finFragmentShader = `
     void main()
     {
         vec3 color = texture2D(uColorTexture, colorTexCoords).rgb;
-        float alpha = texture2D(uFinTexture, finTexCoords).a;
+        float alpha = alphaModifier * texture2D(uFinTexture, finTexCoords).a;
         gl_FragColor = vec4(color, alpha);
         //gl_FragColor = texture2D(uFinTexture, finTexCoords);
     }

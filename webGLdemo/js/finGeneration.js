@@ -1,27 +1,31 @@
-function generateFins(eyeVec, normalMatrix, sharedTriangles, objectData)
+function generateFins(eyeVec, normalMatrix, sharedTriangles, objectData, shouldFilter)
 {
     var finVertices = [];
     var finFaces = [];
     var finTexCoords = [];
     var colorTexCoords = [];
+    var finNormals = [];
 
     for(var edgeIndex = 0; edgeIndex < sharedTriangles.length; edgeIndex++)
     {
         var sharedTriangle = sharedTriangles[edgeIndex];
 
+
         var norm1 = vec4.create();
         vec4.transformMat4(norm1, sharedTriangle.norm1, normalMatrix);
+        vec4.normalize(norm1, norm1);
 
         var norm2 = vec4.create();
         vec4.transformMat4(norm2, sharedTriangle.norm2, normalMatrix);
+        vec4.normalize(norm2, norm2);
 
         var norm1DotEye = vec4.dot(norm1, eyeVec);
         var norm2DotEye = vec4.dot(norm2, eyeVec);
         
         //Should also add a threshold for dot prod.
-        if(norm1DotEye > 0 != norm2DotEye > 0)
+        if(!shouldFilter || isSillhouette(norm1DotEye, norm2DotEye))
         {
-            extrudeEdge(sharedTriangle, finVertices, finFaces, finTexCoords, colorTexCoords, objectData);
+            extrudeEdge(sharedTriangle, finVertices, finFaces, finTexCoords, colorTexCoords, finNormals, objectData);
         }
     }
 
@@ -29,27 +33,35 @@ function generateFins(eyeVec, normalMatrix, sharedTriangles, objectData)
         positions: finVertices,
         faces: finFaces,
         finTexCoords: finTexCoords,
-        colorTexCoords: colorTexCoords
+        colorTexCoords: colorTexCoords,
+        normals: finNormals
     }
 }
 
-function extrudeEdge(sharedTriangle, finVertices, finFaces, finTexCoords, colorTexCoords, objectData)
+function isSillhouette(norm1DotEye, norm2DotEye)
+{
+    const SILLHOUETTE_THRESHOLD = 0.1;
+    var isEitherBelowThreshold = Math.abs(norm1DotEye) < SILLHOUETTE_THRESHOLD || Math.abs(norm2DotEye) < SILLHOUETTE_THRESHOLD;
+    return norm1DotEye > 0 != norm2DotEye > 0 || isEitherBelowThreshold;
+}
+
+function extrudeEdge(sharedTriangle, finVertices, finFaces, finTexCoords, colorTexCoords, finNormals, objectData)
 {
     //Draw the fin
     var startIndex = finVertices.length / 3;
             
     //Get vertex is defined in GlDemo.js
     var v1 = getVertex(sharedTriangle.sharedv1, objectData.position);
-    var v1FurOffset = getVertex(sharedTriangle.sharedv1, objectData.normal)
-    vec3.normalize(v1FurOffset, v1FurOffset);
+    var v1FurOffset = vec3.create();
+    vec3.normalize(v1FurOffset, v1);
     vec3.scale(v1FurOffset, v1FurOffset, objectData.furLength[sharedTriangle.sharedv1]);
     var v3 = vec3.create();
     vec3.add(v3, v1, v1FurOffset);
 
 
     var v2 = getVertex(sharedTriangle.sharedv2, objectData.position);
-    var v2FurOffset = getVertex(sharedTriangle.sharedv2, objectData.normal)
-    vec3.normalize(v2FurOffset, v2FurOffset);
+    var v2FurOffset = vec3.create();
+    vec3.normalize(v2FurOffset, v2);
     vec3.scale(v2FurOffset, v2FurOffset, objectData.furLength[sharedTriangle.sharedv2]);
     var v4 = vec3.create();
     vec3.add(v4, v2, v2FurOffset);
@@ -70,6 +82,14 @@ function extrudeEdge(sharedTriangle, finVertices, finFaces, finTexCoords, colorT
         , currentColorTexCoords.v2.u, currentColorTexCoords.v2.v
         , currentColorTexCoords.v1.u, currentColorTexCoords.v1.v
         , currentColorTexCoords.v2.u, currentColorTexCoords.v2.v);
+
+    //Really don't care much about the sign
+    //Would not do this but it's really easier to duplicate data than to mess with stride.
+    var normal = sharedTriangle.finNormal;
+    for(var finVertex = 0; finVertex < 4; finVertex++)
+    {
+        finNormals.push(normal[0], normal[1], normal[2]);
+    }
 }
 
 function uTexCoordsFor(v1, v2)

@@ -37,9 +37,10 @@ class Scene
 
         this.finBuffers = {
             position: gl.createBuffer(),
+            normal: gl.createBuffer(),
             face: gl.createBuffer(),
             finTexCoords: gl.createBuffer(),
-            colorTexCoords: gl.createBuffer()
+            colorTexCoords: gl.createBuffer(),
         }
 
         this.initializeBuffers(this.gl);
@@ -90,6 +91,7 @@ class Scene
         gl.deleteBuffer(this.finBuffers.position);
         gl.deleteBuffer(this.finBuffers.finTexCoords);
         gl.deleteBuffer(this.finBuffers.colorTexCoords);
+        gl.deleteBuffer(this.finBuffers.normal);
 
         
         const finPositionBuffer = gl.createBuffer();
@@ -108,6 +110,10 @@ class Scene
         gl.bindBuffer(gl.ARRAY_BUFFER, colorTexCoordBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(finData.colorTexCoords), gl.STATIC_DRAW);
 
+        const normalBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(finData.normals), gl.STATIC_DRAW);
+
         
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, finFaceBuffer);
         
@@ -115,9 +121,12 @@ class Scene
         this.setAttributeBuffer(gl, [finAttributeLocations.vertexPosition], finPositionBuffer, 3, false);
         this.setAttributeBuffer(gl, [finAttributeLocations.finTexCoords], finTexCoordBuffer, 2, false);
         this.setAttributeBuffer(gl, [finAttributeLocations.colorTexCoords], colorTexCoordBuffer, 2, false);
+        this.setAttributeBuffer(gl, [finAttributeLocations.vertexNormal], normalBuffer, 3, true);
+
 
         this.finBuffers = {
             face: finFaceBuffer,
+            normal: normalBuffer,
             position: finPositionBuffer,
             finTexCoords: finTexCoordBuffer,
             colorTexCoords: colorTexCoordBuffer
@@ -363,7 +372,8 @@ class Scene
         var eyeVec = vec4.fromValues(0, 0, 1, 0.0)
         var normalMatrix = this.currentNormalMatrix;
 
-        var finData = generateFins(eyeVec, normalMatrix, this.objectData.sharedTriangle, this.objectData);
+        var finData = generateFins(eyeVec, normalMatrix, this.objectData.sharedTriangle, this.objectData, this.shouldFilterFins);
+        //console.log(finData);
         this.finElementCount = finData.faces.length;
         this.resetFinBuffers(this.gl, finData);
 
