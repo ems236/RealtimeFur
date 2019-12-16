@@ -45,7 +45,7 @@ class Scene
         this.loadFins();
 
         this.windSource = vec3.fromValues(0.0, 0.0, 6.0);
-        this.windIntensity = 0.0;
+        this.windIntensity = 0.5;
 
         this.initializeBuffers(this.gl);
         this.initializeTexture();
