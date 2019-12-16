@@ -24,6 +24,11 @@ class Scene
 
         this.camera = new Camera(6, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
 
+
+        this.shouldDrawFins = true;
+        this.shouldDrawShells = true;
+        this.shouldDrawBase = true;
+
         this.furDataSize = 512;
         this.baseFurData = guassBlur5x5Noise(this.furDataSize);
         this.finTextureSize = 128;
@@ -251,44 +256,66 @@ class Scene
         // Clear the canvas before we start drawing on it.
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
+        if(this.shouldDrawBase)
         {
-            const offset = 0;
-            const type = this.gl.UNSIGNED_SHORT;
-            var vertexCount = this.objectData.face.length;
+            this.drawBase();
+        }
 
-            
-            this.loadBaseShellAttributeBuffers();
+        if(this.shouldDrawFins)
+        {
+            this.drawFins();
+        }
 
-            this.loadBaseShaderProgram();
-            this.gl.depthMask(true);
+        if(this.shouldDrawShells)
+        {
+            this.drawShells();
+        }
+    }
 
-            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
+    drawBase()
+    {
+        const offset = 0;
+        const type = this.gl.UNSIGNED_SHORT;
+
+        var vertexCount = this.objectData.face.length;
+        this.loadBaseShellAttributeBuffers();
+
+        this.loadBaseShaderProgram();
+        this.gl.depthMask(true);
+
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
+        this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
+    }
+
+    drawFins()
+    {
+        const offset = 0;
+        const type = this.gl.UNSIGNED_SHORT;
+
+        this.gl.depthMask(false);  
+        this.loadFinShaderProgram();
+        this.loadFins();
+  
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.finBuffers.face);
+        var vertexCount = this.finElementCount;
+        this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
+    }
+
+    drawShells()
+    {
+        const offset = 0;
+        const type = this.gl.UNSIGNED_SHORT;
+        this.gl.depthMask(false);  
+        var vertexCount = this.objectData.face.length;
+        this.loadShellShaderProgram();
+        this.loadBaseShellAttributeBuffers();
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
+
+        for(var shell_number = 1; shell_number <= this.shellCount; shell_number++)
+        {
+            this.setCurrentShell(shell_number);
+            //Load alpha texture
             this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
-            
-            this.gl.depthMask(false);
-            
-            
-            this.loadFinShaderProgram();
-            
-            this.loadFins();
-
-            
-            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.finBuffers.face);
-            vertexCount = this.finElementCount;
-            this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
-            
-            
-            vertexCount = this.objectData.face.length;
-            this.loadShellShaderProgram();
-            this.loadBaseShellAttributeBuffers();
-            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
-
-            for(var shell_number = 1; shell_number <= this.shellCount; shell_number++)
-            {
-                this.setCurrentShell(shell_number);
-                //Load alpha texture
-                this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
-            }
         }
     }
 

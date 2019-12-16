@@ -53,10 +53,32 @@ function bindMouseEvents(canvas)
     canvas.on("contextmenu", function(event) {event.preventDefault();});
 }
 
+function bindInputEvents()
+{
+    $("#draw-base").change(function()
+    {
+        currentScene.shouldDrawBase = this.checked;
+        currentScene.redraw();
+    });
+
+    $("#draw-shells").change(function()
+    {
+        currentScene.shouldDrawShells = this.checked;
+        currentScene.redraw();
+    });
+
+    $("#draw-fins").change(function()
+    {
+        currentScene.shouldDrawFins = this.checked;
+        currentScene.redraw();
+    });
+}
+
 function main()
 {
     const canvas = $("#glCanvas");
     bindMouseEvents(canvas);
+    bindInputEvents();
     const gl = canvas[0].getContext("webgl");
 
     // Only continue if WebGL is available and working
