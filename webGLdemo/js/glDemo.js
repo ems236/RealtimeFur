@@ -66,50 +66,65 @@ function main()
     }
 
     //get shaders going
-    const shaderProgram = attachShaders(gl, shellVertexShader, textureFragmentSharder);
-    const programInfo = 
+    const baseShaderProgram = attachShaders(gl, baseVertexShader, baseFragmentShader);
+    const baseProgramInfo = 
     {
-        program: shaderProgram,
+        program: baseShaderProgram,
         attribLocations: 
         {
-          vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-          texCoords: gl.getAttribLocation(shaderProgram, 'aTexCoords'),
-          vertexNormal: gl.getAttribLocation(shaderProgram, 'aVertexNormal'),
-          furLength: gl.getAttribLocation(shaderProgram, 'aFurLength'),
+          vertexPosition: gl.getAttribLocation(baseShaderProgram, 'aVertexPosition'),
+          texCoords: gl.getAttribLocation(baseShaderProgram, 'aTexCoords'),
+          vertexNormal: gl.getAttribLocation(baseShaderProgram, 'aVertexNormal'),
         },
         uniformLocations: 
         {
-          projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
-          modelMatrix: gl.getUniformLocation(shaderProgram, 'uModelMatrix'),
-          viewMatrix: gl.getUniformLocation(shaderProgram, 'uViewMatrix'),
-          normalMatrix: gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
-          colorTexture: gl.getUniformLocation(shaderProgram, 'uColorTexture'),
-          shellAlphaTexture: gl.getUniformLocation(shaderProgram, 'uShellAlphaTexture'),
-          shellCount: gl.getUniformLocation(shaderProgram, 'uShellCount'),
-          currentShell: gl.getUniformLocation(shaderProgram, 'uCurrentShell'),
+          projectionMatrix: gl.getUniformLocation(baseShaderProgram, 'uProjectionMatrix'),
+          modelMatrix: gl.getUniformLocation(baseShaderProgram, 'uModelMatrix'),
+          viewMatrix: gl.getUniformLocation(baseShaderProgram, 'uViewMatrix'),
+          normalMatrix: gl.getUniformLocation(baseShaderProgram, 'uNormalMatrix'),
+          colorTexture: gl.getUniformLocation(baseShaderProgram, 'uColorTexture'),
         }
     };
 
-    var buffers = initBuffers(gl);
+    const shellShaderProgram = attachShaders(gl, shellVertexShader, shellFragmentShader);
+    const shellProgramInfo = 
+    {
+        program: shellShaderProgram,
+        attribLocations: 
+        {
+          vertexPosition: gl.getAttribLocation(shellShaderProgram, 'aVertexPosition'),
+          texCoords: gl.getAttribLocation(shellShaderProgram, 'aTexCoords'),
+          vertexNormal: gl.getAttribLocation(shellShaderProgram, 'aVertexNormal'),
+          furLength: gl.getAttribLocation(shellShaderProgram, 'aFurLength'),
+        },
+        uniformLocations: 
+        {
+          projectionMatrix: gl.getUniformLocation(shellShaderProgram, 'uProjectionMatrix'),
+          modelMatrix: gl.getUniformLocation(shellShaderProgram, 'uModelMatrix'),
+          viewMatrix: gl.getUniformLocation(shellShaderProgram, 'uViewMatrix'),
+          normalMatrix: gl.getUniformLocation(shellShaderProgram, 'uNormalMatrix'),
+          colorTexture: gl.getUniformLocation(shellShaderProgram, 'uColorTexture'),
+          shellAlphaTexture: gl.getUniformLocation(shellShaderProgram, 'uShellAlphaTexture'),
+          shellCount: gl.getUniformLocation(shellShaderProgram, 'uShellCount'),
+          currentShell: gl.getUniformLocation(shellShaderProgram, 'uCurrentShell'),
+        }
+    };
+
+    var objectData = loadObject();
+
+    const programInfo = 
+    {
+        baseProgramInfo: baseProgramInfo,
+        shellProgramInfo: shellProgramInfo,
+    }
+
     console.log(programInfo);
-    currentScene = new Scene(gl, buffers, programInfo);
+    currentScene = new Scene(gl, objectData, programInfo);
     currentScene.redraw();
 }
 
-function initBuffers(gl) 
+function loadObject() 
 {
-    const positionBuffer = gl.createBuffer(); 
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-  
-    // Now create an array of positions for the square.
-    //LOAD OBJ HERE
-    //const positions = [
-    //  -1.0,  1.0,
-    //   1.0,  1.0,
-    //  -1.0, -1.0,
-    //   1.0, -1.0,
-    //];
-
     const positions = [
         // front
         -1.0, -1.0, 1.0,
@@ -148,10 +163,6 @@ function initBuffers(gl)
         -1.0, 1.0, -1.0
     ];
 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-
-    const normalBuffer = gl.createBuffer(); 
-    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
     const normals = [
         // front
         0.0, 0.0, 1.0,
@@ -190,17 +201,6 @@ function initBuffers(gl)
         -1.0, 0.0, 0.0,
     ];
 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
-
-
-    // in 3D, we also need to specify an index array
-    // since we're just rendering a cube...
-    const indexBuffer = gl.createBuffer();
-
-    // bind it to the element array
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-
-    // construct each face as a collection of 2 triangles
     const indices = [
         0, 1, 2, 0, 2, 3,    // front
         4, 5, 6, 4, 6, 7,    // back
@@ -210,32 +210,6 @@ function initBuffers(gl)
         20, 21, 22, 20, 22, 23,   // left
     ];
 
-    // use the indices rather than the positions
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices),
-        gl.STATIC_DRAW);
-
-    // colors
-    const vertexColors = [
-        [1.0, 1.0, 1.0, 1.0],
-        [1.0, 1.0, 1.0, 1.0],
-        [1.0, 1.0, 1.0, 1.0],
-        [1.0, 1.0, 1.0, 1.0]
-    ];
-
-    var colors = [];
-    for (var i = 0; i < vertexColors.length; i++) {
-        colors.concat(vertexColors[i], vertexColors[i], vertexColors[i], vertexColors[i]);
-    }
-
-    const colorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-
-    
-    
-    const textureCoordBuffer = gl.createBuffer();
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
     const tex_coords = 
     [
         0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,    // front
@@ -246,12 +220,6 @@ function initBuffers(gl)
         0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,     // left
     ];
 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tex_coords), gl.STATIC_DRAW);
-
-
-    const furLengthBuffer = gl.createBuffer();
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, furLengthBuffer);
     const furLengths = 
     [
         0.2, 0.7, 0.3, 0.1,    // front
@@ -262,14 +230,12 @@ function initBuffers(gl)
         0.2, 0.7, 0.3, 0.1,     // left
     ];
 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(furLengths), gl.STATIC_DRAW);
 
     return {
-        position: positionBuffer,
-        normal: normalBuffer,
-        color: colorBuffer,
-        indices: indexBuffer,
-        texCoords: textureCoordBuffer,
-        furLength: furLengthBuffer,
-    };
+        position: positions,
+        normal: normals,
+        face: indices,
+        texCoord: tex_coords,
+        furLength: furLengths
+    }
 }
