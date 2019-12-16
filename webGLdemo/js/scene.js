@@ -24,11 +24,6 @@ class Scene
 
         this.camera = new Camera(6, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
 
-
-        this.shouldDrawFins = true;
-        this.shouldDrawShells = true;
-        this.shouldDrawBase = true;
-
         this.furDataSize = 512;
         this.baseFurData = guassBlur5x5Noise(this.furDataSize);
         this.finTextureSize = 128;
@@ -36,10 +31,17 @@ class Scene
 
         this.finBuffers = {
             position: gl.createBuffer(),
+            normal: gl.createBuffer(),
             face: gl.createBuffer(),
             finTexCoords: gl.createBuffer(),
-            colorTexCoords: gl.createBuffer()
+            colorTexCoords: gl.createBuffer(),
         }
+        this.shouldDrawFins = true;
+        this.shouldDrawShells = true;
+        this.shouldDrawBase = true;
+        this.alphaBlendAllFins = true;
+
+        this.loadFins();
 
         this.initializeBuffers(this.gl);
         this.initializeTexture();
@@ -89,6 +91,7 @@ class Scene
         gl.deleteBuffer(this.finBuffers.position);
         gl.deleteBuffer(this.finBuffers.finTexCoords);
         gl.deleteBuffer(this.finBuffers.colorTexCoords);
+        gl.deleteBuffer(this.finBuffers.normal);
 
         
         const finPositionBuffer = gl.createBuffer();
@@ -107,16 +110,16 @@ class Scene
         gl.bindBuffer(gl.ARRAY_BUFFER, colorTexCoordBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(finData.colorTexCoords), gl.STATIC_DRAW);
 
+        const normalBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(finData.normals), gl.STATIC_DRAW);
+
         
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, finFaceBuffer);
-        
-        var finAttributeLocations = this.programInfo.finProgramInfo.attribLocations;
-        this.setAttributeBuffer(gl, [finAttributeLocations.vertexPosition], finPositionBuffer, 3, false);
-        this.setAttributeBuffer(gl, [finAttributeLocations.finTexCoords], finTexCoordBuffer, 2, false);
-        this.setAttributeBuffer(gl, [finAttributeLocations.colorTexCoords], colorTexCoordBuffer, 2, false);
 
         this.finBuffers = {
             face: finFaceBuffer,
+            normal: normalBuffer,
             position: finPositionBuffer,
             finTexCoords: finTexCoordBuffer,
             colorTexCoords: colorTexCoordBuffer
@@ -171,6 +174,17 @@ class Scene
         this.setAttributeBuffer(gl, furLengthLocations, this.buffers.furLength, numComponents, normalize);
     }
 
+    loadFinAttributeBuffers()
+    {
+        const gl = this.gl;
+
+        var finAttributeLocations = this.programInfo.finProgramInfo.attribLocations;
+        this.setAttributeBuffer(gl, [finAttributeLocations.vertexPosition], this.finBuffers.position, 3, false);
+        this.setAttributeBuffer(gl, [finAttributeLocations.finTexCoords], this.finBuffers.finTexCoords, 2, false);
+        this.setAttributeBuffer(gl, [finAttributeLocations.colorTexCoords], this.finBuffers.colorTexCoords, 2, false);
+        this.setAttributeBuffer(gl, [finAttributeLocations.vertexNormal], this.finBuffers.normal, 3, true);
+    }
+
     initializeTexture()
     {
         this.gl.activeTexture(this.gl.TEXTURE0);
@@ -216,6 +230,7 @@ class Scene
         this.loadBaseUniforms(finProgramInfo);
 
         this.gl.uniform1i(finProgramInfo.uniformLocations.finTexture, 2);
+        this.gl.uniform1i(finProgramInfo.uniformLocations.shouldBlendFins, this.alphaBlendAllFins ? 0 : 1);
     }
 
     setViewDependentTransforms(programInfo)
@@ -294,8 +309,12 @@ class Scene
 
         this.gl.depthMask(false);  
         this.loadFinShaderProgram();
-        this.loadFins();
+        if(!this.alphaBlendAllFins)
+        {
+            this.loadFins();
+        }
   
+        this.loadFinAttributeBuffers();
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.finBuffers.face);
         var vertexCount = this.finElementCount;
         this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
@@ -359,10 +378,12 @@ class Scene
     loadFins()
     {
         //var startTime = Date.now(); 
-        var eyeVec = vec4.fromValues(0, 0, 1, 0.0)
-        var normalMatrix = this.currentNormalMatrix;
+        var cameraPos = this.camera.position();
+        var eyeVec = vec4.fromValues(cameraPos[0], cameraPos[1], cameraPos[2], 0.0);
+        vec4.normalize(eyeVec, eyeVec);
 
-        var finData = generateFins(eyeVec, normalMatrix, this.objectData.sharedTriangle, this.objectData);
+        var finData = generateFins(eyeVec, this.objectData.sharedTriangle, this.objectData, this.alphaBlendAllFins);
+        //console.log(finData);
         this.finElementCount = finData.faces.length;
         this.resetFinBuffers(this.gl, finData);
 
