@@ -157,6 +157,7 @@ function main()
             normalMatrix: gl.getUniformLocation(finShaderProgram, 'uNormalMatrix'),
             colorTexture: gl.getUniformLocation(finShaderProgram, 'uColorTexture'),
             finTexture: gl.getUniformLocation(finShaderProgram, 'uFinTexture'),
+            shouldBlendFins: gl.getUniformLocation(finShaderProgram, 'uShouldModifyFinAlpha'),
         }
     }
 

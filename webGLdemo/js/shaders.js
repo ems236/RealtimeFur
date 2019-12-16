@@ -111,6 +111,7 @@ var finVertexShader = `
     uniform mat4 uViewMatrix;
     uniform mat4 uProjectionMatrix;
     uniform mat4 uNormalMatrix;
+    uniform int uShouldModifyFinAlpha;
 
     varying vec2 finTexCoords;
     varying vec2 colorTexCoords;
@@ -124,7 +125,7 @@ var finVertexShader = `
 
         vec3 normal = (uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz;
         vec3 eyeVec = vec3(0, 0, 1);
-        alphaModifier = max(0.0, 2.0 * abs(dot(normalize(normal), eyeVec)) - 1.0);
+        alphaModifier = max(float(uShouldModifyFinAlpha), 2.0 * abs(dot(normalize(normal), eyeVec)) - 1.0);
         //alphaModifier = 1.0;
         gl_Position = uProjectionMatrix * base_position;
     }
@@ -146,6 +147,7 @@ var finFragmentShader = `
         float alpha = alphaModifier * texture2D(uFinTexture, finTexCoords).a;
         gl_FragColor = vec4(color, alpha);
         //gl_FragColor = texture2D(uFinTexture, finTexCoords);
+        //gl_FragColor = vec4(alphaModifier, alphaModifier, alphaModifier, 1.0);
     }
 `
 

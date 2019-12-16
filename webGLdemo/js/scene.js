@@ -226,6 +226,7 @@ class Scene
         this.loadBaseUniforms(finProgramInfo);
 
         this.gl.uniform1i(finProgramInfo.uniformLocations.finTexture, 2);
+        this.gl.uniform1i(finProgramInfo.uniformLocations.shouldBlendFins, this.alphaBlendAllFins ? 0 : 1);
     }
 
     setViewDependentTransforms(programInfo)

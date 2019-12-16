@@ -40,7 +40,7 @@ function generateFins(eyeVec, normalMatrix, sharedTriangles, objectData, shouldR
 
 function isSillhouette(norm1DotEye, norm2DotEye)
 {
-    const SILLHOUETTE_THRESHOLD = 0.7;
+    const SILLHOUETTE_THRESHOLD = 0.15;
     var isEitherBelowThreshold = Math.abs(norm1DotEye) < SILLHOUETTE_THRESHOLD || Math.abs(norm2DotEye) < SILLHOUETTE_THRESHOLD;
     return norm1DotEye > 0 != norm2DotEye > 0 || isEitherBelowThreshold;
 }
