@@ -55,8 +55,6 @@ function bindMouseEvents(canvas)
 
 function main()
 {
-    console.log(generateFurMap(256, 3));
-
     const canvas = $("#glCanvas");
     bindMouseEvents(canvas);
     const gl = canvas[0].getContext("webgl");
