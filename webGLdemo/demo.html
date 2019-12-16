@@ -1,10 +1,12 @@
 ﻿<!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8"/> 
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-        <style>
-            .hidden{
+<head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/graphics.css">
+    <style>
+            .hidden {
                 display: none;
             }
 
@@ -17,65 +19,100 @@
                 background-color: black;
                 overflow-x: hidden;
             }
-        </style>
-    </head>
-    <body>
-        <div id="main">
+
+            .col-3, .col-4 {
+                border: 1px solid blue;
+            }
+
+    </style>
+</head>
+<body>
+    <div class="row">
+        <div id="main" class="col-6">
             <canvas id="glCanvas" width="640" height="480"></canvas>
         </div>
-        <div class="container-fluid">
-            <div class="row"> 
-                <div class="form-group">
-                    <h4>General Controls</h4>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="draw-base" checked/>
-                        <label class="form-check-label" for="draw-base">
-                            Render Base Model
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="draw-shells" checked/>
-                        <label class="form-check-label" for="draw-shells">
-                            Render Shells
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="draw-fins" checked/>
-                        <label class="form-check-label" for="draw-fins">
-                            Render Fins
-                        </label>
-                    </div>
+
+        <div class="col-3">
+            <div class="form-group">
+                <h4>General Controls</h4>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="draw-base" checked/>
+                    <label class="form-check-label" for="draw-base">
+                        Render Base Model
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="draw-shells" checked/>
+                    <label class="form-check-label" for="draw-shells">
+                        Render Shells
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="draw-fins" checked/>
+                    <label class="form-check-label" for="draw-fins">
+                        Render Fins
+                    </label>
+                </div>
+
+                <label style="margin-top:20px;" for="sel1">Select object:</label>
+                <select class="form-control" id="sel1">
+                    <option>Cube</option>
+                    <option>Sphere</option>
+                    <option>Bunny</option>
+                </select>
+
                 </div>
             </div>
-            <div class="row">
-                <div class="form-group" id="shell-controls">
-                    <h4>Shell Controls</h4> 
-                    
-                </div>
+
+        <div class="col-3">
+            <div class="form-group" id="shell-controls">
+                <h4>Shell Controls</h4>
+                <label for="formControlRange">Curliness:</label>
+                <input type="range" min="0" max="10" value="5" steps="1" class="form-control-range" id="formControlRange">
+
+                <ul>
+                    <li>0.0</li>
+                    <li>0.1</li>
+                    <li>0.2</li>
+                    <li>0.3</li>
+                    <li>0.4</li>
+                    <li>0.5</li>
+                    <li>0.6</li>
+                    <li>0.7</li>
+                    <li>0.8</li>
+                    <li>0.9</li>
+                    <li>1.0</li>
+                </ul>
             </div>
-            <div class="row">
-                <div class="form-group" id="fin-controls">
-                    <h4>Fin Controls</h4>
-                </div>
+            <div class="form-group" id="fin-controls">
+                <h4>Fin Controls</h4>
             </div>
         </div>
 
+</div>
 
-    <!--External utilities-->
-    <script src="js/gl-matrix.js"></script>
-    <script src="js/jquery-3.4.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</div>
 
-    <!--Internal-->
-    <script src="js/glDemo.js"></script>
-    <script src="js/shaders.js"></script>
-    <script src="js/scene.js"></script>
-    <script src="js/camera.js"></script>
-    <script src="js/texture_loader.js"></script>
-    <script src="js/fur-opacity.js"></script>
-    <script src="js/sphere.js"></script>
-    <script src="js/finGeneration.js"></script>
 
-    </body>
+<!--External utilities-->
+<script src="js/gl-matrix.js"></script>
+<script src="js/jquery-3.4.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+<!--Internal-->
+<script src="js/glDemo.js"></script>
+<script src="js/shaders.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/camera.js"></script>
+<script src="js/texture_loader.js"></script>
+<script src="js/fur-opacity.js"></script>
+<script src="js/sphere.js"></script>
+<script src="js/finGeneration.js"></script>
+
+</body>
 </html>
