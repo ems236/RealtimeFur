@@ -64,27 +64,30 @@ var shellVertexShader = `
     varying vec2 texture_coords;
     varying vec3 normal;
 
+    //varying vec2 displacement_amounts;
+    //varying vec3 wind_vector;
+
     const float MAX_ITERATIONS = 100.0;
 
     float PI = 3.14159;
     vec2 shellDisplacement(vec3 windVector, vec3 normal)
     {
-        float shellDistance = aFurLength / uShellCount;
         float windIntensity = length(windVector) * uWindIntensity;
         
         float windDisplacement = 0.0;
         float normalDisplacement = 0.0;
         for(float shellNumber = 1.0; shellNumber <= MAX_ITERATIONS; shellNumber += 1.0)
         {
-            if(shellNumber > uShellCount)
+            if(shellNumber > uCurrentShell)
             {
+                //return vec2(0.0, normalDisplacement);
                 return vec2(windDisplacement, normalDisplacement);
             }
 
             float angle = (windIntensity * PI * shellNumber) / (2.0 * uShellCount);
 
-            windDisplacement = windDisplacement + (shellDistance * sin(angle)); 
-            normalDisplacement = normalDisplacement + (shellDistance * cos(angle));
+            windDisplacement = windDisplacement + sin(angle);
+            normalDisplacement = normalDisplacement + cos(angle);
         }
 
         return vec2(0.0, 0.0);
@@ -96,18 +99,24 @@ var shellVertexShader = `
         texture_coords = aTexCoords;
         normal = normalize((uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz);
 
-        vec3 windVector = normalize((uViewMatrix * vec4(uWindSource, 0.0)).xyz * -1.0);
+        vec3 windVector = normalize(base_position.xyz - (uViewMatrix * vec4(uWindSource, 1.0)).xyz);
+        
+
         //Projection of wind onto normal
         vec3 vertexWindVector = windVector - (normal * (dot(windVector, normal)));
+        //wind_vector = vertexWindVector;
 
         vec2 displacementMultipliers = shellDisplacement(vertexWindVector, normal); 
+        //vec2 displacementMultipliers = vec2(0.0, uCurrentShell);
+        //displacement_amounts = normalize(displacementMultipliers);
+        float shellDistance = aFurLength / uShellCount;
 
-        vec3 displacement = windVector * displacementMultipliers.x + normal * displacementMultipliers.y;
+        vec3 displacement = windVector * shellDistance * displacementMultipliers.x + normal * shellDistance * displacementMultipliers.y;
         
         vec4 oldDisplacement = vec4(normalize(normal) * aFurLength * (uCurrentShell / uShellCount), 0.0);
 
-        gl_Position = uProjectionMatrix * (base_position + oldDisplacement);
-        //gl_Position = uProjectionMatrix * (base_position + vec4(displacement, 0.0));
+        //gl_Position = uProjectionMatrix * (base_position + oldDisplacement);
+        gl_Position = uProjectionMatrix * (base_position + vec4(displacement, 0.0));
         //gl_Position = uProjectionMatrix * base_position;
     }
 `
@@ -122,6 +131,10 @@ var shellFragmentShader = `
     varying vec2 texture_coords;
     varying vec3 normal;
 
+    //varying vec2 displacement_amounts;
+    //varying vec3 wind_vector;
+
+
     void main() 
     {
         vec4 color = texture2D(uColorTexture, texture_coords);
@@ -133,7 +146,16 @@ var shellFragmentShader = `
 
         //gl_FragColor = vec4(texture_coords, 0.0, 1.0);
         //gl_FragColor = vec4(color.aaa, 0.5);
+        
+
+        //gl_FragColor = vec4(abs(displacement_amounts.x), abs(displacement_amounts.x), 0.0, 0.1);
+        //gl_FragColor = vec4(abs(wind_vector.x), abs(wind_vector.y), abs(wind_vector.z) , 1.0);
+        //gl_FragColor = vec4(abs(normal.x), abs(normal.y), abs(normal.z) , 1.0);
+
+
         gl_FragColor = vec4(color.rgb, alpha);
+        
+        
         //gl_FragColor = vec4(1.0, 1.0, 1.0, alpha);
         //gl_FragColor = vec4(texture2D(uShellAlphaTexture, texture_coords).rgb, alpha);
     }

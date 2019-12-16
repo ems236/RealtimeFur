@@ -44,7 +44,7 @@ class Scene
         //Called because alpha blending all fins is the default and fins don't need to be reloaded every time if you do it that way
         this.loadFins();
 
-        this.windSource = vec3.create();
+        this.windSource = vec3.fromValues(0.0, 0.0, 6.0);
         this.windIntensity = 0.0;
 
         this.initializeBuffers(this.gl);
