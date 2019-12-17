@@ -1,4 +1,4 @@
-function generateFins(eyeVec, sharedTriangles, objectData, shouldRenderAll, subFinCount, windPosition, windIntensity)
+function generateFins(eyeVec, sharedTriangles, objectData, shouldRenderAll, subFinCount, windPosition, windIntensity, movementForce)
 {
     var finVertices = [];
     var finFaces = [];
@@ -29,7 +29,7 @@ function generateFins(eyeVec, sharedTriangles, objectData, shouldRenderAll, subF
         
         if(shouldRenderAll || isSillhouette(norm1DotEye, norm2DotEye))
         {
-            extrudeEdge(sharedTriangle, finData, objectData, subFinCount, windPosition, windIntensity);
+            extrudeEdge(sharedTriangle, finData, objectData, subFinCount, windPosition, windIntensity, movementForce);
         }
     }
 
@@ -49,7 +49,7 @@ function isSillhouette(norm1DotEye, norm2DotEye)
     return norm1DotEye > 0 != norm2DotEye > 0 || isEitherBelowThreshold;
 }
 
-function extrudeEdge(sharedTriangle, finData, objectData, subFinCount, windPosition, windIntensity)
+function extrudeEdge(sharedTriangle, finData, objectData, subFinCount, windPosition, windIntensity, movementForce)
 {
     //Fins look longer than shells because they don't really fade so much, so shorten them a bit.
     const FIN_LENGTH_MODIFIER = 0.75;
@@ -64,8 +64,8 @@ function extrudeEdge(sharedTriangle, finData, objectData, subFinCount, windPosit
     vec3.normalize(v2Normal, v2Normal);
 
 
-    v1Locations = subFinDisplacementsFor(v1, v1Normal, windPosition, windIntensity, subFinCount, objectData.furLength[sharedTriangle.sharedv1]);
-    v2Locations = subFinDisplacementsFor(v2, v2Normal, windPosition, windIntensity, subFinCount, objectData.furLength[sharedTriangle.sharedv2]);
+    v1Locations = subFinDisplacementsFor(v1, v1Normal, windPosition, windIntensity, movementForce, subFinCount, objectData.furLength[sharedTriangle.sharedv1]);
+    v2Locations = subFinDisplacementsFor(v2, v2Normal, windPosition, windIntensity, movementForce, subFinCount, objectData.furLength[sharedTriangle.sharedv2]);
 
     var utexCoords = uTexCoordsFor(v1, v2);
     var currentColorTexCoords = {
@@ -102,31 +102,38 @@ function extrudeEdge(sharedTriangle, finData, objectData, subFinCount, windPosit
     }
 }
 
-function subFinDisplacementsFor(vertex, normal, windSource, windIntensityModifer, subFinCount, furLength)
+function subFinDisplacementsFor(vertex, normal, windSource, windIntensityModifer, movementForce, subFinCount, furLength)
 {
     var locations = [vertex];
     var windVector = vec3.create();
     vec3.subtract(windVector, vertex, windSource);
     vec3.normalize(windVector, windVector);
+    vec3.scale(windVector, windVector, windIntensityModifer);
 
-    var vertexWindVector = vec3.create();
+    var forceVector = vec3.create();
+    vec3.add(forceVector, movementForce, windVector);
+
+    var unitForceVector = vec3.create();
+    vec3.normalize(unitForceVector, forceVector);
+
+    var vertexForceVector = vec3.create();
     var scaledNormal = vec3.create();
-    vec3.scale(scaledNormal, normal, vec3.dot(windVector, normal));
-    vec3.subtract(vertexWindVector, windVector, scaledNormal);
+    vec3.scale(scaledNormal, normal, vec3.dot(forceVector, normal));
+    vec3.subtract(vertexForceVector, forceVector, scaledNormal);
 
-    var windIntensity = windIntensityModifer * vec3.length(vertexWindVector);
+    var windIntensity = vec3.length(vertexForceVector);
     var shellDistance = furLength / subFinCount;
 
     for(var subFinIndex = 1; subFinIndex <= subFinCount; subFinIndex++)
     {
         var previousVertex = locations[locations.length - 1];
         
-        var angle = (windIntensity * PI * subFinIndex) / (2.0 * subFinCount);
+        var angle = (Math.min(windIntensity * subFinIndex / subFinCount, 1.0) * PI) / (2.0);
         var windDisplacement =  shellDistance * Math.sin(angle);
         var normalDisplacement = shellDistance * Math.cos(angle);
 
         var windVectorDisplacement = vec3.create();
-        vec3.scale(windVectorDisplacement, windVector, windDisplacement);
+        vec3.scale(windVectorDisplacement, unitForceVector, windDisplacement);
 
         var normVectorDisplacement = vec3.create();
         vec3.scale(normVectorDisplacement, normal, normalDisplacement);
