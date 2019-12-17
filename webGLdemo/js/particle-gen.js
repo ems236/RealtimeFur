@@ -147,31 +147,33 @@ function drawTexture(layer) {
 
     var circle = [];
 
-    for (var rx = 0; rx <= 2 * Math.PI; rx += 0.1) {
-        circle.push([]);
-
-        for (var ry = 0; ry <= 2 * Math.PI; ry += 0.1) {
-            var x = Math.floor(hairRadius * Math.cos(rx));
-            var y = Math.floor(hairRadius * Math.sin(ry));
-
-            circle[rx].push([x, y]);
-//            if (
-//                x < 0 || x >= layer.layer.length ||
-//                y < 0 || y >= layer.layer[px].length
-//                ) {
-//                    continue;
-//                }
-
-//            layer.colors[x][y] = [0, 0, 0];
-        }
-    }
-
 
     for (var px = 0; px < layer.layer.length; px++) {
         for (var py = 0; py < layer.layer[px].length; py++) {
             if (!layer.layer[px][py]) {
                 continue;
             }
+
+            for (var rx = 0; rx <= 2 * Math.PI; rx += 0.1) {
+                circle.push([]);
+
+                for (var ry = 0; ry <= 2 * Math.PI; ry += 0.1) {
+                    var x = Math.floor(hairRadius * Math.cos(rx));
+                    var y = Math.floor(hairRadius * Math.sin(ry));
+
+                    //circle[rx].push([x, y]);
+                    if (
+                         x < 0 || x >= layer.layer.length ||
+                         y < 0 || y >= layer.layer[px].length
+                        ) {
+                              continue;
+                    }
+
+                    layer.colors[x][y] = [0, 0, 0];
+                }
+            }
+
+
 
         }
     }
