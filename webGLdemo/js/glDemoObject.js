@@ -175,7 +175,7 @@ function main()
     }
 
     console.log(programInfo);
-    currentScene = new Scene(gl, objectData, programInfo, "dog_texture.jpg");
+    currentScene = new Scene(gl, objectData, programInfo, "testabstract.jpg");
     currentScene.redraw();
 }
 
@@ -235,7 +235,7 @@ function loadDog()
 
     for(var vertexIndex = 0; vertexIndex < positions.length / 3; vertexIndex++)
     {
-        furLengths[vertexIndex] = 0.2;
+        furLengths[vertexIndex] = 0.08;
     }
 
     sharedTriangles = loadFinEdgeList(faces, positions);
