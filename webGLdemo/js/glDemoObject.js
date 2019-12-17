@@ -165,7 +165,7 @@ function main()
         }
     }
 
-    var objectData = loadObject();
+    var objectData = loadDog();
 
     const programInfo = 
     {
@@ -213,6 +213,43 @@ function loadObject()
         sharedTriangle: sharedTriangles
     }
 }
+
+
+function loadDog()
+{
+    var object = getDog();
+
+    var positions = object.positions;
+    var faces = object.faces;
+    var normals = object.normals;
+    var texCoords = object.texCoords;
+
+    var furLengths = new Array(positions.length / 3);
+
+    //sphere definition is 1 indexed
+    //webgl is 0 indexed
+    for(var vertexIndexIndex = 0; vertexIndexIndex < faces.length; vertexIndexIndex++)
+    {
+        faces[vertexIndexIndex] -= 1;
+    }
+
+    for(var vertexIndex = 0; vertexIndex < positions.length / 3; vertexIndex++)
+    {
+        furLengths[vertexIndex] = 0.2;
+    }
+
+    sharedTriangles = loadFinEdgeList(faces, positions);
+
+    return {
+        position: positions,
+        normal: normals,
+        face: faces,
+        texCoord: texCoords,
+        furLength: furLengths,
+        sharedTriangle: sharedTriangles
+    }
+}
+
 
 function loadFinEdgeList(faces, positions)
 {

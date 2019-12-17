@@ -16,7 +16,7 @@ function load_texture(gl, scene, image_name)
                 temp_texture);
 
     const image = new Image();
-    image.crossOrigin = "*";
+    image.crossOrigin = "anonymous";
     image.onload = function()
     {
         gl.bindTexture(gl.TEXTURE_2D, texture);
