@@ -43,6 +43,7 @@ class Scene
 
         this.windSource = vec3.fromValues(0.0, 0.0, 6.0);
         this.windIntensity = 0.5;
+        this.baseWindIntensity = 0.5;
 
 
         this.initializeBuffers(this.gl);
@@ -52,6 +53,8 @@ class Scene
 
         //Called because alpha blending all fins is the default and fins don't need to be reloaded every time if you do it that way
         this.loadFins();
+
+        window.requestAnimationFrame(animateScene);
     }
 
     initializeBuffers(gl)
@@ -267,7 +270,19 @@ class Scene
         return normalMat;
     }
 
-    redraw()
+    setFrameWindSpeed(timestamp)
+    {
+        if(this.baseWindIntensity == 0)
+        {
+            this.windIntensity = 0;
+        }
+        else
+        {
+            this.windIntensity = clamp(this.baseWindIntensity + 0.3 * Math.sin(timestamp / 500), 0, 1);
+        }
+    }
+
+    redraw(timestamp)
     {
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         this.gl.clearDepth(1.0);                 // Clear everything
@@ -277,6 +292,8 @@ class Scene
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
         // Clear the canvas before we start drawing on it.
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
+        this.setFrameWindSpeed(timestamp);
 
         if(this.shouldDrawBase)
         {
@@ -292,6 +309,8 @@ class Scene
         {
             this.drawShells();
         }
+
+        window.requestAnimationFrame(animateScene);
     }
 
     drawBase()
@@ -316,7 +335,7 @@ class Scene
 
         this.gl.depthMask(false);  
         this.loadFinShaderProgram();
-        if(!this.alphaBlendAllFins)
+        if(!this.alphaBlendAllFins || this.windIntensity > 0)
         {
             this.loadFins();
         }
