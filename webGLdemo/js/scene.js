@@ -27,7 +27,7 @@ class Scene
 
         this.camera = new Camera(6, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
 
-        this.furDataSize = 256;
+        this.furDataSize = 512;
         this.noiseShellTextures = [];
         this.particleGenShellTextures = [];
 
@@ -418,7 +418,7 @@ class Scene
     {
         var particleLayerData = []
         //pGenFur(layerDist, layerDim, depth, threshold, previousLayers, allLayers);
-        pGenFur(2, this.furDataSize, this.shellCount, 0.5, new Layer(), particleLayerData);
+        pGenFur(10, this.furDataSize, this.shellCount, 0.6, new Layer(), particleLayerData);
 
         this.particleGenShellTextures = [];
         for(var layerIndex = 0; layerIndex < this.shellCount; layerIndex++)

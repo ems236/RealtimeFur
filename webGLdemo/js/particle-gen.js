@@ -89,6 +89,7 @@ function generateLayers(layerDist, layerDim, depth, threshold, previousLayers, a
                 z /= mag;
 
                 previousLayers.dirs[px].push([Math.random(), Math.random(), Math.random()]);
+                //previousLayers.dirs[px].push([0, 1, 0]);
                 previousLayers.colors[px].push([255, 255, 255]);
             }
         }
@@ -118,7 +119,11 @@ function generateLayers(layerDist, layerDim, depth, threshold, previousLayers, a
     }
 
     for (var px = 0; px < layerDim; px++) {
+        if (px % 2 == 0) {
+            continue;
+        }
         for (var py = 0; py < layerDim; py++) {
+            if (py % 2 == 0) { continue; }
             if (!previousLayers.layer[px][py]) {
                 continue;
             }
@@ -135,8 +140,9 @@ function generateLayers(layerDist, layerDim, depth, threshold, previousLayers, a
                 continue;
             }
 
-            newLayer.layer[x][y] = true;
-            newLayer.dirs[x][y] = previousLayers.dirs[px][py];
+            newLayer.layer[px][py] = true;
+            //newLayer.dirs[px][py] = [Math.random(), Math.random(), Math.random()];
+            newLayer.dirs[px][py] = previousLayers.dirs[px][py];
         }
     }
 
@@ -147,7 +153,8 @@ function generateLayers(layerDist, layerDim, depth, threshold, previousLayers, a
 function pGenFur(layerDist, layerDim, depth, threshold, previousLayers, allLayers) {
     generateLayers(layerDist, layerDim, depth, threshold, previousLayers, allLayers);
 
-    allLayers.forEach(drawTexture);
+    //allLayers.forEach(drawTexture);
+    console.log(allLayers);
 }
 
 function drawTexture(layer) {
