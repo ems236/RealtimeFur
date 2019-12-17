@@ -64,8 +64,8 @@ function extrudeEdge(sharedTriangle, finData, objectData, subFinCount, windPosit
     vec3.normalize(v2Normal, v2Normal);
 
 
-    v1Locations = subFinDisplacementsFor(v1, v1Normal, windPosition, windIntensity, movementForce, subFinCount, objectData.furLength[sharedTriangle.sharedv1]);
-    v2Locations = subFinDisplacementsFor(v2, v2Normal, windPosition, windIntensity, movementForce, subFinCount, objectData.furLength[sharedTriangle.sharedv2]);
+    v1Locations = subFinDisplacementsFor(v1, v1Normal, windPosition, windIntensity, movementForce, subFinCount, objectData.furLength[sharedTriangle.sharedv1] * FIN_LENGTH_MODIFIER);
+    v2Locations = subFinDisplacementsFor(v2, v2Normal, windPosition, windIntensity, movementForce, subFinCount, objectData.furLength[sharedTriangle.sharedv2] * FIN_LENGTH_MODIFIER);
 
     var utexCoords = uTexCoordsFor(v1, v2);
     var currentColorTexCoords = {
