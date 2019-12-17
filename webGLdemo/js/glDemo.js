@@ -86,10 +86,6 @@ function bindInputEvents()
 
 function main()
 {
-    var allLayers = [];
-    pGenFur(2, 100, 10, 0.4, new Layer(), allLayers);
-    //console.log(allLayers);
-
     const canvas = $("#glCanvas");
     bindMouseEvents(canvas);
     bindInputEvents();

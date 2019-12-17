@@ -42,6 +42,16 @@ class Layer {
     addToColors(row, col, val) {
         this._colors[row][col] = val;
     }
+
+    toAlphaBytes()
+    {
+        var boolData = this._layer;
+        return boolData.map(function(row){
+            return row.map(function(item){
+                return item ? 255 : 0;
+            });
+        });
+    }
 }
 
 function generateLayers(layerDist, layerDim, depth, threshold, previousLayers, allLayers) {
@@ -138,8 +148,6 @@ function pGenFur(layerDist, layerDim, depth, threshold, previousLayers, allLayer
     generateLayers(layerDist, layerDim, depth, threshold, previousLayers, allLayers);
 
     allLayers.forEach(drawTexture);
-
-    console.log(allLayers);
 }
 
 function drawTexture(layer) {

@@ -1,3 +1,6 @@
+const PARTICLE_GEN_TEXTURE = 0;
+const NOISE_GEN_TEXTURE = 1;
+
 class Scene
 {
     constructor(gl, objectData, programInfo)
@@ -24,8 +27,11 @@ class Scene
 
         this.camera = new Camera(6, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
 
-        this.furDataSize = 512;
-        this.baseFurData = guassBlur5x5Noise(this.furDataSize);
+        this.furDataSize = 256;
+        this.noiseShellTextures = [];
+        this.particleGenShellTextures = [];
+
+        this.baseFurNoise = guassBlur5x5Noise(this.furDataSize);
         this.finTextureSize = 128;
         this.finTextureRaw = finTextureData(this.finTextureSize, 0.2, 0.0);
 
@@ -42,14 +48,15 @@ class Scene
         this.alphaBlendAllFins = true;
 
         this.windSource = vec3.fromValues(0.0, 0.0, 6.0);
-        this.windIntensity = 0.5;
-        this.baseWindIntensity = 0.5;
+        this.windIntensity = 0;
+        this.baseWindIntensity = 0;
 
 
         this.initializeBuffers(this.gl);
         this.initializeTexture();
         this.initializeFinTexture()
         this.setShellCount(10);
+        this.setCurrentShellMode(PARTICLE_GEN_TEXTURE);
 
         //Called because alpha blending all fins is the default and fins don't need to be reloaded every time if you do it that way
         this.loadFins();
@@ -379,14 +386,57 @@ class Scene
 
     initializeFurTextures()
     {
-        this.shellTextures = [];
+        this.deleteOldTextures(this.gl, this.noiseShellTextures);
+        this.deleteOldTextures(this.gl, this.particleGenShellTextures);
+
+        this.initializeNoiseShellTextures();
+        this.inializeParticleGenShellTextures();
+    }
+
+    deleteOldTextures(gl, textureList)
+    {
+        for(var textureIndex = 0; textureIndex < textureList.length; textureIndex++)
+        {
+            gl.deleteTexture(textureList[textureIndex]);
+        }
+    }
+
+    initializeNoiseShellTextures()
+    {
+        this.noiseShellTextures = [];
         for(var shellNumber = 0; shellNumber < this.shellCount; shellNumber++)
         {
             const base = 127;
             const max = 182;
             var limit = base + (max - base) * (shellNumber / this.shellCount);
-            var filtered = sampleFur(limit, this.baseFurData);
-            this.shellTextures.push(textureFromData(this.gl, padAlphaData(filtered), this.furDataSize));
+            var filtered = sampleFur(limit, this.baseFurNoise);
+            this.noiseShellTextures.push(textureFromData(this.gl, padAlphaData(filtered), this.furDataSize));
+        }
+    }
+
+    inializeParticleGenShellTextures()
+    {
+        var particleLayerData = []
+        //pGenFur(layerDist, layerDim, depth, threshold, previousLayers, allLayers);
+        pGenFur(2, this.furDataSize, this.shellCount, 0.5, new Layer(), particleLayerData);
+
+        this.particleGenShellTextures = [];
+        for(var layerIndex = 0; layerIndex < this.shellCount; layerIndex++)
+        {
+            var rawTextureData = particleLayerData[layerIndex].toAlphaBytes();
+            this.particleGenShellTextures.push(textureFromData(this.gl, padAlphaData(rawTextureData), this.furDataSize));
+        }
+    }
+
+    setCurrentShellMode(type)
+    {
+        if(type == NOISE_GEN_TEXTURE)
+        {
+            this.currentTextureList = this.noiseShellTextures;
+        }
+        if(type == PARTICLE_GEN_TEXTURE)
+        {
+            this.currentTextureList = this.particleGenShellTextures;
         }
     }
 
@@ -394,7 +444,10 @@ class Scene
     {
         this.gl.uniform1f(this.programInfo.shellProgramInfo.uniformLocations.currentShell, shell);
         this.gl.activeTexture(this.gl.TEXTURE1);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.shellTextures[Math.max(0, shell - 1)]);
+
+        
+
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.currentTextureList[Math.max(0, shell - 1)]);
 
         //I don't know why this matters but it definitely does.
         //No display when this is not done.
