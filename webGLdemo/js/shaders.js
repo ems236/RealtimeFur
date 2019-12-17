@@ -204,6 +204,15 @@ var shellFragmentShader = `
         float alpha = shellData.a;
 
         color = mix(color, shellData.rgb, uColorNoiseFactor);
+
+        /*
+        vec3 ambientColor = color.rgb * uAmbientIntensity * uKa;
+        vec3 diffuseColor = color.rgb * uKd * uLightIntensity * (dot(normalize(normal), normalize(lightVector)));
+        float specularLight = pow(dot(normalize(normal), normalize(halfwayVector)), uNs);
+        vec3 specularColor = color.rgb * uKs * uLightIntensity * specularLight;
+
+        color = vec4((ambientColor + diffuseColor + specularColor) * netShadowFactor, 1.0);
+        */
         color = color * netShadowFactor;
 
         //gl_FragColor = vec4(abs(normal.x), abs(normal.y), abs(normal.z), 1.0);
@@ -296,6 +305,13 @@ var finFragmentShader = `
         vec4 textureData = texture2D(uFinTexture, finTexCoords);
         color = mix(color, textureData.rgb, uColorNoiseFactor);
 
+        vec3 ambientColor = color.rgb * uAmbientIntensity * uKa;
+        vec3 diffuseColor = color.rgb * uKd * uLightIntensity * (abs(dot(normalize(normal), normalize(lightVector))));
+        float specularLight = pow(abs(dot(normalize(normal), normalize(halfwayVector))), uNs);
+        vec3 specularColor = color.rgb * uKs * uLightIntensity * specularLight;
+
+        color = ambientColor + diffuseColor + specularColor;
+        
         float shadowFactor = finTexCoords.y * (1.0 - uMinShadowFactor) + uMinShadowFactor;
         color = color * shadowFactor;
         float alpha = alphaModifier * textureData.a;
