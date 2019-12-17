@@ -80,3 +80,15 @@ function parseOBJ(stream, cb) {
       })
     })
 }
+
+function getObject(objectPath){
+    var fs = require("fs")
+    var parseOBJ = require("parse-object")
+
+    parseOBJ(fs.createReadStream(objectPath), function(err, result) {
+    if(err) {
+        throw new Error("Error parsing OBJ file: " + err)
+    }
+    console.log("Got mesh: ", result)
+    })
+}
