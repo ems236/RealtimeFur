@@ -47,8 +47,8 @@ class Scene
         this.alphaBlendAllFins = true;
 
         this.windSource = vec3.fromValues(0.0, 0.0, 6.0);
-        this.windIntensity = 0;
-        this.baseWindIntensity = 0;
+        this.windIntensity = 0.5;
+        this.baseWindIntensity = 0.5;
 
 
         this.initializeBuffers(this.gl);
@@ -298,7 +298,7 @@ class Scene
         var previousVelocity = this.currentVelocity;
         if(this.positionChange)
         {
-            vec3.scale(this.currentVelocity, this.positionChange, -10000 / (this.currentTime - this.previousTime));
+            vec3.scale(this.currentVelocity, this.positionChange, 1 / (this.currentTime - this.previousTime));
             this.positionChange = undefined;
         }
         else
@@ -308,11 +308,16 @@ class Scene
 
         var previousNetForce = this.netForce;
         var momentum = vec3.create();
-        //vec3.subtract(momentum, this.currentVelocity, this.previousVelocity);
-        //vec3.scale(momentum, momentum, -3000 / (this.currentTime - this.previousTime));
+        vec3.subtract(momentum, this.currentVelocity, this.previousVelocity);
+        vec3.scale(momentum, momentum, -400 / (this.currentTime - this.previousTime));
+
+        var velocityFactor = vec3.create();
+        vec3.scale(velocityFactor, this.currentVelocity, -500);
 
         var currentForce = vec3.create();
-        vec3.add(currentForce, this.currentVelocity, momentum);
+        vec3.add(currentForce, velocityFactor, momentum);
+        //vec3.scale(currentForce, momentum, 1);
+
         vec3.scale(currentForce, currentForce, 0.3);
         vec3.scale(previousNetForce, previousNetForce, 0.7);
 
@@ -320,7 +325,7 @@ class Scene
 
         if(Math.abs(this.netForce[0]) > 0.002 || Math.abs(this.netForce[1]) > 0.002 || Math.abs(this.netForce[2]) > 0.002)
         {
-            console.log(this.netForce);
+            //console.log(this.netForce);
         }
     }
 
@@ -377,7 +382,7 @@ class Scene
 
         this.gl.depthMask(false);  
         this.loadFinShaderProgram();
-        if(!this.alphaBlendAllFins || this.windIntensity > 0)
+        if(!this.alphaBlendAllFins || this.windIntensity > 0 || vec3.length(this.netForce) != 0.00)
         {
             this.loadFins();
         }
@@ -450,7 +455,7 @@ class Scene
         var eyeVec = vec4.fromValues(cameraPos[0], cameraPos[1], cameraPos[2], 0.0);
         vec4.normalize(eyeVec, eyeVec);
 
-        var finData = generateFins(eyeVec, this.objectData.sharedTriangle, this.objectData, this.alphaBlendAllFins, this.shellCount, this.windSource, this.windIntensity);
+        var finData = generateFins(eyeVec, this.objectData.sharedTriangle, this.objectData, this.alphaBlendAllFins, this.shellCount, this.windSource, this.windIntensity, this.netForce);
         //console.log(finData);
         this.finElementCount = finData.faces.length;
         this.resetFinBuffers(this.gl, finData);
