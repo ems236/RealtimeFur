@@ -165,7 +165,7 @@ function main()
         }
     }
 
-    var objectData = loadObject("objects/Dog/dog_kurtshaar_grey.obj");
+    var objectData = loadObject("http://ems236.github.io/RenderingFur/webGLdemo/objects/Dog/dog_kurtshaar_grey.obj");
 
     const programInfo = 
     {
@@ -175,7 +175,7 @@ function main()
     }
 
     console.log(programInfo);
-    currentScene = new Scene(gl, objectData, programInfo, "textures/testabstract.jpg");
+    currentScene = new Scene(gl, objectData, programInfo, "testabstract.jpg");
     currentScene.redraw();
 }
 
