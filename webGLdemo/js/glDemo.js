@@ -185,7 +185,7 @@ var previousTime = Date.now();
 function animateScene(timestamp)
 {
     displayFPS(timestamp);
-    currentScene.redraw();
+    currentScene.redraw(timestamp);
 }
 
 function displayFPS(currentTime)
