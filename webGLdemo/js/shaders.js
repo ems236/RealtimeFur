@@ -73,7 +73,7 @@ var shellVertexShader = `
     float PI = 3.14159;
     vec2 shellDisplacement(vec3 windVector, vec3 normal)
     {
-        float windIntensity = length(windVector) * uWindIntensity;
+        float windIntensity = length(windVector);
         
         float windDisplacement = 0.0;
         float normalDisplacement = 0.0;
@@ -85,7 +85,7 @@ var shellVertexShader = `
                 return vec2(windDisplacement, normalDisplacement);
             }
 
-            float angle = (max(windIntensity * shellNumber, 1.0) * PI) / (2.0 * uShellCount);
+            float angle = (min(windIntensity * shellNumber / uShellCount, 1.0) * PI) / (2.0);
 
             windDisplacement = windDisplacement + sin(angle);
             normalDisplacement = normalDisplacement + cos(angle);
@@ -100,7 +100,7 @@ var shellVertexShader = `
         texture_coords = aTexCoords;
         normal = normalize((uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz);
 
-        vec3 windVector = normalize(base_position.xyz - (uViewMatrix * vec4(uWindSource, 1.0)).xyz);        
+        vec3 windVector = normalize(base_position.xyz - (uViewMatrix * vec4(uWindSource, 1.0)).xyz)  * uWindIntensity;        
         vec3 viewSpaceNetForce = (uViewMatrix * vec4(uModelForce, 0.0)).xyz;
 
         vec3 totalForce = windVector + viewSpaceNetForce;
