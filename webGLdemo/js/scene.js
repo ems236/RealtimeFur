@@ -52,6 +52,8 @@ class Scene
 
         //Called because alpha blending all fins is the default and fins don't need to be reloaded every time if you do it that way
         this.loadFins();
+
+        window.requestAnimationFrame(animateScene);
     }
 
     initializeBuffers(gl)
@@ -292,6 +294,8 @@ class Scene
         {
             this.drawShells();
         }
+
+        window.requestAnimationFrame(animateScene);
     }
 
     drawBase()

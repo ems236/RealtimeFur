@@ -22,8 +22,6 @@ function load_texture(gl, scene, image_name)
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
         gl.generateMipmap(gl.TEXTURE_2D);
-
-        scene.redraw();
     }
     image.src = "http://ems236.github.io/RenderingFur/webGLdemo/textures/" + image_name;
 

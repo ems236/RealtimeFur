@@ -28,7 +28,7 @@ function bindMouseEvents(canvas)
                     if(currentScene)
                     {
                         currentScene.mousemove(event.pageX, event.pageY);
-                        currentScene.redraw();
+                        //currentScene.redraw();
                     }
                 });
             }
@@ -58,19 +58,19 @@ function bindInputEvents()
     $("#draw-base").change(function()
     {
         currentScene.shouldDrawBase = this.checked;
-        currentScene.redraw();
+        //currentScene.redraw();
     });
 
     $("#draw-shells").change(function()
     {
         currentScene.shouldDrawShells = this.checked;
-        currentScene.redraw();
+        //currentScene.redraw();
     });
 
     $("#draw-fins").change(function()
     {
         currentScene.shouldDrawFins = this.checked;
-        currentScene.redraw();
+        //currentScene.redraw();
     });
 
     $("#filter-fins").change(function()
@@ -80,7 +80,7 @@ function bindInputEvents()
         {
             currentScene.loadFins();
         }
-        currentScene.redraw();
+        //currentScene.redraw();
     });
 }
 
@@ -178,7 +178,23 @@ function main()
 
     console.log(programInfo);
     currentScene = new Scene(gl, objectData, programInfo);
+    //currentScene.redraw();
+}
+
+var previousTime = Date.now();
+function animateScene(timestamp)
+{
+    displayFPS(timestamp);
     currentScene.redraw();
+}
+
+function displayFPS(currentTime)
+{
+    var difference = currentTime - previousTime;
+    previousTime = currentTime;
+
+    var FPS = 1000 / difference;
+    $("#fps-counter").html(FPS.toFixed(1));
 }
 
 function loadSphere()
