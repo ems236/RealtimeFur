@@ -115,6 +115,7 @@ function main()
           viewMatrix: gl.getUniformLocation(baseShaderProgram, 'uViewMatrix'),
           normalMatrix: gl.getUniformLocation(baseShaderProgram, 'uNormalMatrix'),
           colorTexture: gl.getUniformLocation(baseShaderProgram, 'uColorTexture'),
+          minShadowFactor: gl.getUniformLocation(baseShaderProgram, 'uMinShadowFactor'),
         }
     };
 
@@ -143,6 +144,7 @@ function main()
             windIntensity: gl.getUniformLocation(shellShaderProgram, 'uWindIntensity'),
             netForce: gl.getUniformLocation(shellShaderProgram, 'uModelForce'),
             noiseFactor: gl.getUniformLocation(shellShaderProgram, 'uColorNoiseFactor'),
+            minShadowFactor: gl.getUniformLocation(shellShaderProgram, 'uMinShadowFactor'),
         }
     };
 
@@ -167,6 +169,7 @@ function main()
             finTexture: gl.getUniformLocation(finShaderProgram, 'uFinTexture'),
             shouldBlendFins: gl.getUniformLocation(finShaderProgram, 'uShouldModifyFinAlpha'),
             noiseFactor: gl.getUniformLocation(finShaderProgram, 'uColorNoiseFactor'),
+            minShadowFactor: gl.getUniformLocation(finShaderProgram, 'uMinShadowFactor'),
         }
     }
 

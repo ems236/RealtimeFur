@@ -33,6 +33,7 @@ var baseFragmentShader = `
     precision mediump float;
         
     uniform sampler2D uColorTexture;
+    uniform float uMinShadowFactor;
 
     varying vec2 texture_coords;
     varying vec3 normal;
@@ -40,6 +41,7 @@ var baseFragmentShader = `
     void main() 
     {
         vec4 color = texture2D(uColorTexture, texture_coords);
+        color = vec4(color.rgb * uMinShadowFactor, 1.0);
         gl_FragColor = vec4(color.rgb, 1.0);
         //gl_FragColor = vec4(1.0, 0.0, color.b, 1.0);
     }
@@ -61,9 +63,12 @@ var shellVertexShader = `
     uniform vec3 uWindSource;
     uniform float uWindIntensity;
     uniform vec3 uModelForce;
+    uniform float uMinShadowFactor;
+
 
     varying vec2 texture_coords;
     varying vec3 normal;
+    varying float netShadowFactor;
 
     //varying vec2 displacement_amounts;
     //varying vec3 wind_vector;
@@ -100,6 +105,8 @@ var shellVertexShader = `
         texture_coords = aTexCoords;
         normal = normalize((uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz);
 
+        netShadowFactor = (uCurrentShell / uShellCount) * (1.0 - uMinShadowFactor) + uMinShadowFactor; 
+
         vec3 windVector = normalize(base_position.xyz - (uViewMatrix * vec4(uWindSource, 1.0)).xyz)  * uWindIntensity;        
         vec3 viewSpaceNetForce = (uViewMatrix * vec4(uModelForce, 0.0)).xyz;
 
@@ -133,6 +140,7 @@ var shellFragmentShader = `
 
     varying vec2 texture_coords;
     varying vec3 normal;
+    varying float netShadowFactor;
 
     //varying vec2 displacement_amounts;
     //varying vec3 wind_vector;
@@ -147,7 +155,8 @@ var shellFragmentShader = `
         float alpha = shellData.a;
 
         color = mix(color, shellData.rgb, uColorNoiseFactor);
-        
+        color = color * netShadowFactor;
+
         //gl_FragColor = vec4(abs(normal.x), abs(normal.y), abs(normal.z), 1.0);
 
         //gl_FragColor = vec4(texture_coords, 0.0, 1.0);
@@ -207,6 +216,7 @@ var finFragmentShader = `
     uniform sampler2D uFinTexture;
     uniform sampler2D uColorTexture;
     uniform float uColorNoiseFactor;
+    uniform float uMinShadowFactor;
     
 
     void main()
@@ -215,6 +225,9 @@ var finFragmentShader = `
         
         vec4 textureData = texture2D(uFinTexture, finTexCoords);
         color = mix(color, textureData.rgb, uColorNoiseFactor);
+
+        float shadowFactor = finTexCoords.y * (1.0 - uMinShadowFactor) + uMinShadowFactor;
+        color = color * shadowFactor;
         float alpha = alphaModifier * textureData.a;
         gl_FragColor = vec4(color, alpha);
         //gl_FragColor = texture2D(uFinTexture, finTexCoords);

@@ -77,7 +77,7 @@ function extrudeEdge(sharedTriangle, finData, objectData, subFinCount, windPosit
     var startIndex = finData.finVertices.length / 3;
     
     finData.finVertices.push(v1[0], v1[1], v1[2], v2[0], v2[1], v2[2]);
-    finData.finTexCoords.push(utexCoords.left, 0, utexCoords.right, 0);
+    finData.finTexCoords.push(utexCoords.left, 1 / subFinCount, utexCoords.right, 1 / subFinCount);
     finData.colorTexCoords.push(currentColorTexCoords.v1.u, currentColorTexCoords.v1.v, currentColorTexCoords.v2.u, currentColorTexCoords.v2.v);
 
     for(var subfinIndex = 1; subfinIndex <= subFinCount; subfinIndex++)
@@ -85,7 +85,7 @@ function extrudeEdge(sharedTriangle, finData, objectData, subFinCount, windPosit
         var v3 = v1Locations[subfinIndex];
         var v4 = v2Locations[subfinIndex];
         finData.finVertices.push(v3[0], v3[1], v3[2], v4[0], v4[1], v4[2]);
-        finData.finTexCoords.push(utexCoords.left, 0, utexCoords.right, 0);
+        finData.finTexCoords.push(utexCoords.left, subfinIndex / subFinCount, utexCoords.right, subfinIndex / subFinCount);
         finData.colorTexCoords.push(currentColorTexCoords.v1.u, currentColorTexCoords.v1.v, currentColorTexCoords.v2.u, currentColorTexCoords.v2.v);
 
         finData.finFaces.push(startIndex, startIndex + 1, startIndex + 2, startIndex + 2, startIndex + 3, startIndex + 1);

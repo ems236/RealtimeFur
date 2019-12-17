@@ -33,7 +33,9 @@ class Scene
         this.baseFurData = guassBlur5x5Noise(this.furDataSize);
         this.finTextureSize = 128;
         this.finTextureRaw = finTextureData(this.finTextureSize, 0.2, 0.0);
+
         this.colorNoiseFactor = 0.2;
+        this.minShadowFactor = 0.2;
 
         this.finBuffers = {
             position: gl.createBuffer(),
@@ -220,6 +222,7 @@ class Scene
             this.modelMatrix);
         
         gl.uniform1i(programInfo.uniformLocations.colorTexture, 0);
+        gl.uniform1f(programInfo.uniformLocations.minShadowFactor, this.minShadowFactor);
 
         this.setViewDependentTransforms(programInfo);
     }
