@@ -175,7 +175,7 @@ function main()
     }
 
     console.log(programInfo);
-    currentScene = new Scene(gl, objectData, programInfo, "testabstract.jpg");
+    currentScene = new Scene(gl, objectData, programInfo, "dog_texture.jpg");
     currentScene.redraw();
 }
 
