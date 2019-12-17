@@ -36,6 +36,12 @@ class Scene
 
         this.colorNoiseFactor = 0.2;
         this.minShadowFactor = 0.2;
+        this.ka = 1.0;
+        this.ks = 0.5;
+        this.kd = 0.9;
+        this.ns = 10;
+        this.lightIntensity = vec3.fromValues(1.0, 1.0, 1.0);
+        this.ambientIntensity = vec3.fromValues(0.1, 0.1, 0.1);
 
         this.finBuffers = {
             position: gl.createBuffer(),
@@ -223,6 +229,12 @@ class Scene
         
         gl.uniform1i(programInfo.uniformLocations.colorTexture, 0);
         gl.uniform1f(programInfo.uniformLocations.minShadowFactor, this.minShadowFactor);
+        gl.uniform1f(programInfo.uniformLocations.ka, this.ka);
+        gl.uniform1f(programInfo.uniformLocations.kd, this.kd);
+        gl.uniform1f(programInfo.uniformLocations.ks, this.ks);
+        gl.uniform1f(programInfo.uniformLocations.ns, this.ns);
+        gl.uniform3f(programInfo.uniformLocations.ambientIntensity, this.ambientIntensity[0], this.ambientIntensity[1], this.ambientIntensity[2]);
+        gl.uniform3f(programInfo.uniformLocations.lightIntensity, this.lightIntensity[0], this.lightIntensity[1], this.lightIntensity[2]);
 
         this.setViewDependentTransforms(programInfo);
     }

@@ -116,6 +116,12 @@ function main()
           normalMatrix: gl.getUniformLocation(baseShaderProgram, 'uNormalMatrix'),
           colorTexture: gl.getUniformLocation(baseShaderProgram, 'uColorTexture'),
           minShadowFactor: gl.getUniformLocation(baseShaderProgram, 'uMinShadowFactor'),
+          ka: gl.getUniformLocation(baseShaderProgram, 'uKa'),
+          kd: gl.getUniformLocation(baseShaderProgram, 'uKd'),
+          ks: gl.getUniformLocation(baseShaderProgram, 'uKs'),
+          ns: gl.getUniformLocation(baseShaderProgram, 'uNs'),
+          ambientIntensity: gl.getUniformLocation(baseShaderProgram, 'uAmbientIntensity'),
+          lightIntensity: gl.getUniformLocation(baseShaderProgram, 'uLightIntensity'),
         }
     };
 
@@ -145,6 +151,12 @@ function main()
             netForce: gl.getUniformLocation(shellShaderProgram, 'uModelForce'),
             noiseFactor: gl.getUniformLocation(shellShaderProgram, 'uColorNoiseFactor'),
             minShadowFactor: gl.getUniformLocation(shellShaderProgram, 'uMinShadowFactor'),
+            ka: gl.getUniformLocation(shellShaderProgram, 'uKa'),
+            kd: gl.getUniformLocation(shellShaderProgram, 'uKd'),
+            ks: gl.getUniformLocation(shellShaderProgram, 'uKs'),
+            ns: gl.getUniformLocation(shellShaderProgram, 'uNs'),
+            ambientIntensity: gl.getUniformLocation(shellShaderProgram, 'uAmbientIntensity'),
+            lightIntensity: gl.getUniformLocation(shellShaderProgram, 'uLightIntensity'),
         }
     };
 
@@ -170,6 +182,12 @@ function main()
             shouldBlendFins: gl.getUniformLocation(finShaderProgram, 'uShouldModifyFinAlpha'),
             noiseFactor: gl.getUniformLocation(finShaderProgram, 'uColorNoiseFactor'),
             minShadowFactor: gl.getUniformLocation(finShaderProgram, 'uMinShadowFactor'),
+            ka: gl.getUniformLocation(finShaderProgram, 'uKa'),
+            kd: gl.getUniformLocation(finShaderProgram, 'uKd'),
+            ks: gl.getUniformLocation(finShaderProgram, 'uKs'),
+            ns: gl.getUniformLocation(finShaderProgram, 'uNs'),
+            ambientIntensity: gl.getUniformLocation(finShaderProgram, 'uAmbientIntensity'),
+            lightIntensity: gl.getUniformLocation(finShaderProgram, 'uLightIntensity'),
         }
     }
 

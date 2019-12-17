@@ -21,8 +21,16 @@ var baseVertexShader = `
     varying vec2 texture_coords;
     varying vec3 normal;
 
+    //lighting
+    varying vec3 lightVector;
+    varying vec3 halfwayVector;
+
     void main() {
         vec4 base_position = uViewMatrix * uModelMatrix * aVertexPosition;
+
+        lightVector = normalize(-1.0 * base_position.xyz);
+        halfwayVector = lightVector;
+
         texture_coords = aTexCoords;
         normal = (uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz;
         gl_Position = uProjectionMatrix * base_position;
@@ -35,13 +43,35 @@ var baseFragmentShader = `
     uniform sampler2D uColorTexture;
     uniform float uMinShadowFactor;
 
+    //Phong parameters
+    uniform float uKa;
+    uniform float uKd;
+    uniform float uKs;
+    uniform float uNs;
+    uniform vec3 uLightIntensity;
+    uniform vec3 uAmbientIntensity;
+
     varying vec2 texture_coords;
     varying vec3 normal;
+
+
+    //lighting
+    varying vec3 lightVector;
+    varying vec3 halfwayVector;
 
     void main() 
     {
         vec4 color = texture2D(uColorTexture, texture_coords);
-        color = vec4(color.rgb * uMinShadowFactor, 1.0);
+        color = vec4(color.rgb, 1.0);
+
+        vec3 ambientColor = color.rgb * uAmbientIntensity * uKa;
+        vec3 diffuseColor = color.rgb * uKd * uLightIntensity * (dot(normalize(normal), normalize(lightVector)));
+        float specularLight = pow(dot(normalize(normal), normalize(halfwayVector)), uNs);
+        vec3 specularColor = color.rgb * uKs * uLightIntensity * specularLight;
+
+        color = vec4((ambientColor + diffuseColor + specularColor) * uMinShadowFactor, 1.0);
+
+        //gl_FragColor = vec4(specularColor, 1.0);
         gl_FragColor = vec4(color.rgb, 1.0);
         //gl_FragColor = vec4(1.0, 0.0, color.b, 1.0);
     }
@@ -69,6 +99,10 @@ var shellVertexShader = `
     varying vec2 texture_coords;
     varying vec3 normal;
     varying float netShadowFactor;
+
+    //lighting
+    varying vec3 lightVector;
+    varying vec3 halfwayVector;
 
     //varying vec2 displacement_amounts;
     //varying vec3 wind_vector;
@@ -102,6 +136,9 @@ var shellVertexShader = `
     void main() {
         vec4 base_position = uViewMatrix * uModelMatrix * aVertexPosition;
         
+        lightVector = normalize(-1.0 * base_position.xyz);
+        halfwayVector = lightVector;
+
         texture_coords = aTexCoords;
         normal = normalize((uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz);
 
@@ -138,9 +175,21 @@ var shellFragmentShader = `
     uniform highp float uCurrentShell;
     uniform float uColorNoiseFactor;
 
+    //Phong parameters
+    uniform float uKa;
+    uniform float uKd;
+    uniform float uKs;
+    uniform float uNs;
+    uniform vec3 uLightIntensity;
+    uniform vec3 uAmbientIntensity;
+
     varying vec2 texture_coords;
     varying vec3 normal;
     varying float netShadowFactor;
+
+    //lighting
+    varying vec3 lightVector;
+    varying vec3 halfwayVector;
 
     //varying vec2 displacement_amounts;
     //varying vec3 wind_vector;
@@ -192,13 +241,22 @@ var finVertexShader = `
     varying vec2 colorTexCoords;
     varying float alphaModifier;
 
+    //lighting
+    varying vec3 lightVector;
+    varying vec3 halfwayVector;
+    varying vec3 normal;
+
     void main() 
     {
         vec4 base_position = uViewMatrix * uModelMatrix * aVertexPosition;
+
+        lightVector = normalize(-1.0 * base_position.xyz);
+        halfwayVector = lightVector;
+
         finTexCoords = aFinTexCoords;
         colorTexCoords = aColorTexCoords;
 
-        vec3 normal = (uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz;
+        normal = (uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz;
         vec3 eyeVec = vec3(0, 0, 1);
         alphaModifier = max(float(uShouldModifyFinAlpha), 2.0 * abs(dot(normalize(normal), eyeVec)) - 1.0);
         //alphaModifier = 1.0;
@@ -217,7 +275,19 @@ var finFragmentShader = `
     uniform sampler2D uColorTexture;
     uniform float uColorNoiseFactor;
     uniform float uMinShadowFactor;
+
+    //Phong parameters
+    uniform float uKa;
+    uniform float uKd;
+    uniform float uKs;
+    uniform float uNs;
+    uniform vec3 uLightIntensity;
+    uniform vec3 uAmbientIntensity;
     
+    //lighting
+    varying vec3 lightVector;
+    varying vec3 halfwayVector;
+    varying vec3 normal;
 
     void main()
     {
