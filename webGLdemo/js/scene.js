@@ -6,6 +6,11 @@ class Scene
         this.objectData = objectData;
         this.programInfo = programInfo;
 
+        this.currentTime = 0;
+        this.previousVelocity = vec3.fromValues(0, 0, 0);
+        this.netForce = vec3.fromValues(0, 0, 0);
+
+
         this.fieldOfView = 45 * Math.PI / 180;   // in radians
         this.aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
         this.zNear = 0.1;
@@ -42,8 +47,8 @@ class Scene
         this.alphaBlendAllFins = true;
 
         this.windSource = vec3.fromValues(0.0, 0.0, 6.0);
-        this.windIntensity = 0.5;
-        this.baseWindIntensity = 0.5;
+        this.windIntensity = 0;
+        this.baseWindIntensity = 0;
 
 
         this.initializeBuffers(this.gl);
@@ -230,6 +235,7 @@ class Scene
 
         this.gl.uniform1f(shellProgramInfo.uniformLocations.shellCount, this.shellCount);
         this.gl.uniform3f(shellProgramInfo.uniformLocations.windSource, this.windSource[0], this.windSource[1], this.windSource[2]);
+        this.gl.uniform3f(shellProgramInfo.uniformLocations.netForce, this.netForce[0], this.netForce[1], this.netForce[2]);
         this.gl.uniform1f(shellProgramInfo.uniformLocations.windIntensity, this.windIntensity);
         this.gl.uniform1i(shellProgramInfo.uniformLocations.shellAlphaTexture, 1);
     }
@@ -282,6 +288,42 @@ class Scene
         }
     }
 
+    setFrameNetForce(timestamp)
+    {
+        this.previousTime = this.currentTime;
+        this.currentTime = timestamp;
+
+        this.setFrameWindSpeed(timestamp);
+
+        var previousVelocity = this.currentVelocity;
+        if(this.positionChange)
+        {
+            vec3.scale(this.currentVelocity, this.positionChange, -10000 / (this.currentTime - this.previousTime));
+            this.positionChange = undefined;
+        }
+        else
+        {
+            this.currentVelocity = vec3.fromValues(0, 0, 0);
+        }
+
+        var previousNetForce = this.netForce;
+        var momentum = vec3.create();
+        //vec3.subtract(momentum, this.currentVelocity, this.previousVelocity);
+        //vec3.scale(momentum, momentum, -3000 / (this.currentTime - this.previousTime));
+
+        var currentForce = vec3.create();
+        vec3.add(currentForce, this.currentVelocity, momentum);
+        vec3.scale(currentForce, currentForce, 0.3);
+        vec3.scale(previousNetForce, previousNetForce, 0.7);
+
+        vec3.add(this.netForce, previousNetForce, currentForce);
+
+        if(Math.abs(this.netForce[0]) > 0.002 || Math.abs(this.netForce[1]) > 0.002 || Math.abs(this.netForce[2]) > 0.002)
+        {
+            console.log(this.netForce);
+        }
+    }
+
     redraw(timestamp)
     {
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
@@ -293,7 +335,7 @@ class Scene
         // Clear the canvas before we start drawing on it.
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-        this.setFrameWindSpeed(timestamp);
+        this.setFrameNetForce(timestamp);
 
         if(this.shouldDrawBase)
         {
@@ -428,6 +470,30 @@ class Scene
         gl.activeTexture(gl.TEXTURE0);
     }
 
+    translateModel(x, y)
+    {
+        //Need to do this in view coordinates more or less
+        var axes = this.camera.viewAxes();
+        var step = 0.01;
+
+        var xTranslation = axes.x;
+        vec3.scale(xTranslation, xTranslation, x * step);
+
+        var yTranslation = axes.y;
+        vec3.scale(yTranslation, yTranslation, y * step * -1);
+
+        var totalTranslation = vec3.create();
+        vec3.add(totalTranslation, xTranslation, yTranslation);
+
+        this.positionChange = totalTranslation;
+        mat4.translate(this.modelMatrix, this.modelMatrix, totalTranslation);
+    }
+
+    resetModelTranslation()
+    {
+        this.modelMatrix = mat4.create();
+    }
+
     mousedown(type, x, y)
     {
         this.x = x;
@@ -458,6 +524,7 @@ class Scene
 
         if(type == 2)
         {
+            this.resetModelTranslation();
             this.middleMouseDown = false;
         }
 
@@ -481,7 +548,7 @@ class Scene
         this.x = x;
         this.y = y;
 
-        if(this.leftMouseDown)
+        if(this.leftMouseDown && !this.middleMouseDown)
         {
             //console.log("left is down");
             this.camera.changeLatitude(ychange);
@@ -492,6 +559,10 @@ class Scene
         {
             //console.log("right is down");
             this.camera.changeRadius(ychange);
+        }
+        if(this.middleMouseDown)
+        {
+            this.translateModel(xchange, ychange);
         }
     }
 }

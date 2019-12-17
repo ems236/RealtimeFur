@@ -141,6 +141,7 @@ function main()
             currentShell: gl.getUniformLocation(shellShaderProgram, 'uCurrentShell'),
             windSource: gl.getUniformLocation(shellShaderProgram, 'uWindSource'),
             windIntensity: gl.getUniformLocation(shellShaderProgram, 'uWindIntensity'),
+            netForce: gl.getUniformLocation(shellShaderProgram, 'uModelForce'),
         }
     };
 

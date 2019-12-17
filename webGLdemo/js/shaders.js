@@ -60,6 +60,7 @@ var shellVertexShader = `
     uniform float uShellCount;
     uniform vec3 uWindSource;
     uniform float uWindIntensity;
+    uniform vec3 uModelForce;
 
     varying vec2 texture_coords;
     varying vec3 normal;
@@ -84,7 +85,7 @@ var shellVertexShader = `
                 return vec2(windDisplacement, normalDisplacement);
             }
 
-            float angle = (windIntensity * PI * shellNumber) / (2.0 * uShellCount);
+            float angle = (max(windIntensity * shellNumber, 1.0) * PI) / (2.0 * uShellCount);
 
             windDisplacement = windDisplacement + sin(angle);
             normalDisplacement = normalDisplacement + cos(angle);
@@ -99,19 +100,20 @@ var shellVertexShader = `
         texture_coords = aTexCoords;
         normal = normalize((uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz);
 
-        vec3 windVector = normalize(base_position.xyz - (uViewMatrix * vec4(uWindSource, 1.0)).xyz);
-        
+        vec3 windVector = normalize(base_position.xyz - (uViewMatrix * vec4(uWindSource, 1.0)).xyz);        
+        vec3 viewSpaceNetForce = (uViewMatrix * vec4(uModelForce, 0.0)).xyz;
 
+        vec3 totalForce = windVector + viewSpaceNetForce;
         //Projection of wind onto normal
-        vec3 vertexWindVector = windVector - (normal * (dot(windVector, normal)));
+        vec3 vertexForceVector = totalForce - (normal * (dot(totalForce, normal)));
         //wind_vector = vertexWindVector;
 
-        vec2 displacementMultipliers = shellDisplacement(vertexWindVector, normal); 
+        vec2 displacementMultipliers = shellDisplacement(vertexForceVector, normal); 
         //vec2 displacementMultipliers = vec2(0.0, uCurrentShell);
         //displacement_amounts = normalize(displacementMultipliers);
         float shellDistance = aFurLength / uShellCount;
 
-        vec3 displacement = windVector * shellDistance * displacementMultipliers.x + normal * shellDistance * displacementMultipliers.y;
+        vec3 displacement = normalize(totalForce) * shellDistance * displacementMultipliers.x + normal * shellDistance * displacementMultipliers.y;
         
         vec4 oldDisplacement = vec4(normalize(normal) * aFurLength * (uCurrentShell / uShellCount), 0.0);
 
