@@ -82,6 +82,28 @@ function bindInputEvents()
         }
         currentScene.redraw();
     });
+
+    $('#objectSelection').change(function() 
+    {
+        var renderObject = $('#objectSelection').val();
+        var objectData;
+        switch (renderObject) {
+            case 'Dog': 
+                objectData = loadDog();
+                break;
+            case 'Sphere': 
+                objectData = loadSphere();
+                break;
+        }
+
+        currentScene.objectData = objectData;
+        currentScene.initializeBuffers(currentScene.gl);
+        currentScene.loadFins();
+
+        // currentScene = new Scene(gl, objectData, programInfo, "testabstract.jpg");
+        currentScene.redraw();
+   });
+
 }
 
 function main()
@@ -165,7 +187,15 @@ function main()
         }
     }
 
-    var objectData = loadDog();
+    var objectData = loadSphere();
+    var renderObject = $('#objectSelection').val();
+
+    switch (renderObject) {
+        case 'Dog': objectData = loadDog();
+            break;
+        case 'Sphere': objectData = loadSphere();
+            break;
+    }
 
     const programInfo = 
     {
@@ -175,7 +205,7 @@ function main()
     }
 
     console.log(programInfo);
-    currentScene = new Scene(gl, objectData, programInfo, "testabstract.jpg");
+    currentScene = new Scene(gl, objectData, programInfo, "dog_texture_squared.jpg");
     currentScene.redraw();
 }
 
