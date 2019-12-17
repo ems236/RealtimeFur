@@ -165,7 +165,7 @@ function main()
         }
     }
 
-    var objectData = loadObject("http://ems236.github.io/RenderingFur/webGLdemo/objects/Dog/dog_kurtshaar_grey.obj");
+    var objectData = loadObject();
 
     const programInfo = 
     {
@@ -179,14 +179,14 @@ function main()
     currentScene.redraw();
 }
 
-function loadObject(objectPath)
+function loadObject()
 {
-    var object = parse-object.getObject(objectPath);
+    var object = getObject();
 
-    var positions = object.vertexPositions;
-    var faces = object.facePositions;
-    var normals = object.vertexNormals;
-    var texCoords = object.vertexUVs;
+    var positions = object.positions;
+    var faces = object.faces;
+    var normals = object.normals;
+    var texCoords = object.texCoords;
 
     var furLengths = new Array(positions.length / 3);
 
@@ -359,4 +359,73 @@ function setTexCoord(u, v, index, texCoords)
     startIndex = 2 * index;
     texCoords[startIndex] = clamp(u, 0, 1);
     texCoords[startIndex + 1] = clamp(v, 0, 1);
+}
+
+function loadSphere()
+{
+    var sphere = getSphere();
+
+    var positions = sphere.positions;
+    var faces = sphere.faces;
+
+    var normals = new Array(positions.length);
+    normals.fill(0);
+    var texCoords = new Array(2 * positions.length / 3);
+    var furLengths = new Array(positions.length / 3);
+
+    //sphere definition is 1 indexed
+    //webgl is 0 indexed
+    for(var vertexIndexIndex = 0; vertexIndexIndex < faces.length; vertexIndexIndex++)
+    {
+        faces[vertexIndexIndex] -= 1;
+    }
+
+    for(var faceIndex = 0; faceIndex < faces.length / 3; faceIndex++)
+    {
+        var v1index = faces[faceIndex * 3];
+        var v2index = faces[faceIndex * 3 + 1];
+        var v3index = faces[faceIndex * 3 + 2];
+
+        var v1 = getVertex(v1index, positions);
+        var v2 = getVertex(v2index, positions);
+        var v3 = getVertex(v3index, positions);
+
+
+        var e1 = vec3.create();
+        vec3.subtract(e1, v3, v1);
+
+        var e2 = vec3.create();
+        vec3.subtract(e2, v2, v3);
+
+        var normal = vec3.create();
+        vec3.cross(normal, e2, e1);
+
+        addNormal(normal, v1index, normals);
+        addNormal(normal, v2index, normals);
+        addNormal(normal, v3index, normals);
+    }
+
+    for(var vertexIndex = 0; vertexIndex < positions.length / 3; vertexIndex++)
+    {
+        furLengths[vertexIndex] = 0.2;
+        
+        //Spherical coords
+        var position = getVertex(vertexIndex, positions);
+
+        var theta = Math.atan2(position[0], position[2]);
+        var phi = Math.atan2(Math.pow(position[0] * position[0] + position[2] * position[2], 0.5), position[1]);
+
+        setTexCoord(1 - (theta / (2 * 3.14159) + 0.5), 1 - (phi / 3.14159), vertexIndex, texCoords);
+    }
+
+    sharedTriangles = loadFinEdgeList(faces, positions);
+
+    return {
+        position: positions,
+        normal: normals,
+        face: faces,
+        texCoord: texCoords,
+        furLength: furLengths,
+        sharedTriangle: sharedTriangles
+    }
 }
