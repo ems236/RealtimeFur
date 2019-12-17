@@ -142,6 +142,7 @@ function main()
             windSource: gl.getUniformLocation(shellShaderProgram, 'uWindSource'),
             windIntensity: gl.getUniformLocation(shellShaderProgram, 'uWindIntensity'),
             netForce: gl.getUniformLocation(shellShaderProgram, 'uModelForce'),
+            noiseFactor: gl.getUniformLocation(shellShaderProgram, 'uColorNoiseFactor'),
         }
     };
 
@@ -165,6 +166,7 @@ function main()
             colorTexture: gl.getUniformLocation(finShaderProgram, 'uColorTexture'),
             finTexture: gl.getUniformLocation(finShaderProgram, 'uFinTexture'),
             shouldBlendFins: gl.getUniformLocation(finShaderProgram, 'uShouldModifyFinAlpha'),
+            noiseFactor: gl.getUniformLocation(finShaderProgram, 'uColorNoiseFactor'),
         }
     }
 

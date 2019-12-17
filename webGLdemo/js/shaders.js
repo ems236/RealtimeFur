@@ -129,6 +129,7 @@ var shellFragmentShader = `
     uniform sampler2D uColorTexture;
     uniform sampler2D uShellAlphaTexture;
     uniform highp float uCurrentShell;
+    uniform float uColorNoiseFactor;
 
     varying vec2 texture_coords;
     varying vec3 normal;
@@ -139,10 +140,13 @@ var shellFragmentShader = `
 
     void main() 
     {
-        vec4 color = texture2D(uColorTexture, texture_coords);
+        vec3 color = texture2D(uColorTexture, texture_coords).rgb;
         
         
-        float alpha = texture2D(uShellAlphaTexture, texture_coords).a;
+        vec4 shellData = texture2D(uShellAlphaTexture, texture_coords);
+        float alpha = shellData.a;
+
+        color = mix(color, shellData.rgb, uColorNoiseFactor);
         
         //gl_FragColor = vec4(abs(normal.x), abs(normal.y), abs(normal.z), 1.0);
 
@@ -202,11 +206,16 @@ var finFragmentShader = `
 
     uniform sampler2D uFinTexture;
     uniform sampler2D uColorTexture;
+    uniform float uColorNoiseFactor;
+    
 
     void main()
     {
         vec3 color = texture2D(uColorTexture, colorTexCoords).rgb;
-        float alpha = alphaModifier * texture2D(uFinTexture, finTexCoords).a;
+        
+        vec4 textureData = texture2D(uFinTexture, finTexCoords);
+        color = mix(color, textureData.rgb, uColorNoiseFactor);
+        float alpha = alphaModifier * textureData.a;
         gl_FragColor = vec4(color, alpha);
         //gl_FragColor = texture2D(uFinTexture, finTexCoords);
         //gl_FragColor = vec4(alphaModifier, alphaModifier, alphaModifier, 1.0);

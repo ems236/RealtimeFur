@@ -33,6 +33,7 @@ class Scene
         this.baseFurData = guassBlur5x5Noise(this.furDataSize);
         this.finTextureSize = 128;
         this.finTextureRaw = finTextureData(this.finTextureSize, 0.2, 0.0);
+        this.colorNoiseFactor = 0.2;
 
         this.finBuffers = {
             position: gl.createBuffer(),
@@ -237,6 +238,7 @@ class Scene
         this.gl.uniform3f(shellProgramInfo.uniformLocations.windSource, this.windSource[0], this.windSource[1], this.windSource[2]);
         this.gl.uniform3f(shellProgramInfo.uniformLocations.netForce, this.netForce[0], this.netForce[1], this.netForce[2]);
         this.gl.uniform1f(shellProgramInfo.uniformLocations.windIntensity, this.windIntensity);
+        this.gl.uniform1f(shellProgramInfo.uniformLocations.noiseFactor, this.colorNoiseFactor);
         this.gl.uniform1i(shellProgramInfo.uniformLocations.shellAlphaTexture, 1);
     }
 
@@ -247,6 +249,7 @@ class Scene
 
         this.gl.uniform1i(finProgramInfo.uniformLocations.finTexture, 2);
         this.gl.uniform1i(finProgramInfo.uniformLocations.shouldBlendFins, this.alphaBlendAllFins ? 0 : 1);
+        this.gl.uniform1f(finProgramInfo.uniformLocations.noiseFactor, this.colorNoiseFactor);
     }
 
     setViewDependentTransforms(programInfo)
@@ -426,6 +429,8 @@ class Scene
 
     initializeFurTextures()
     {
+        var colorNoise = noiseOf(this.furDataSize / 4);
+
         this.shellTextures = [];
         for(var shellNumber = 0; shellNumber < this.shellCount; shellNumber++)
         {
@@ -433,7 +438,7 @@ class Scene
             const max = 182;
             var limit = base + (max - base) * (shellNumber / this.shellCount);
             var filtered = sampleFur(limit, this.baseFurData);
-            this.shellTextures.push(textureFromData(this.gl, padAlphaData(filtered), this.furDataSize));
+            this.shellTextures.push(textureFromData(this.gl, padAlphaData(filtered, colorNoise), this.furDataSize));
         }
     }
 
@@ -467,7 +472,8 @@ class Scene
     {
         const gl = this.gl;
 
-        var finTexture = textureFromData(gl, padAlphaData(this.finTextureRaw), this.finTextureSize);
+        var colorNoise = noiseOf(this.finTextureSize / 4);
+        var finTexture = textureFromData(gl, padAlphaData(this.finTextureRaw, colorNoise), this.finTextureSize);
 
         gl.activeTexture(gl.TEXTURE2);
         gl.bindTexture(gl.TEXTURE_2D, finTexture);

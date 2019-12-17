@@ -51,15 +51,17 @@ function textureFromData(gl, data, size)
 }
 
 //I cannot make a single channel texture for the life of me
-function padAlphaData(data)
+function padAlphaData(data, colorNoise)
 {
     var flat = data.flat();
+    var flatNoise = colorNoise.flat();
     var newData = [];
     for(var i = 0; i < flat.length; i++)
     {
-        newData.push(flat[i]);
-        newData.push(0);
-        newData.push(0);
+        var grayNoise = Math.round(255 * (Math.pow(flatNoise[Math.floor(i / 16)] / 255, 2)));
+        newData.push(grayNoise);
+        newData.push(grayNoise);
+        newData.push(grayNoise);
         newData.push(flat[i]);
     }
 
