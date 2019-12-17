@@ -139,6 +139,8 @@ function main()
             shellAlphaTexture: gl.getUniformLocation(shellShaderProgram, 'uShellAlphaTexture'),
             shellCount: gl.getUniformLocation(shellShaderProgram, 'uShellCount'),
             currentShell: gl.getUniformLocation(shellShaderProgram, 'uCurrentShell'),
+            windSource: gl.getUniformLocation(shellShaderProgram, 'uWindSource'),
+            windIntensity: gl.getUniformLocation(shellShaderProgram, 'uWindIntensity'),
         }
     };
 

@@ -41,12 +41,17 @@ class Scene
         this.shouldDrawBase = true;
         this.alphaBlendAllFins = true;
 
-        this.loadFins();
+        this.windSource = vec3.fromValues(0.0, 0.0, 6.0);
+        this.windIntensity = 0.5;
+
 
         this.initializeBuffers(this.gl);
         this.initializeTexture();
         this.initializeFinTexture()
         this.setShellCount(10);
+
+        //Called because alpha blending all fins is the default and fins don't need to be reloaded every time if you do it that way
+        this.loadFins();
     }
 
     initializeBuffers(gl)
@@ -221,6 +226,8 @@ class Scene
         this.loadBaseUniforms(shellProgramInfo);
 
         this.gl.uniform1f(shellProgramInfo.uniformLocations.shellCount, this.shellCount);
+        this.gl.uniform3f(shellProgramInfo.uniformLocations.windSource, this.windSource[0], this.windSource[1], this.windSource[2]);
+        this.gl.uniform1f(shellProgramInfo.uniformLocations.windIntensity, this.windIntensity);
         this.gl.uniform1i(shellProgramInfo.uniformLocations.shellAlphaTexture, 1);
     }
 
@@ -382,7 +389,7 @@ class Scene
         var eyeVec = vec4.fromValues(cameraPos[0], cameraPos[1], cameraPos[2], 0.0);
         vec4.normalize(eyeVec, eyeVec);
 
-        var finData = generateFins(eyeVec, this.objectData.sharedTriangle, this.objectData, this.alphaBlendAllFins);
+        var finData = generateFins(eyeVec, this.objectData.sharedTriangle, this.objectData, this.alphaBlendAllFins, this.shellCount, this.windSource, this.windIntensity);
         //console.log(finData);
         this.finElementCount = finData.faces.length;
         this.resetFinBuffers(this.gl, finData);
