@@ -82,6 +82,24 @@ function bindInputEvents()
         }
         currentScene.redraw();
     });
+
+//    $('#objectSelection').change(function() {
+//        var renderObject = $('#objectSelection').val();
+//        var objectData;
+//        switch (renderObject) {
+//            case 'Cube': objectData = loadObject();
+//                break;
+//            case 'Sphere': objectData = loadSphere();
+//                break;
+//            case 'Bunny':
+//                objectData = loadSphere();
+//                console.log("it's a bunny");
+//                break;
+//        }
+//
+//        currentScene.objectData = objectData;
+//        currentScene.redraw();
+//    });
 }
 
 function main()

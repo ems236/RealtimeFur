@@ -1,10 +1,12 @@
 ﻿<!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8"/> 
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-        <style>
-            .hidden{
+<head>
+	<meta charset="utf-8"/>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+		  integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" href="css/graphics.css">
+	<style>
+            .hidden {
                 display: none;
             }
 
@@ -17,71 +19,147 @@
                 background-color: black;
                 overflow-x: hidden;
             }
-        </style>
-    </head>
-    <body>
-        <div id="main">
-            <canvas id="glCanvas" width="640" height="480"></canvas>
-        </div>
-        <div class="container-fluid">
-            <div class="row"> 
-                <div class="form-group">
-                    <h4>General Controls</h4>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="draw-base" checked/>
-                        <label class="form-check-label" for="draw-base">
-                            Render Base Model
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="draw-shells" checked/>
-                        <label class="form-check-label" for="draw-shells">
-                            Render Shells
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="draw-fins" checked/>
-                        <label class="form-check-label" for="draw-fins">
-                            Render Fins
-                        </label>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group" id="shell-controls">
-                    <h4>Shell Controls</h4> 
-                    
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group" id="fin-controls">
-                    <h4>Fin Controls</h4>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="filter-fins" checked/>
-                        <label class="form-check-label" for="draw-base">
-                            Alpha Blend Non-Sillhouette Fins
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
+
+            .col-2, .col-3, .col-4 {
+                border: 1px solid blue;
+            }
+
+	</style>
+</head>
+<body>
+
+<div class="container-fluid mt-5">
+	<div class="row">
+		<div id="main" class="col-6">
+			<canvas id="glCanvas" width="800" height="480"></canvas>
+		</div>
+
+		<div class="col-3">
+			<div class="form-group">
+				<h4>General Controls</h4>
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" id="draw-base" checked/>
+					<label class="form-check-label" for="draw-base">
+						Render Base Model
+					</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" id="draw-shells" checked/>
+					<label class="form-check-label" for="draw-shells">
+						Render Shells
+					</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" id="draw-fins" checked/>
+					<label class="form-check-label" for="draw-fins">
+						Render Fins
+					</label>
+				</div>
+			</div>
+
+			<!--			<label style="margin-top:20px;" for="objectSelection">Select object:</label>-->
+			<!--			<select class="form-control" id="objectSelection">-->
+			<!--				<option value="Cube">Cube</option>-->
+			<!--				<option value="Sphere">Sphere</option>-->
+			<!--				<option value="Bunny">Bunny</option>-->
+			<!--			</select>-->
+		</div>
+
+		<div class="col-3">
+			<div class="form-group" id="shell-controls">
+				<h4>Shell Controls</h4>
+				<label for="shellControlRange">Number of Shells:</label>
+				<input type="range" min="0" max="10" value="5" step="1" class="form-control-range"
+					   id="shellControlRange">
+
+				<label for="curlinessControlRange">Curliness:</label>
+				<input type="range" min="0" max="10" value="5" step="1" class="form-control-range"
+					   id="curlinessControlRange">
+
+			</div>
+			<div class="row">
+				<div class="form-group" id="fin-controls">
+					<h4>Fin Controls</h4>
+					<div class="form-check">
+						<input class="form-check-input" type="checkbox" id="filter-fins" checked/>
+						<label class="form-check-label" for="draw-base">
+							Alpha Blend Non-Sillhouette Fins
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="container">
+		<div class="container mt-5">
+			<h1>A Hairy Problem</h1>
+			<p>
+				One of the biggest open problems in the graphics field is rendering hair-like protrusions efficiently.
+
+				A na&iumlve approach would be to represent every hair with its own geometric model. However, when hair
+				is present, it tends to be plentiful. That just isn't feasible if you are rendering a dynamic scene.
 
 
-    <!--External utilities-->
-    <script src="js/gl-matrix.js"></script>
-    <script src="js/jquery-3.4.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+			</p>
 
-    <!--Internal-->
-    <script src="js/glDemoObject.js"></script>
-    <script src="js/shaders.js"></script>
-    <script src="js/scene.js"></script>
-    <script src="js/camera.js"></script>
-    <script src="js/texture_loader.js"></script>
-    <script src="js/fur-opacity.js"></script>
-    <script src="js/sphere.js"></script>
-    <script src="js/finGeneration.js"></script>
+			<h1>Rendering Techniques</h1>
+			<h3>Shells</h3>
+			<p>
+				Hair like protrusions (i.e. fur and grass) can be approximated using a series of planes called
+				"shells" which can be layered, one on top of the other and separated by an arbitrary distance.
+			</p>
+			<p>We implemented two different methods of texture generation as described below.</p>
+			<h5>Random Noise<sup>1</sup></h5>
+			<p>A 2D texture was initially generated using a uniform distribution to assign an intensity value
+			between 0 and 255. The initial texture was then passed through a Gaussian filter to not only smooth out intensity values,
+			but also find </p>
+			<p>The resulting texture was then used in an alpha blending algorithm in order to </p>
+			<h5>Particle Generation<sup>2</sup></h5>
+			<p>The shell textures were generated by randomly initializing the </p>
+			<p></p>
+			<h3>Fins</h3>
+		</div>
 
-    </body>
+		<div class="container mt-5">
+			<h1>Citations</h1>
+			<ol>
+				<li>
+					Papaioannou, G. “A simple and Fast Technique for Fur Rendering,” Department of Informatics,
+					University of Athens. 2002.
+				</li>
+				<li>Sheppard, G. “Real-Time Rendering of Fur,” Bachelor of Engineering. University of Sheffield. 2004.</li>
+				<li>
+					Kim, H., Lee, J., DongKyum, K., Henzel, C., Kim, J., Lim, M. “Real-time fur simulation and
+					rendering,” Computer Animation and Virtual Worlds. vol . 21, pp. 311-320. May 2010.
+				</li>
+			</ol>
+		</div>
+
+	</div>
+
+
+
+
+<!--External utilities-->
+<script src="js/gl-matrix.js"></script>
+<script src="js/jquery-3.4.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+		integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+		crossorigin="anonymous"></script>
+
+<!--Internal-->
+<script src="js/glDemoObject.js"></script>
+<script src="js/shaders.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/camera.js"></script>
+<script src="js/texture_loader.js"></script>
+<script src="js/fur-opacity.js"></script>
+<script src="js/sphere.js"></script>
+<script src="js/finGeneration.js"></script>
+
+</body>
 </html>

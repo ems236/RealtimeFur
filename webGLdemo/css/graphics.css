@@ -1,0 +1,11 @@
+
+.flex-container {
+    display: flex;
+    justify-content: center;
+}
+
+.flex-container > div {
+    border: 1px solid blue;
+    flex-grow: 1;
+    flex-basis: 0;
+}
