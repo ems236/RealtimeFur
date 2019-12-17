@@ -99,6 +99,7 @@ var shellVertexShader = `
     varying vec2 texture_coords;
     varying vec3 normal;
     varying float netShadowFactor;
+    varying vec3 furDirection;
 
     //lighting
     varying vec3 lightVector;
@@ -143,6 +144,7 @@ var shellVertexShader = `
         normal = normalize((uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz);
 
         netShadowFactor = (uCurrentShell / uShellCount) * (1.0 - uMinShadowFactor) + uMinShadowFactor; 
+        
 
         vec3 windVector = normalize(base_position.xyz - (uViewMatrix * vec4(uWindSource, 1.0)).xyz)  * uWindIntensity;        
         vec3 viewSpaceNetForce = (uViewMatrix * vec4(uModelForce, 0.0)).xyz;
@@ -158,7 +160,8 @@ var shellVertexShader = `
         float shellDistance = aFurLength / uShellCount;
 
         vec3 displacement = normalize(totalForce) * shellDistance * displacementMultipliers.x + normal * shellDistance * displacementMultipliers.y;
-        
+        furDirection = normalize(displacement);
+
         vec4 oldDisplacement = vec4(normalize(normal) * aFurLength * (uCurrentShell / uShellCount), 0.0);
 
         //gl_Position = uProjectionMatrix * (base_position + oldDisplacement);
@@ -190,6 +193,7 @@ var shellFragmentShader = `
     //lighting
     varying vec3 lightVector;
     varying vec3 halfwayVector;
+    varying vec3 furDirection;
 
     //varying vec2 displacement_amounts;
     //varying vec3 wind_vector;
@@ -205,14 +209,18 @@ var shellFragmentShader = `
 
         color = mix(color, shellData.rgb, uColorNoiseFactor);
 
-        /*
+        
+        vec3 furLightNormal = normalize(lightVector - furDirection * dot(normalize(furDirection), normalize(lightVector)));
+        vec3 furHalfwayNormal = normalize(halfwayVector - furDirection * dot(normalize(furDirection), normalize(halfwayVector)));
+
+
         vec3 ambientColor = color.rgb * uAmbientIntensity * uKa;
-        vec3 diffuseColor = color.rgb * uKd * uLightIntensity * (dot(normalize(normal), normalize(lightVector)));
-        float specularLight = pow(dot(normalize(normal), normalize(halfwayVector)), uNs);
+        vec3 diffuseColor = color.rgb * uKd * uLightIntensity * (dot(furLightNormal, normalize(lightVector)));
+        float specularLight = pow(dot(furHalfwayNormal, normalize(halfwayVector)), uNs);
         vec3 specularColor = color.rgb * uKs * uLightIntensity * specularLight;
 
-        color = vec4((ambientColor + diffuseColor + specularColor) * netShadowFactor, 1.0);
-        */
+        color = ambientColor + diffuseColor + specularColor;
+        
         color = color * netShadowFactor;
 
         //gl_FragColor = vec4(abs(normal.x), abs(normal.y), abs(normal.z), 1.0);
