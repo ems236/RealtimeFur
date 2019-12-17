@@ -181,7 +181,7 @@ function main()
 
 function loadObject(objectPath)
 {
-    var object = getObject(objectPath);
+    var object = parse-object.getObject(objectPath);
 
     var positions = object.vertexPositions;
     var faces = object.facePositions;
