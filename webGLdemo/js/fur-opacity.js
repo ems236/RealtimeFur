@@ -53,7 +53,7 @@ function generateFurMap(mapSize, kernelSize) {
     return filteredNoise;
 }
 
-function guassBlur5x5Noise(noiseSize)
+function noiseOf(noiseSize)
 {
     var noise = [];
     for (var i = 0; i < noiseSize; i++) {
@@ -64,6 +64,14 @@ function guassBlur5x5Noise(noiseSize)
             noise[i].push(rand);
         }
     }
+
+    return noise;
+}
+
+function guassBlur5x5Noise(noiseSize)
+{
+    var noise = noiseOf(noiseSize);
+    
 
     var kernel = [[1, 4, 6, 4, 1], [4, 16, 24, 16, 4], [6, 24, 36, 24, 6], [4, 16, 24, 16, 4], [1, 4, 6, 4, 1]];
     var scale = 256.0;

@@ -21,8 +21,16 @@ var baseVertexShader = `
     varying vec2 texture_coords;
     varying vec3 normal;
 
+    //lighting
+    varying vec3 lightVector;
+    varying vec3 halfwayVector;
+
     void main() {
         vec4 base_position = uViewMatrix * uModelMatrix * aVertexPosition;
+
+        lightVector = normalize(-1.0 * base_position.xyz);
+        halfwayVector = lightVector;
+
         texture_coords = aTexCoords;
         normal = (uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz;
         gl_Position = uProjectionMatrix * base_position;
@@ -33,13 +41,37 @@ var baseFragmentShader = `
     precision mediump float;
         
     uniform sampler2D uColorTexture;
+    uniform float uMinShadowFactor;
+
+    //Phong parameters
+    uniform float uKa;
+    uniform float uKd;
+    uniform float uKs;
+    uniform float uNs;
+    uniform vec3 uLightIntensity;
+    uniform vec3 uAmbientIntensity;
 
     varying vec2 texture_coords;
     varying vec3 normal;
 
+
+    //lighting
+    varying vec3 lightVector;
+    varying vec3 halfwayVector;
+
     void main() 
     {
         vec4 color = texture2D(uColorTexture, texture_coords);
+        color = vec4(color.rgb, 1.0);
+
+        vec3 ambientColor = color.rgb * uAmbientIntensity * uKa;
+        vec3 diffuseColor = color.rgb * uKd * uLightIntensity * (dot(normalize(normal), normalize(lightVector)));
+        float specularLight = pow(dot(normalize(normal), normalize(halfwayVector)), uNs);
+        vec3 specularColor = color.rgb * uKs * uLightIntensity * specularLight;
+
+        color = vec4((ambientColor + diffuseColor + specularColor) * uMinShadowFactor, 1.0);
+
+        //gl_FragColor = vec4(specularColor, 1.0);
         gl_FragColor = vec4(color.rgb, 1.0);
         //gl_FragColor = vec4(1.0, 0.0, color.b, 1.0);
     }
@@ -61,9 +93,17 @@ var shellVertexShader = `
     uniform vec3 uWindSource;
     uniform float uWindIntensity;
     uniform vec3 uModelForce;
+    uniform float uMinShadowFactor;
+
 
     varying vec2 texture_coords;
     varying vec3 normal;
+    varying float netShadowFactor;
+    varying vec3 furDirection;
+
+    //lighting
+    varying vec3 lightVector;
+    varying vec3 halfwayVector;
 
     //varying vec2 displacement_amounts;
     //varying vec3 wind_vector;
@@ -97,8 +137,14 @@ var shellVertexShader = `
     void main() {
         vec4 base_position = uViewMatrix * uModelMatrix * aVertexPosition;
         
+        lightVector = normalize(-1.0 * base_position.xyz);
+        halfwayVector = lightVector;
+
         texture_coords = aTexCoords;
         normal = normalize((uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz);
+
+        netShadowFactor = (uCurrentShell / uShellCount) * (1.0 - uMinShadowFactor) + uMinShadowFactor; 
+        
 
         vec3 windVector = normalize(base_position.xyz - (uViewMatrix * vec4(uWindSource, 1.0)).xyz)  * uWindIntensity;        
         vec3 viewSpaceNetForce = (uViewMatrix * vec4(uModelForce, 0.0)).xyz;
@@ -114,7 +160,8 @@ var shellVertexShader = `
         float shellDistance = aFurLength / uShellCount;
 
         vec3 displacement = normalize(totalForce) * shellDistance * displacementMultipliers.x + normal * shellDistance * displacementMultipliers.y;
-        
+        furDirection = normalize(displacement);
+
         vec4 oldDisplacement = vec4(normalize(normal) * aFurLength * (uCurrentShell / uShellCount), 0.0);
 
         //gl_Position = uProjectionMatrix * (base_position + oldDisplacement);
@@ -129,9 +176,24 @@ var shellFragmentShader = `
     uniform sampler2D uColorTexture;
     uniform sampler2D uShellAlphaTexture;
     uniform highp float uCurrentShell;
+    uniform float uColorNoiseFactor;
+
+    //Phong parameters
+    uniform float uKa;
+    uniform float uKd;
+    uniform float uKs;
+    uniform float uNs;
+    uniform vec3 uLightIntensity;
+    uniform vec3 uAmbientIntensity;
 
     varying vec2 texture_coords;
     varying vec3 normal;
+    varying float netShadowFactor;
+
+    //lighting
+    varying vec3 lightVector;
+    varying vec3 halfwayVector;
+    varying vec3 furDirection;
 
     //varying vec2 displacement_amounts;
     //varying vec3 wind_vector;
@@ -139,11 +201,28 @@ var shellFragmentShader = `
 
     void main() 
     {
-        vec4 color = texture2D(uColorTexture, texture_coords);
+        vec3 color = texture2D(uColorTexture, texture_coords).rgb;
         
         
-        float alpha = texture2D(uShellAlphaTexture, texture_coords).a;
+        vec4 shellData = texture2D(uShellAlphaTexture, texture_coords);
+        float alpha = shellData.a;
+
+        color = mix(color, shellData.rgb, uColorNoiseFactor);
+
         
+        vec3 furLightNormal = normalize(lightVector - furDirection * dot(normalize(furDirection), normalize(lightVector)));
+        vec3 furHalfwayNormal = normalize(halfwayVector - furDirection * dot(normalize(furDirection), normalize(halfwayVector)));
+
+
+        vec3 ambientColor = color.rgb * uAmbientIntensity * uKa;
+        vec3 diffuseColor = color.rgb * uKd * uLightIntensity * (dot(furLightNormal, normalize(lightVector)));
+        float specularLight = pow(dot(furHalfwayNormal, normalize(halfwayVector)), uNs);
+        vec3 specularColor = color.rgb * uKs * uLightIntensity * specularLight;
+
+        color = ambientColor + diffuseColor + specularColor;
+        
+        color = color * netShadowFactor;
+
         //gl_FragColor = vec4(abs(normal.x), abs(normal.y), abs(normal.z), 1.0);
 
         //gl_FragColor = vec4(texture_coords, 0.0, 1.0);
@@ -179,13 +258,22 @@ var finVertexShader = `
     varying vec2 colorTexCoords;
     varying float alphaModifier;
 
+    //lighting
+    varying vec3 lightVector;
+    varying vec3 halfwayVector;
+    varying vec3 normal;
+
     void main() 
     {
         vec4 base_position = uViewMatrix * uModelMatrix * aVertexPosition;
+
+        lightVector = normalize(-1.0 * base_position.xyz);
+        halfwayVector = lightVector;
+
         finTexCoords = aFinTexCoords;
         colorTexCoords = aColorTexCoords;
 
-        vec3 normal = (uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz;
+        normal = (uNormalMatrix * vec4(aVertexNormal, 0.0)).xyz;
         vec3 eyeVec = vec3(0, 0, 1);
         alphaModifier = max(float(uShouldModifyFinAlpha), 2.0 * abs(dot(normalize(normal), eyeVec)) - 1.0);
         //alphaModifier = 1.0;
@@ -202,11 +290,39 @@ var finFragmentShader = `
 
     uniform sampler2D uFinTexture;
     uniform sampler2D uColorTexture;
+    uniform float uColorNoiseFactor;
+    uniform float uMinShadowFactor;
+
+    //Phong parameters
+    uniform float uKa;
+    uniform float uKd;
+    uniform float uKs;
+    uniform float uNs;
+    uniform vec3 uLightIntensity;
+    uniform vec3 uAmbientIntensity;
+    
+    //lighting
+    varying vec3 lightVector;
+    varying vec3 halfwayVector;
+    varying vec3 normal;
 
     void main()
     {
         vec3 color = texture2D(uColorTexture, colorTexCoords).rgb;
-        float alpha = alphaModifier * texture2D(uFinTexture, finTexCoords).a;
+        
+        vec4 textureData = texture2D(uFinTexture, finTexCoords);
+        color = mix(color, textureData.rgb, uColorNoiseFactor);
+
+        vec3 ambientColor = color.rgb * uAmbientIntensity * uKa;
+        vec3 diffuseColor = color.rgb * uKd * uLightIntensity * (abs(dot(normalize(normal), normalize(lightVector))));
+        float specularLight = pow(abs(dot(normalize(normal), normalize(halfwayVector))), uNs);
+        vec3 specularColor = color.rgb * uKs * uLightIntensity * specularLight;
+
+        color = ambientColor + diffuseColor + specularColor;
+        
+        float shadowFactor = finTexCoords.y * (1.0 - uMinShadowFactor) + uMinShadowFactor;
+        color = color * shadowFactor;
+        float alpha = alphaModifier * textureData.a;
         gl_FragColor = vec4(color, alpha);
         //gl_FragColor = texture2D(uFinTexture, finTexCoords);
         //gl_FragColor = vec4(alphaModifier, alphaModifier, alphaModifier, 1.0);

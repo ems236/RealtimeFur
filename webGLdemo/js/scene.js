@@ -34,6 +34,15 @@ class Scene
         this.finTextureSize = 128;
         this.finTextureRaw = finTextureData(this.finTextureSize, 0.2, 0.0);
 
+        this.colorNoiseFactor = 0.2;
+        this.minShadowFactor = 0.2;
+        this.ka = 1.0;
+        this.ks = 0.5;
+        this.kd = 0.9;
+        this.ns = 10;
+        this.lightIntensity = vec3.fromValues(1.0, 1.0, 1.0);
+        this.ambientIntensity = vec3.fromValues(0.1, 0.1, 0.1);
+
         this.finBuffers = {
             position: gl.createBuffer(),
             normal: gl.createBuffer(),
@@ -219,6 +228,13 @@ class Scene
             this.modelMatrix);
         
         gl.uniform1i(programInfo.uniformLocations.colorTexture, 0);
+        gl.uniform1f(programInfo.uniformLocations.minShadowFactor, this.minShadowFactor);
+        gl.uniform1f(programInfo.uniformLocations.ka, this.ka);
+        gl.uniform1f(programInfo.uniformLocations.kd, this.kd);
+        gl.uniform1f(programInfo.uniformLocations.ks, this.ks);
+        gl.uniform1f(programInfo.uniformLocations.ns, this.ns);
+        gl.uniform3f(programInfo.uniformLocations.ambientIntensity, this.ambientIntensity[0], this.ambientIntensity[1], this.ambientIntensity[2]);
+        gl.uniform3f(programInfo.uniformLocations.lightIntensity, this.lightIntensity[0], this.lightIntensity[1], this.lightIntensity[2]);
 
         this.setViewDependentTransforms(programInfo);
     }
@@ -237,6 +253,7 @@ class Scene
         this.gl.uniform3f(shellProgramInfo.uniformLocations.windSource, this.windSource[0], this.windSource[1], this.windSource[2]);
         this.gl.uniform3f(shellProgramInfo.uniformLocations.netForce, this.netForce[0], this.netForce[1], this.netForce[2]);
         this.gl.uniform1f(shellProgramInfo.uniformLocations.windIntensity, this.windIntensity);
+        this.gl.uniform1f(shellProgramInfo.uniformLocations.noiseFactor, this.colorNoiseFactor);
         this.gl.uniform1i(shellProgramInfo.uniformLocations.shellAlphaTexture, 1);
     }
 
@@ -247,6 +264,7 @@ class Scene
 
         this.gl.uniform1i(finProgramInfo.uniformLocations.finTexture, 2);
         this.gl.uniform1i(finProgramInfo.uniformLocations.shouldBlendFins, this.alphaBlendAllFins ? 0 : 1);
+        this.gl.uniform1f(finProgramInfo.uniformLocations.noiseFactor, this.colorNoiseFactor);
     }
 
     setViewDependentTransforms(programInfo)
@@ -426,6 +444,8 @@ class Scene
 
     initializeFurTextures()
     {
+        var colorNoise = noiseOf(this.furDataSize / 4);
+
         this.shellTextures = [];
         for(var shellNumber = 0; shellNumber < this.shellCount; shellNumber++)
         {
@@ -433,7 +453,7 @@ class Scene
             const max = 182;
             var limit = base + (max - base) * (shellNumber / this.shellCount);
             var filtered = sampleFur(limit, this.baseFurData);
-            this.shellTextures.push(textureFromData(this.gl, padAlphaData(filtered), this.furDataSize));
+            this.shellTextures.push(textureFromData(this.gl, padAlphaData(filtered, colorNoise), this.furDataSize));
         }
     }
 
@@ -467,7 +487,8 @@ class Scene
     {
         const gl = this.gl;
 
-        var finTexture = textureFromData(gl, padAlphaData(this.finTextureRaw), this.finTextureSize);
+        var colorNoise = noiseOf(this.finTextureSize / 4);
+        var finTexture = textureFromData(gl, padAlphaData(this.finTextureRaw, colorNoise), this.finTextureSize);
 
         gl.activeTexture(gl.TEXTURE2);
         gl.bindTexture(gl.TEXTURE_2D, finTexture);
