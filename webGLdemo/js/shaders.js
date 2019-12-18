@@ -160,7 +160,12 @@ var shellVertexShader = `
         //displacement_amounts = normalize(displacementMultipliers);
         float shellDistance = aFurLength * uFurLengthMultiplier / uShellCount;
 
-        vec3 displacement = normalize(totalForce) * shellDistance * displacementMultipliers.x + normal * shellDistance * displacementMultipliers.y;
+        vec3 displacement = normal * shellDistance * displacementMultipliers.y;
+        if(length(totalForce) > 0.0)
+        {
+            displacement = displacement + normalize(totalForce) * shellDistance * displacementMultipliers.x;
+        }
+        
         furDirection = normalize(displacement);
 
         //vec4 oldDisplacement = vec4(normalize(normal) * aFurLength * (uCurrentShell / uShellCount), 0.0);
@@ -230,7 +235,7 @@ var shellFragmentShader = `
         //gl_FragColor = vec4(color.aaa, 0.5);
         
 
-        //gl_FragColor = vec4(abs(displacement_amounts.x), abs(displacement_amounts.x), 0.0, 0.1);
+        //gl_FragColor = vec4(abs(displacement_amounts.x), abs(displacement_amounts.y), 0.0, 0.1);
         //gl_FragColor = vec4(abs(wind_vector.x), abs(wind_vector.y), abs(wind_vector.z) , 1.0);
         //gl_FragColor = vec4(abs(normal.x), abs(normal.y), abs(normal.z) , 1.0);
 
