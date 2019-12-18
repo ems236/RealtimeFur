@@ -259,10 +259,10 @@ class Scene
         this.setAttributeBuffer(gl, [finAttributeLocations.vertexNormal], this.finBuffers.normal, 3, true);
     }
 
-    initializeTexture()
+    initializeTexture(path)
     {
         this.gl.activeTexture(this.gl.TEXTURE0);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, load_texture(this.gl, this, "testabstract.jpg"));
+        this.gl.bindTexture(this.gl.TEXTURE_2D, load_texture(this.gl, this, path));
     }
 
     loadBaseUniforms(programInfo)
