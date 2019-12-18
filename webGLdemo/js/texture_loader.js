@@ -22,8 +22,6 @@ function load_texture(gl, scene, image_name)
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
         gl.generateMipmap(gl.TEXTURE_2D);
-
-        scene.redraw();
     }
     image.src = "http://ems236.github.io/RenderingFur/webGLdemo/textures/" + image_name;
 
@@ -53,15 +51,17 @@ function textureFromData(gl, data, size)
 }
 
 //I cannot make a single channel texture for the life of me
-function padAlphaData(data)
+function padAlphaData(data, colorNoise)
 {
     var flat = data.flat();
+    var flatNoise = colorNoise.flat();
     var newData = [];
     for(var i = 0; i < flat.length; i++)
     {
-        newData.push(flat[i]);
-        newData.push(0);
-        newData.push(0);
+        var grayNoise = Math.round(255 * (Math.pow(flatNoise[Math.floor(i / 16)] / 255, 2)));
+        newData.push(grayNoise);
+        newData.push(grayNoise);
+        newData.push(grayNoise);
         newData.push(flat[i]);
     }
 

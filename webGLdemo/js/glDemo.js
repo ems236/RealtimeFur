@@ -28,7 +28,7 @@ function bindMouseEvents(canvas)
                     if(currentScene)
                     {
                         currentScene.mousemove(event.pageX, event.pageY);
-                        currentScene.redraw();
+                        //currentScene.redraw();
                     }
                 });
             }
@@ -58,19 +58,19 @@ function bindInputEvents()
     $("#draw-base").change(function()
     {
         currentScene.shouldDrawBase = this.checked;
-        currentScene.redraw();
+        //currentScene.redraw();
     });
 
     $("#draw-shells").change(function()
     {
         currentScene.shouldDrawShells = this.checked;
-        currentScene.redraw();
+        //currentScene.redraw();
     });
 
     $("#draw-fins").change(function()
     {
         currentScene.shouldDrawFins = this.checked;
-        currentScene.redraw();
+        //currentScene.redraw();
     });
 
     $("#filter-fins").change(function()
@@ -80,7 +80,7 @@ function bindInputEvents()
         {
             currentScene.loadFins();
         }
-        currentScene.redraw();
+        //currentScene.redraw();
     });
 
     $('#objectSelection').change(function() 
@@ -141,6 +141,13 @@ function main()
           viewMatrix: gl.getUniformLocation(baseShaderProgram, 'uViewMatrix'),
           normalMatrix: gl.getUniformLocation(baseShaderProgram, 'uNormalMatrix'),
           colorTexture: gl.getUniformLocation(baseShaderProgram, 'uColorTexture'),
+          minShadowFactor: gl.getUniformLocation(baseShaderProgram, 'uMinShadowFactor'),
+          ka: gl.getUniformLocation(baseShaderProgram, 'uKa'),
+          kd: gl.getUniformLocation(baseShaderProgram, 'uKd'),
+          ks: gl.getUniformLocation(baseShaderProgram, 'uKs'),
+          ns: gl.getUniformLocation(baseShaderProgram, 'uNs'),
+          ambientIntensity: gl.getUniformLocation(baseShaderProgram, 'uAmbientIntensity'),
+          lightIntensity: gl.getUniformLocation(baseShaderProgram, 'uLightIntensity'),
         }
     };
 
@@ -165,6 +172,17 @@ function main()
             shellAlphaTexture: gl.getUniformLocation(shellShaderProgram, 'uShellAlphaTexture'),
             shellCount: gl.getUniformLocation(shellShaderProgram, 'uShellCount'),
             currentShell: gl.getUniformLocation(shellShaderProgram, 'uCurrentShell'),
+            windSource: gl.getUniformLocation(shellShaderProgram, 'uWindSource'),
+            windIntensity: gl.getUniformLocation(shellShaderProgram, 'uWindIntensity'),
+            netForce: gl.getUniformLocation(shellShaderProgram, 'uModelForce'),
+            noiseFactor: gl.getUniformLocation(shellShaderProgram, 'uColorNoiseFactor'),
+            minShadowFactor: gl.getUniformLocation(shellShaderProgram, 'uMinShadowFactor'),
+            ka: gl.getUniformLocation(shellShaderProgram, 'uKa'),
+            kd: gl.getUniformLocation(shellShaderProgram, 'uKd'),
+            ks: gl.getUniformLocation(shellShaderProgram, 'uKs'),
+            ns: gl.getUniformLocation(shellShaderProgram, 'uNs'),
+            ambientIntensity: gl.getUniformLocation(shellShaderProgram, 'uAmbientIntensity'),
+            lightIntensity: gl.getUniformLocation(shellShaderProgram, 'uLightIntensity'),
         }
     };
 
@@ -188,6 +206,14 @@ function main()
             colorTexture: gl.getUniformLocation(finShaderProgram, 'uColorTexture'),
             finTexture: gl.getUniformLocation(finShaderProgram, 'uFinTexture'),
             shouldBlendFins: gl.getUniformLocation(finShaderProgram, 'uShouldModifyFinAlpha'),
+            noiseFactor: gl.getUniformLocation(finShaderProgram, 'uColorNoiseFactor'),
+            minShadowFactor: gl.getUniformLocation(finShaderProgram, 'uMinShadowFactor'),
+            ka: gl.getUniformLocation(finShaderProgram, 'uKa'),
+            kd: gl.getUniformLocation(finShaderProgram, 'uKd'),
+            ks: gl.getUniformLocation(finShaderProgram, 'uKs'),
+            ns: gl.getUniformLocation(finShaderProgram, 'uNs'),
+            ambientIntensity: gl.getUniformLocation(finShaderProgram, 'uAmbientIntensity'),
+            lightIntensity: gl.getUniformLocation(finShaderProgram, 'uLightIntensity'),
         }
     }
 
@@ -210,7 +236,23 @@ function main()
 
     console.log(programInfo);
     currentScene = new Scene(gl, objectData, programInfo, "dog_texture_square.jpg");
-    currentScene.redraw();
+    //currentScene.redraw();
+}
+
+var previousTime = Date.now();
+function animateScene(timestamp)
+{
+    displayFPS(timestamp);
+    currentScene.redraw(timestamp);
+}
+
+function displayFPS(currentTime)
+{
+    var difference = currentTime - previousTime;
+    previousTime = currentTime;
+
+    var FPS = 1000 / difference;
+    $("#fps-counter").html(FPS.toFixed(1));
 }
 
 function loadObject()
