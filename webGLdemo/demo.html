@@ -212,12 +212,25 @@
 
 			<h3 class="subHeader">Fins</h3>
 			<p>
-				Fins are geometric objects which begin at the object surface and pass through each shell. They are geometric objects which are commonly employed in
-				order to maintain the illusion provided by the shell textures.
+				Fins are commonly employed in order to maintain the illusion provided by the shell textures. They originate
+				from the object surface and pass through each shell. When a mesh edge is identified and labeled as a fin,
+				its two vertices are extruded along their respective vertex normals and intersected with each of our generated shells.
 			</p>
 			<p>
 
 			</p>
+
+			<h1 class="sectionHeader">Simulations</h1>
+			<hr>
+			<h3 class="subHeader">Wind<sup>2,grass</sup></h3>
+			<p>In order to generate a subtle breeze, the hair can be gently moved according to an applied force.</p>
+			<p>To calculate the displacement components, the following equations were used:
+			<img src="img/wind_cos.png" alt="Wind cos force equation">
+			<img src="img/wind_sin.png" alt="Wind sin force equation">
+			where W<sub>n</sub> is the displacement along the normal direction, W<sub>f</sub> is the displacement
+			along the radial direction, S is the inter-shell distance, I is the wind intensity, and N is the number
+				of shells.</p>
+			<h3 class="subHeader">Movement<sup>2</sup></h3>
 		</div>
 
 
