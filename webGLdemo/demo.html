@@ -19,11 +19,6 @@
                 background-color: black;
                 overflow-x: hidden;
             }
-
-<!--            .col-2, .col-3, .col-4 {-->
-<!--                border: 1px solid blue;-->
-<!--            }-->
-
 	</style>
 </head>
 <body>
@@ -246,9 +241,10 @@
 			<img src="img/wind_sin.PNG" alt="Wind sin force equation">
 			where W<sub>n</sub> is the displacement along the normal direction, W<sub>f</sub> is the displacement
 			along the radial direction, S is the inter-shell distance, I is the wind intensity, and N is the number
-				of shells.</p>
+                of shells.</p>
+            <p>Intensity I is calculated using the magnitude of the projection of the wind vector onto the plane normal to shell's normal</p>
 			<h3 class="subHeader">Movement<sup style="font-weight: normal;">2</sup></h3>
-			<p>We can move the hairs according to an arbitrary applied force swapping out the wind intensity I with a force of our choice.</p>
+			<p>We can move the hairs according to an arbitrary applied force swapping out the wind force of our choice.</p>
 			<p>We ended up simulating how an objects momentum would move its hair. From Newton's second law of motion, we know that:
 			<img src="img/2ndlaw.PNG" alt="Thank you Newton!">
 			</p>
@@ -258,7 +254,10 @@
 			<p>From this knowledge, we can find the change force, and subsequently the deformation of the hair based on the same equations we
 			used to find the deformation due to wind.
 				<img src="img/ithforce.PNG">
-			</p>
+            </p>
+            <p>
+                This same displacement method can be applied to fins.  To acheive a smooth curve, the fins must be divided into sub-fins as they become farther away from the surface.
+            </p>
 
 
 			<h1 class="sectionHeader">Lighting Models</h1>
