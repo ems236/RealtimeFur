@@ -9,3 +9,15 @@
     flex-grow: 1;
     flex-basis: 0;
 }
+
+.sectionHeader {
+    font-weight: bold;
+}
+
+.subHeader {
+    font-weight: bold;
+}
+
+.miniHeader {
+    font-style: italic;
+}
