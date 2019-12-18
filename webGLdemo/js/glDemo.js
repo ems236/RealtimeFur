@@ -64,6 +64,7 @@ function readAllSceneSettings()
         shouldDrawAllFins: $("#filter-fins")[0].checked,
         finLengthMultiplier: $("#fin-multiplier").val(),
         sillhouetteEdgeThreshold: $("#sillhouette-threshold").val(),
+        subfinCount: Math.round($("#subfin-count").val()),
         minSelfShadowFactor: $("#min-self-shadow").val(),
         ka: $("#ka").val(),
         kd: $("#kd").val(),
