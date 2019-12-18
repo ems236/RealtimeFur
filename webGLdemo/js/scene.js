@@ -82,6 +82,7 @@ class Scene
         
         this.alphaBlendAllFins = sceneSettings.shouldDrawAllFins;
         this.finLengthMultiplier = sceneSettings.finLengthMultiplier * 1.0;
+        this.sillhouetteEdgeThreshold = sceneSettings.sillhouetteEdgeThreshold * 1.0;
 
         this.colorNoiseFactor = sceneSettings.colorNoiseMixingRatio * 1.0;
         this.minShadowFactor = sceneSettings.minSelfShadowFactor * 1.0;
@@ -281,6 +282,7 @@ class Scene
         this.gl.uniform1f(shellProgramInfo.uniformLocations.windIntensity, this.windIntensity);
         this.gl.uniform1f(shellProgramInfo.uniformLocations.noiseFactor, this.colorNoiseFactor);
         this.gl.uniform1i(shellProgramInfo.uniformLocations.shellAlphaTexture, 1);
+        this.gl.uniform1f(shellProgramInfo.uniformLocations.furLengthMultiplier, this.furLengthMultiplier);
     }
 
     loadFinShaderProgram()
@@ -502,7 +504,18 @@ class Scene
         var eyeVec = vec4.fromValues(cameraPos[0], cameraPos[1], cameraPos[2], 0.0);
         vec4.normalize(eyeVec, eyeVec);
 
-        var finData = generateFins(eyeVec, this.objectData.sharedTriangle, this.objectData, this.alphaBlendAllFins, this.shellCount, this.windSource, this.windIntensity, this.netForce);
+        var finData = generateFins(
+            eyeVec
+            , this.objectData.sharedTriangle
+            , this.objectData
+            , this.alphaBlendAllFins
+            , this.shellCount
+            , this.windSource
+            , this.windIntensity
+            , this.netForce
+            , this.sillhouetteEdgeThreshold
+            , this.finLengthMultiplier * this.furLengthMultiplier
+        );
         //console.log(finData);
         this.finElementCount = finData.faces.length;
         this.resetFinBuffers(this.gl, finData);

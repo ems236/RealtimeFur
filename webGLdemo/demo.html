@@ -65,12 +65,6 @@
             <hr/>
             <div class="form-group" id="shell-controls">
                 <h4>Shell Controls</h4>
-                <label for="shellControlRange">Number of Shells:</label>
-                <input type="range" min="0" max="32" value="10" step="1" class="form-control-range scene-control" id="shellControlRange"/>
-
-                <label for="curlinessControlRange">Curliness:</label>
-                <input type="range" min="0" max="10" value="5" step="1" class="form-control-range scene-control" id="curlinessControlRange"/>
-
                 <label for="color-noise">Color Noise Mixing Ratio:</label>
                 <input type="number" min="0" max="1" value="0.2" step="0.001" class="form-control realtime-scene-control" id="color-noise"/>
 
@@ -85,6 +79,23 @@
                 </div>
                 <label for="fin-multiplier">Fin Length Multiplier (Compounds with Fur Length):</label>
                 <input type="number" min="0" value="0.75" step="0.001" class="form-control realtime-scene-control" id="fin-multiplier"/>
+
+                <label for="sillhoutte-threshold">Dot Product Threshold for Sillhouete Edge Identification:</label>
+                <input type="number" min="0" max="1" value="0.15" step="0.001" class="form-control realtime-scene-control" id="sillhouette-threshold"/>
+            </div>
+            <div class="form-group">
+                <h4>Texture Controls</h4>
+                <div class="alert alert-warning">Requires you to click the redraw button because these settings are too slow for realtime rendering</div>
+                <label for="shellControlRange">Number of Shells:</label>
+                <input type="range" min="0" max="32" value="10" step="1" class="form-control-range texture-control" id="shellControlRange"/>
+
+                <label for="curlinessControlRange">Curliness [Only Applies to fins if draw mode is particle gen]:</label>
+                <input type="range" min="0" max="10" value="5" step="1" class="form-control-range texture-control" id="curlinessControlRange"/>
+
+                <label for="fur-density">Fur Density:</label>
+                <input type="range" min="0" max="10" value="5" step="1" class="form-control-range texture-control" id="fur-density"/>
+
+                <button class="btn btn-primary" id="regen-textures">Redraw</button>
             </div>
             
 			<!--			<label style="margin-top:20px;" for="objectSelection">Select object:</label>-->
