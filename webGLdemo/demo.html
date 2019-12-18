@@ -183,6 +183,9 @@
 				A na&iumlve approach would be to represent every hair with its own geometric model. However, when hair
 				is present, it tends to be plentiful. That just isn't feasible if you are rendering a dynamic scene.
 
+				Our approach to rendering fur using shells and fins can achieve a more efficient frame rate while also
+				keeping a good visual quality for the model.
+
 			</p>
 
 			<h1 class="sectionHeader">Rendering Techniques</h1>
@@ -222,9 +225,13 @@
 
 			<h3 class="subHeader">Fins</h3>
 			<p>
-				Fins are commonly employed in order to maintain the illusion provided by the shell textures. They originate
-				from the object surface and pass through each shell. When a mesh edge is identified and labeled as a fin,
-				its two vertices are extruded along their respective vertex normals and intersected with each of our generated shells.
+				Fins are commonly employed in order to maintain the illusion provided by the shell textures along an object’s silhouette.
+				When an object’s normal is orthogonal to the view vector, the gaps between the shells become apparent.
+				Fins fill in these gaps by extruding edges on a mesh along the edge’s normal. When an edge’s normal is almost parallel
+				to the view vector, extruding fins accentuates the triangles of the base mesh and breaks the illusion of a smooth surface. Therefore each edge must
+				be identified as a silhouette edge before being extruded.  Our implementation of fins is severely limited by WebGL’s lack of support for a geometry shader.
+				Each frame update, we calculate the faces and locations of each fin outside of the normal graphics pipeline. For high-poly meshes, this severely impacts our FPS.
+
 			</p>
 			<p>
 
@@ -252,6 +259,29 @@
 			used to find the deformation due to wind.
 				<img src="img/ithforce.PNG">
 			</p>
+
+
+			<h1 class="sectionHeader">Lighting Models</h1>
+			<hr>
+			<h3 class="subHeader">Illumination</h3>
+			<p>Lighting of the fur follows the basic Phong illumination model with approximations for self-shadowing and
+				the surface normal of the shells.  The hairs of each shell can be approximated by a cylinder along the axis
+				of the direction of the hair. The normal used for diffuse and specular calculations is the normal that maximizes
+				the dot product with the light-vector L for diffuse and the halfway-vector H for specular. For diffuse lighting, the normal is given by the projection
+				of the light vector onto the plane normal to the tangent. The same approximation is made with the halfway-vector
+				for the specular component. For straight fur, the tangent is the displacement of a given shell defined by the dynamics
+				above.  We were unable to implement effective approximation for curly fur, but the simplest method is to generate an
+				additional texture of its displacement during shell texture generation.</p>
+
+			<h3 class="subHeader">Shadows</h3>
+			<p>
+				Shadows are approximated based on the distance from the surfaces and a min-shadow factor using the following equation:
+				<img src="img/shadows.PNG" class="mt-2">
+
+				The shadow factor at a shell is given by where i is current shell number and n is the total number of
+				shells. The output light intensity is simply scaled by this shadow factor.
+			</p>
+
 		</div>
 
 		<div class="container mt-5">
