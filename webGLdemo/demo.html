@@ -60,13 +60,13 @@
 					</label>
                 </div>
                 <label for="fur-multiplier">Fur Length Multiplier:</label>
-                <input type="number" min="0" value="1" step="0.001" class="form-control realtime-scene-control" id="fur-multiplier"/>
+                <input type="number" min="0" value="1" step="0.05" class="form-control realtime-scene-control" id="fur-multiplier"/>
             </div>
             <hr/>
             <div class="form-group" id="shell-controls">
                 <h4>Shell Controls</h4>
                 <label for="color-noise">Color Noise Mixing Ratio:</label>
-                <input type="number" min="0" max="1" value="0.2" step="0.001" class="form-control realtime-scene-control" id="color-noise"/>
+                <input type="number" min="0" max="1" value="0.2" step="0.05" class="form-control realtime-scene-control" id="color-noise"/>
 
             </div>
             <div class="form-group" id="fin-controls">
@@ -78,10 +78,10 @@
                     </label>
                 </div>
                 <label for="fin-multiplier">Fin Length Multiplier (Compounds with Fur Length):</label>
-                <input type="number" min="0" value="0.75" step="0.001" class="form-control realtime-scene-control" id="fin-multiplier"/>
+                <input type="number" min="0" value="0.75" step="0.05" class="form-control realtime-scene-control" id="fin-multiplier"/>
 
                 <label for="silhouette-threshold">Dot Product Threshold for Silhouete Edge Identification:</label>
-                <input type="number" min="0" max="1" value="0.15" step="0.001" class="form-control realtime-scene-control" id="silhouette-threshold"/>
+                <input type="number" min="0" max="1" value="0.15" step="0.05" class="form-control realtime-scene-control" id="silhouette-threshold"/>
             </div>
             <div class="form-group">
                 <h4>Texture Controls</h4>
@@ -125,47 +125,47 @@
             <h2>Environment Controls</h2>
             <h4>Light Controls</h4>
             <label for="min-self-shadow">Min Self Shadow Factor:</label>
-            <input type="number" min="0" max="1" value="0.5" step="0.001" class="form-control realtime-scene-control" id="min-self-shadow"/>
+            <input type="number" min="0" max="1" value="0.5" step="0.05" class="form-control realtime-scene-control" id="min-self-shadow"/>
             <div class="form-group">
                 <h6>Object Phong Parameters [Coefficients used with for Texture Colors]</h6>
                 <label for="ka">Phong Ka:</label>
-                <input type="number" min="0" max="1" value="1.0" step="0.001" class="form-control form-control-range realtime-scene-control" id="ka"/>
+                <input type="number" min="0" max="1" value="1.0" step="0.05" class="form-control form-control-range realtime-scene-control" id="ka"/>
                 <label for="kd">Phong Kd:</label>
-                <input type="number" min="0" max="1" value="0.9" step="0.001" class="form-control form-control-range realtime-scene-control" id="kd"/>
+                <input type="number" min="0" max="1" value="0.9" step="0.05" class="form-control form-control-range realtime-scene-control" id="kd"/>
                 <label for="ks">Phong Ks:</label>
-                <input type="number" min="0" max="1" value="0.9" step="0.001" class="form-control form-control-range realtime-scene-control" id="ks"/>
+                <input type="number" min="0" max="1" value="0.9" step="0.05" class="form-control form-control-range realtime-scene-control" id="ks"/>
                 <label for="ns">Phong Ns:</label>
-                <input type="number" min="0" value="10" step="0.001" class="form-control realtime-scene-control" id="ns"/>
+                <input type="number" min="0" value="10" step="0.05" class="form-control realtime-scene-control" id="ns"/>
             </div>
             <div class="form-group">
                 <h6>Light Intensity</h6>
                 <label for="light-r">R:</label>
-                <input type="range" min="0" max="1" value="1" step="0.001" class="form-control realtime-scene-control" id="light-r"/>
+                <input type="range" min="0" max="1" value="1" step="0.05" class="form-control realtime-scene-control" id="light-r"/>
                 <label for="light-g">G:</label>
-                <input type="range" min="0" max="1" value="1" step="0.001" class="form-control realtime-scene-control" id="light-g"/>
+                <input type="range" min="0" max="1" value="1" step="0.05" class="form-control realtime-scene-control" id="light-g"/>
                 <label for="light-b">B:</label>
-                <input type="range" min="0" max="1" value="1" step="0.001" class="form-control realtime-scene-control" id="light-b"/>
+                <input type="range" min="0" max="1" value="1" step="0.05" class="form-control realtime-scene-control" id="light-b"/>
             </div>
             <div class="form-group">
                 <h6>Ambient Intensity</h6>
                 <label for="ambient-r">R:</label>
-                <input type="range" min="0" max="1" value="0.1" step="0.001" class="form-control realtime-scene-control" id="ambient-r"/>
+                <input type="range" min="0" max="1" value="0.1" step="0.05" class="form-control realtime-scene-control" id="ambient-r"/>
                 <label for="ambient-g">G:</label>
-                <input type="range" min="0" max="1" value="0.1" step="0.001" class="form-control realtime-scene-control" id="ambient-g"/>
+                <input type="range" min="0" max="1" value="0.1" step="0.05" class="form-control realtime-scene-control" id="ambient-g"/>
                 <label for="ambient-b">B:</label>
-                <input type="range" min="0" max="1" value="0.1" step="0.001" class="form-control realtime-scene-control" id="ambient-b"/>
+                <input type="range" min="0" max="1" value="0.1" step="0.05" class="form-control realtime-scene-control" id="ambient-b"/>
             </div>
             
             <h4>Wind Controls</h4>
             <div class="form-group">
                 <label for="wind-x">Wind x:</label>
-                <input type="number" value="0" step="0.001" class="form-control form-control-range realtime-scene-control" id="wind-x"/>
+                <input type="number" value="0" step="0.05" class="form-control form-control-range realtime-scene-control" id="wind-x"/>
                 <label for="wind-y">Wind y:</label>
-                <input type="number" value="0" step="0.001" class="form-control form-control-range realtime-scene-control" id="wind-y"/>
+                <input type="number" value="0" step="0.05" class="form-control form-control-range realtime-scene-control" id="wind-y"/>
                 <label for="wind-z">Wind z:</label>
-                <input type="number" value="6" step="0.001" class="form-control form-control-range realtime-scene-control" id="wind-z"/>
+                <input type="number" value="6" step="0.05" class="form-control form-control-range realtime-scene-control" id="wind-z"/>
                 <label for="wind-intensity">Wind Intensity (Preferably 0-1)</label>
-                <input type="number" min="0" value="0.5" step="0.001" class="form-control realtime-scene-control" id="wind-intensity"/>
+                <input type="number" min="0" value="0.5" step="0.05" class="form-control realtime-scene-control" id="wind-intensity"/>
             </div>
 		</div>
 	</div>
