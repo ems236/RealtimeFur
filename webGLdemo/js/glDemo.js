@@ -53,6 +53,30 @@ function bindMouseEvents(canvas)
     canvas.on("contextmenu", function(event) {event.preventDefault();});
 }
 
+function readAllSceneSettings()
+{
+    return {
+        shouldDrawBase: $("#draw-base")[0].checked,
+        shouldDrawShells: $("#draw-shells")[0].checked,
+        shouldDrawFins: $("#draw-fins")[0].checked,
+        furLengthMultiplier: $("#fur-multiplier").val(),
+        colorNoiseMixingRatio: $("#color-noise").val(), 
+        shouldFilterFins: $("#filter-fins")[0].checked,
+        finLengthMultiplier: $("#fin-multiplier").val(),
+        minSelfShadowFactor: $("#min-self-shadow").val(),
+        ka: $("#ka").val(),
+        kd: $("#kd").val(),
+        ks: $("#ks").val(),
+        ns: $("#ns").val(),
+        lightIntensity: vec3.fromValues($("#light-r").val(), $("#light-g").val(), $("#light-b").val()),
+        ambientIntensity: vec3.fromValues($("#ambient-r").val(), $("#ambient-g").val(), $("#ambient-b").val()),
+        windPosition: vec3.fromValues($("#wind-x").val(), $("#wind-y").val(), $("#wind-z").val()),
+        windIntensity: $("#wind-intensity").val(),
+    };
+
+
+}
+
 function bindInputEvents()
 {
     $("#draw-base").change(function()
@@ -82,6 +106,8 @@ function bindInputEvents()
         }
         //currentScene.redraw();
     });
+
+
 
 //    $('#objectSelection').change(function() {
 //        var renderObject = $('#objectSelection').val();

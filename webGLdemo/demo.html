@@ -38,31 +38,55 @@
 		</div>
 
 		<div class="col-3">
-                <h6>FPS <span id="fps-counter"></span></h6>
-            </div>
-            <div class="row"> 
+            <h2>Model Controls</h2>
 			<div class="form-group">
 				<h4>General Controls</h4>
 				<div class="form-check">
-					<input class="form-check-input" type="checkbox" id="draw-base" checked/>
+					<input class="form-check-input scene-control" type="checkbox" id="draw-base" checked/>
 					<label class="form-check-label" for="draw-base">
 						Render Base Model
 					</label>
 				</div>
 				<div class="form-check">
-					<input class="form-check-input" type="checkbox" id="draw-shells" checked/>
+					<input class="form-check-input scene-control" type="checkbox" id="draw-shells" checked/>
 					<label class="form-check-label" for="draw-shells">
 						Render Shells
 					</label>
 				</div>
 				<div class="form-check">
-					<input class="form-check-input" type="checkbox" id="draw-fins" checked/>
+					<input class="form-check-input scene-control" type="checkbox" id="draw-fins" checked/>
 					<label class="form-check-label" for="draw-fins">
 						Render Fins
 					</label>
-				</div>
-			</div>
+                </div>
+                <label for="fur-multiplier">Fur Length Multiplier:</label>
+                <input type="number" min="0" value="1" step="0.001" class="form-control scene-control" id="fur-multiplier"/>
+            </div>
+            <hr/>
+            <div class="form-group" id="shell-controls">
+                <h4>Shell Controls</h4>
+                <label for="shellControlRange">Number of Shells:</label>
+                <input type="range" min="0" max="32" value="10" step="1" class="form-control-range scene-control" id="shellControlRange"/>
 
+                <label for="curlinessControlRange">Curliness:</label>
+                <input type="range" min="0" max="10" value="5" step="1" class="form-control-range scene-control" id="curlinessControlRange"/>
+
+                <label for="color-noise">Color Noise Mixing Ratio:</label>
+                <input type="number" min="0" max="1" value="0.2" step="0.001" class="form-control scene-control" id="color-noise"/>
+
+            </div>
+            <div class="form-group" id="fin-controls">
+                <h4>Fin Controls</h4>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="filter-fins" class="form-check-input scene-control" checked/>
+                    <label class="form-check-label" for="filter-fins">
+                        Alpha Blend Non-Sillhouette Fins
+                    </label>
+                </div>
+                <label for="fin-multiplier">Fin Length Multiplier (Compounds with Fur Length):</label>
+                <input type="number" min="0" value="0.75" step="0.001" class="form-control scene-control" id="fin-multiplier"/>
+            </div>
+            
 			<!--			<label style="margin-top:20px;" for="objectSelection">Select object:</label>-->
 			<!--			<select class="form-control" id="objectSelection">-->
 			<!--				<option value="Cube">Cube</option>-->
@@ -72,28 +96,51 @@
 		</div>
 
 		<div class="col-3">
-			<div class="form-group" id="shell-controls">
-				<h4>Shell Controls</h4>
-				<label for="shellControlRange">Number of Shells:</label>
-				<input type="range" min="0" max="10" value="5" step="1" class="form-control-range"
-					   id="shellControlRange">
-
-				<label for="curlinessControlRange">Curliness:</label>
-				<input type="range" min="0" max="10" value="5" step="1" class="form-control-range"
-					   id="curlinessControlRange">
-
-			</div>
-			<div class="row">
-				<div class="form-group" id="fin-controls">
-					<h4>Fin Controls</h4>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" id="filter-fins" checked/>
-						<label class="form-check-label" for="draw-base">
-							Alpha Blend Non-Sillhouette Fins
-						</label>
-					</div>
-				</div>
-			</div>
+            <h2>Environment Controls</h2>
+            <h4>Light Controls</h4>
+            <label for="min-self-shadow">Min Self Shadow Factor:</label>
+            <input type="number" min="0" max="1" value="0.5" step="0.001" class="form-control scene-control" id="min-self-shadow"/>
+            <div class="form-group">
+                <h6>Object Phong Parameters [Coefficients used with for Texture Colors]</h6>
+                <label for="ka">Phong Ka:</label>
+                <input type="number" min="0" max="1" value="1.0" step="0.001" class="form-control form-control-range scene-control" id="ka"/>
+                <label for="kd">Phong Kd:</label>
+                <input type="number" min="0" max="1" value="0.9" step="0.001" class="form-control form-control-range scene-control" id="kd"/>
+                <label for="ks">Phong Ks:</label>
+                <input type="number" min="0" max="1" value="0.9" step="0.001" class="form-control form-control-range scene-control" id="ks"/>
+                <label for="ns">Phong Ns:</label>
+                <input type="number" min="0" value="10" step="0.001" class="form-control scene-control" id="ns"/>
+            </div>
+            <div class="form-group">
+                <h6>Light Intensity</h6>
+                <label for="light-r">R:</label>
+                <input type="range" min="0" max="1" value="1" step="0.001" class="form-control scene-control" id="light-r"/>
+                <label for="light-g">G:</label>
+                <input type="range" min="0" max="1" value="1" step="0.001" class="form-control scene-control" id="light-g"/>
+                <label for="light-b">B:</label>
+                <input type="range" min="0" max="1" value="1" step="0.001" class="form-control scene-control" id="light-b"/>
+            </div>
+            <div class="form-group">
+                <h6>Ambient Intensity</h6>
+                <label for="ambient-r">R:</label>
+                <input type="range" min="0" max="1" value="0.1" step="0.001" class="form-control scene-control" id="ambient-r"/>
+                <label for="ambient-g">G:</label>
+                <input type="range" min="0" max="1" value="0.1" step="0.001" class="form-control scene-control" id="ambient-g"/>
+                <label for="ambient-b">B:</label>
+                <input type="range" min="0" max="1" value="0.1" step="0.001" class="form-control scene-control" id="ambient-b"/>
+            </div>
+            
+            <h4>Wind Controls</h4>
+            <div class="form-group">
+                <label for="wind-x">Wind x:</label>
+                <input type="number" value="0" step="0.001" class="form-control form-control-range scene-control" id="wind-x"/>
+                <label for="wind-y">Wind y:</label>
+                <input type="number" value="0" step="0.001" class="form-control form-control-range scene-control" id="wind-y"/>
+                <label for="wind-z">Wind z:</label>
+                <input type="number" value="0" step="0.001" class="form-control form-control-range scene-control" id="wind-z"/>
+                <label for="wind-intensity">Wind Intensity (Preferably 0-1)</label>
+                <input type="number" min="0" value="0.5" step="0.001" class="form-control scene-control" id="wind-intensity"/>
+            </div>
 		</div>
 	</div>
 </div>
