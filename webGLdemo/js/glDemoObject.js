@@ -90,15 +90,19 @@ function bindInputEvents()
         switch (renderObject) {
             case 'Dog': 
                 objectData = loadDog();
+                currentScene.objectData = objectData;
+                currentScene.initializeBuffers(currentScene.gl);
+                currentScene.initializeTexture("dog_texture_square.jpg");
+                currentScene.loadFins();
                 break;
             case 'Sphere': 
                 objectData = loadSphere();
+                currentScene.objectData = objectData;
+                currentScene.initializeBuffers(currentScene.gl);
+                currentScene.initializeTexture("testabstract.jpg");
+                currentScene.loadFins();
                 break;
         }
-
-        currentScene.objectData = objectData;
-        currentScene.initializeBuffers(currentScene.gl);
-        currentScene.loadFins();
 
         // currentScene = new Scene(gl, objectData, programInfo, "testabstract.jpg");
         currentScene.redraw();
@@ -205,7 +209,7 @@ function main()
     }
 
     console.log(programInfo);
-    currentScene = new Scene(gl, objectData, programInfo, "dog_texture_squared.jpg");
+    currentScene = new Scene(gl, objectData, programInfo, "dog_texture_square.jpg");
     currentScene.redraw();
 }
 
