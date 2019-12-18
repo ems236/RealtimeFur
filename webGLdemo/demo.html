@@ -86,14 +86,20 @@
             <div class="form-group">
                 <h4>Texture Controls</h4>
                 <div class="alert alert-warning">Requires you to click the redraw button because these settings are too slow for realtime rendering</div>
-                <label for="shellControlRange">Number of Shells:</label>
-                <input type="range" min="0" max="32" value="10" step="1" class="form-control-range texture-control" id="shellControlRange"/>
+                <label for="shell-count">Number of Shells: (<span id="shell-display">10</span>)</label>
+                <input type="range" min="0" max="50" value="10" step="1" class="form-control-range texture-control" id="shell-count"/>
 
-                <label for="curlinessControlRange">Curliness [Only Applies to fins if draw mode is particle gen]:</label>
-                <input type="range" min="0" max="10" value="5" step="1" class="form-control-range texture-control" id="curlinessControlRange"/>
+                <label for="curliness">Curliness [Only Applies to fins if draw mode is particle gen]:</label>
+                <input type="range" min="0" max="1" value="0.0" step="0.1" class="form-control-range texture-control" id="curliness"/>
 
                 <label for="fur-density">Fur Density:</label>
-                <input type="range" min="0" max="10" value="5" step="1" class="form-control-range texture-control" id="fur-density"/>
+                <input type="range" min="0" max="1" value="0.5" step="0.1" class="form-control-range texture-control" id="fur-density"/>
+
+                <label for="fur-density">Shell Texture Dimensions: (<span id="shell-size-display">512</span>)</label>
+                <input type="number" min="6" max="10" value="9" step="1" class="form-control texture-control" id="shell-texture-size"/>
+
+                <label for="fur-density">Fin Texture Dimensions: (<span id="fin-size-display">128</span>)</label>
+                <input type="number" min="6" max="10" value="7" step="1" class="form-control texture-control" id="fin-texture-size"/>
 
                 <button class="btn btn-primary" id="regen-textures">Redraw</button>
             </div>

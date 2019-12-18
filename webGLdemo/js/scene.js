@@ -1,10 +1,12 @@
 class Scene
 {
-    constructor(gl, objectData, programInfo, sceneData)
+    constructor(gl, objectData, programInfo, sceneData, textureSettings)
     {
         this.gl = gl;
         this.objectData = objectData;
         this.programInfo = programInfo;
+
+        this.shouldDraw = true;
 
         this.setSceneSettings(sceneData);
         
@@ -31,10 +33,13 @@ class Scene
 
         this.camera = new Camera(6, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
 
-        this.furDataSize = 512;
-        this.baseFurData = guassBlur5x5Noise(this.furDataSize);
-        this.finTextureSize = 128;
-        this.finTextureRaw = finTextureData(this.finTextureSize, 0.2, 0.0);
+        //this.furDataSize = 512;
+        //this.baseFurData = guassBlur5x5Noise(this.furDataSize);
+        //this.finTextureSize = 128;
+        //this.finTextureRaw = finTextureData(this.finTextureSize, 0.2, 0.0);
+        //this.initializeFinTexture()
+        //this.setShellCount(10);
+        this.setTextureSettings(textureSettings);
 
         //this.colorNoiseFactor = 0.2;
         //this.minShadowFactor = 0.2;
@@ -64,8 +69,9 @@ class Scene
 
         this.initializeBuffers(this.gl);
         this.initializeTexture();
-        this.initializeFinTexture()
-        this.setShellCount(10);
+        //this.initializeFinTexture()
+        //this.setShellCount(10);
+        //this.setTextureSettings(textureSettings);
 
         window.requestAnimationFrame(animateScene);
     }
@@ -96,6 +102,25 @@ class Scene
 
         this.windSource = sceneSettings.windPosition;
         this.baseWindIntensity = sceneSettings.windIntensity * 1.0;
+    }
+
+    setTextureSettings(textureSettings)
+    {
+        //console.log(textureSettings);
+        this.shouldLoadFins = true;
+        this.shouldDraw = false;
+
+        this.furDataSize = textureSettings.shellTextureSize;
+        this.baseFurData = guassBlur5x5Noise(this.furDataSize);
+        this.finTextureSize = textureSettings.finTextureSize;
+        //this.finTextureRaw = finTextureData(this.finTextureSize, textureSettings.finDensity, textureSettings.curliness);
+        this.finTextureRaw = finTextureData(this.finTextureSize, 0.2, textureSettings.curliness);
+
+        //this.shellDensity = textureSettings.shellDensity;
+        this.initializeFinTexture()
+        this.setShellCount(textureSettings.shellCount);
+
+        this.shouldDraw = true;
     }
 
     initializeBuffers(gl)
@@ -377,30 +402,33 @@ class Scene
 
     redraw(timestamp)
     {
-        this.gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
-        this.gl.clearDepth(1.0);                 // Clear everything
-        this.gl.enable(this.gl.DEPTH_TEST);           // Enable depth testing
-        this.gl.depthFunc(this.gl.LEQUAL);            // Near things obscure far things
-        this.gl.enable(this.gl.BLEND);
-        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-        // Clear the canvas before we start drawing on it.
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-
-        this.setFrameNetForce(timestamp);
-
-        if(this.shouldDrawBase)
+        if(this.shouldDraw)
         {
-            this.drawBase();
-        }
+            this.gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
+            this.gl.clearDepth(1.0);                 // Clear everything
+            this.gl.enable(this.gl.DEPTH_TEST);           // Enable depth testing
+            this.gl.depthFunc(this.gl.LEQUAL);            // Near things obscure far things
+            this.gl.enable(this.gl.BLEND);
+            this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+            // Clear the canvas before we start drawing on it.
+            this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-        if(this.shouldDrawFins)
-        {
-            this.drawFins();
-        }
+            this.setFrameNetForce(timestamp);
 
-        if(this.shouldDrawShells)
-        {
-            this.drawShells();
+            if(this.shouldDrawBase)
+            {
+                this.drawBase();
+            }
+
+            if(this.shouldDrawFins)
+            {
+                this.drawFins();
+            }
+
+            if(this.shouldDrawShells)
+            {
+                this.drawShells();
+            }
         }
 
         window.requestAnimationFrame(animateScene);
@@ -475,6 +503,7 @@ class Scene
     {
         var colorNoise = noiseOf(this.furDataSize / 4);
 
+        this.gl.activeTexture(this.gl.TEXTURE1);
         this.shellTextures = [];
         for(var shellNumber = 0; shellNumber < this.shellCount; shellNumber++)
         {
@@ -484,6 +513,7 @@ class Scene
             var filtered = sampleFur(limit, this.baseFurData);
             this.shellTextures.push(textureFromData(this.gl, padAlphaData(filtered, colorNoise), this.furDataSize));
         }
+        this.gl.activeTexture(this.gl.TEXTURE0);
     }
 
     setCurrentShell(shell)
@@ -528,9 +558,8 @@ class Scene
         const gl = this.gl;
 
         var colorNoise = noiseOf(this.finTextureSize / 4);
-        var finTexture = textureFromData(gl, padAlphaData(this.finTextureRaw, colorNoise), this.finTextureSize);
-
         gl.activeTexture(gl.TEXTURE2);
+        var finTexture = textureFromData(gl, padAlphaData(this.finTextureRaw, colorNoise), this.finTextureSize);
         gl.bindTexture(gl.TEXTURE_2D, finTexture);
 
         gl.activeTexture(gl.TEXTURE0);

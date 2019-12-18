@@ -76,12 +76,35 @@ function readAllSceneSettings()
     };
 }
 
+function readAllTextureSettings()
+{
+    return {
+        shellCount: Math.round($("#shell-count").val() * 1.0),
+        curliness: $("#curliness").val() * 1.0,
+        finDensity: $("#fin-density").val() * 1.0,
+        shellDensity: $("#shell-density").val() * 1.0,
+        shellTextureSize: Math.pow(2, $("#shell-texture-size").val() * 1.0),
+        finTextureSize: Math.pow(2, $("#fin-texture-size").val() * 1.0),
+    }
+}
+
 function bindInputEvents()
 {
     $(".realtime-scene-control").change(function()
     {
         currentScene.setSceneSettings(readAllSceneSettings());
-    })
+    });
+
+    $("#regen-textures").click(function()
+    {
+        var settings = readAllTextureSettings();
+
+        $("#shell-display").html(settings.shellCount);
+        $("#shell-size-display").html(settings.shellTextureSize);
+        $("#fin-size-display").html(settings.finTextureSize);
+
+        currentScene.setTextureSettings(settings);
+    });
 
     /*
     $("#draw-base").change(function()
@@ -252,7 +275,9 @@ function main()
 
     console.log(programInfo);
     var sceneSettings = readAllSceneSettings();
-    currentScene = new Scene(gl, objectData, programInfo, sceneSettings);
+    var textureSettings = readAllTextureSettings();
+    console.log(textureSettings);
+    currentScene = new Scene(gl, objectData, programInfo, sceneSettings, textureSettings);
     //currentScene.redraw();
 }
 
