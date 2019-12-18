@@ -83,31 +83,23 @@ function bindInputEvents()
         currentScene.redraw();
     });
 
-    $('#objectSelection').change(function() 
-    {
-        var renderObject = $('#objectSelection').val();
-        var objectData;
-        switch (renderObject) {
-            case 'Dog': 
-                objectData = loadDog();
-                currentScene.objectData = objectData;
-                currentScene.initializeBuffers(currentScene.gl);
-                currentScene.initializeTexture("dog_texture_square.jpg");
-                currentScene.loadFins();
-                break;
-            case 'Sphere': 
-                objectData = loadSphere();
-                currentScene.objectData = objectData;
-                currentScene.initializeBuffers(currentScene.gl);
-                currentScene.initializeTexture("testabstract.jpg");
-                currentScene.loadFins();
-                break;
-        }
-
-        // currentScene = new Scene(gl, objectData, programInfo, "testabstract.jpg");
-        currentScene.redraw();
-   });
-
+//    $('#objectSelection').change(function() {
+//        var renderObject = $('#objectSelection').val();
+//        var objectData;
+//        switch (renderObject) {
+//            case 'Cube': objectData = loadObject();
+//                break;
+//            case 'Sphere': objectData = loadSphere();
+//                break;
+//            case 'Bunny':
+//                objectData = loadSphere();
+//                console.log("it's a bunny");
+//                break;
+//        }
+//
+//        currentScene.objectData = objectData;
+//        currentScene.redraw();
+//    });
 }
 
 function main()
@@ -192,14 +184,6 @@ function main()
     }
 
     var objectData = loadSphere();
-    var renderObject = $('#objectSelection').val();
-
-    switch (renderObject) {
-        case 'Dog': objectData = loadDog();
-            break;
-        case 'Sphere': objectData = loadSphere();
-            break;
-    }
 
     const programInfo = 
     {
@@ -209,19 +193,20 @@ function main()
     }
 
     console.log(programInfo);
-    currentScene = new Scene(gl, objectData, programInfo, "dog_texture_square.jpg");
+    currentScene = new Scene(gl, objectData, programInfo);
     currentScene.redraw();
 }
 
-function loadObject()
+function loadSphere()
 {
-    var object = getObject();
+    var sphere = getSphere();
 
-    var positions = object.positions;
-    var faces = object.faces;
-    var normals = object.normals;
-    var texCoords = object.texCoords;
+    var positions = sphere.positions;
+    var faces = sphere.faces;
 
+    var normals = new Array(positions.length);
+    normals.fill(0);
+    var texCoords = new Array(2 * positions.length / 3);
     var furLengths = new Array(positions.length / 3);
 
     //sphere definition is 1 indexed
@@ -229,11 +214,44 @@ function loadObject()
     for(var vertexIndexIndex = 0; vertexIndexIndex < faces.length; vertexIndexIndex++)
     {
         faces[vertexIndexIndex] -= 1;
+    }
+
+    for(var faceIndex = 0; faceIndex < faces.length / 3; faceIndex++)
+    {
+        var v1index = faces[faceIndex * 3];
+        var v2index = faces[faceIndex * 3 + 1];
+        var v3index = faces[faceIndex * 3 + 2];
+
+        var v1 = getVertex(v1index, positions);
+        var v2 = getVertex(v2index, positions);
+        var v3 = getVertex(v3index, positions);
+
+
+        var e1 = vec3.create();
+        vec3.subtract(e1, v3, v1);
+
+        var e2 = vec3.create();
+        vec3.subtract(e2, v2, v3);
+
+        var normal = vec3.create();
+        vec3.cross(normal, e2, e1);
+
+        addNormal(normal, v1index, normals);
+        addNormal(normal, v2index, normals);
+        addNormal(normal, v3index, normals);
     }
 
     for(var vertexIndex = 0; vertexIndex < positions.length / 3; vertexIndex++)
     {
         furLengths[vertexIndex] = 0.2;
+        
+        //Spherical coords
+        var position = getVertex(vertexIndex, positions);
+
+        var theta = Math.atan2(position[0], position[2]);
+        var phi = Math.atan2(Math.pow(position[0] * position[0] + position[2] * position[2], 0.5), position[1]);
+
+        setTexCoord(1 - (theta / (2 * 3.14159) + 0.5), 1 - (phi / 3.14159), vertexIndex, texCoords);
     }
 
     sharedTriangles = loadFinEdgeList(faces, positions);
@@ -247,43 +265,6 @@ function loadObject()
         sharedTriangle: sharedTriangles
     }
 }
-
-
-function loadDog()
-{
-    var object = getDog();
-
-    var positions = object.positions;
-    var faces = object.faces;
-    var normals = object.normals;
-    var texCoords = object.texCoords;
-
-    var furLengths = new Array(positions.length / 3);
-
-    //sphere definition is 1 indexed
-    //webgl is 0 indexed
-    for(var vertexIndexIndex = 0; vertexIndexIndex < faces.length; vertexIndexIndex++)
-    {
-        faces[vertexIndexIndex] -= 1;
-    }
-
-    for(var vertexIndex = 0; vertexIndex < positions.length / 3; vertexIndex++)
-    {
-        furLengths[vertexIndex] = 0.08;
-    }
-
-    sharedTriangles = loadFinEdgeList(faces, positions);
-
-    return {
-        position: positions,
-        normal: normals,
-        face: faces,
-        texCoord: texCoords,
-        furLength: furLengths,
-        sharedTriangle: sharedTriangles
-    }
-}
-
 
 function loadFinEdgeList(faces, positions)
 {
@@ -432,71 +413,119 @@ function setTexCoord(u, v, index, texCoords)
     texCoords[startIndex + 1] = clamp(v, 0, 1);
 }
 
-function loadSphere()
+function loadObject() 
 {
-    var sphere = getSphere();
+    const positions = [
+        // front
+        -1.0, -1.0, 1.0,
+        1.0, -1.0, 1.0,
+        1.0, 1.0, 1.0,
+        -1.0, 1.0, 1.0,
 
-    var positions = sphere.positions;
-    var faces = sphere.faces;
+        // back
+        -1.0, -1.0, -1.0,
+        1.0, -1.0, -1.0,
+        1.0, 1.0, -1.0,
+        -1.0, 1.0, -1.0,
 
-    var normals = new Array(positions.length);
-    normals.fill(0);
-    var texCoords = new Array(2 * positions.length / 3);
-    var furLengths = new Array(positions.length / 3);
+        // Top face
+        -1.0, 1.0, -1.0,
+        -1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0,
+        1.0, 1.0, -1.0,
 
-    //sphere definition is 1 indexed
-    //webgl is 0 indexed
-    for(var vertexIndexIndex = 0; vertexIndexIndex < faces.length; vertexIndexIndex++)
-    {
-        faces[vertexIndexIndex] -= 1;
-    }
+        // Bottom face
+        -1.0, -1.0, -1.0,
+        1.0, -1.0, -1.0,
+        1.0, -1.0, 1.0,
+        -1.0, -1.0, 1.0,
 
-    for(var faceIndex = 0; faceIndex < faces.length / 3; faceIndex++)
-    {
-        var v1index = faces[faceIndex * 3];
-        var v2index = faces[faceIndex * 3 + 1];
-        var v3index = faces[faceIndex * 3 + 2];
+        // right
+        1.0, -1.0, -1.0,
+        1.0, -1.0, 1.0,
+        1.0, 1.0, 1.0,
+        1.0, 1.0, -1.0,
 
-        var v1 = getVertex(v1index, positions);
-        var v2 = getVertex(v2index, positions);
-        var v3 = getVertex(v3index, positions);
+        // left
+        -1.0, -1.0, -1.0,
+        -1.0, -1.0, 1.0,
+        -1.0, 1.0, 1.0,
+        -1.0, 1.0, -1.0
+    ];
 
+    const normals = [
+        // front
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
 
-        var e1 = vec3.create();
-        vec3.subtract(e1, v3, v1);
+        // back
+        0.0, 0.0, -1.0,
+        0.0, 0.0, -1.0,
+        0.0, 0.0, -1.0,
+        0.0, 0.0, -1.0,
 
-        var e2 = vec3.create();
-        vec3.subtract(e2, v2, v3);
+        // Top face
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
 
-        var normal = vec3.create();
-        vec3.cross(normal, e2, e1);
+        // Bottom face
+        0.0, -1.0, 0.0,
+        0.0, -1.0, 0.0,
+        0.0, -1.0, 0.0,
+        0.0, -1.0, 0.0,
 
-        addNormal(normal, v1index, normals);
-        addNormal(normal, v2index, normals);
-        addNormal(normal, v3index, normals);
-    }
+        // right
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
 
-    for(var vertexIndex = 0; vertexIndex < positions.length / 3; vertexIndex++)
-    {
-        furLengths[vertexIndex] = 0.2;
-        
-        //Spherical coords
-        var position = getVertex(vertexIndex, positions);
+        // left
+        -1.0, 0.0, 0.0,
+        -1.0, 0.0, 0.0,
+        -1.0, 0.0, 0.0,
+        -1.0, 0.0, 0.0,
+    ];
 
-        var theta = Math.atan2(position[0], position[2]);
-        var phi = Math.atan2(Math.pow(position[0] * position[0] + position[2] * position[2], 0.5), position[1]);
+    const indices = [
+        0, 1, 2, 0, 2, 3,    // front
+        4, 5, 6, 4, 6, 7,    // back
+        8, 9, 10, 8, 10, 11,   // top
+        12, 13, 14, 12, 14, 15,   // bottom
+        16, 17, 18, 16, 18, 19,   // right
+        20, 21, 22, 20, 22, 23,   // left
+    ];
 
-        setTexCoord(1 - (theta / (2 * 3.14159) + 0.5), 1 - (phi / 3.14159), vertexIndex, texCoords);
-    }
+    const tex_coords = 
+    [
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,    // front
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,    // back
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,     // top
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,     // bottom
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,     // right
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,     // left
+    ];
 
-    sharedTriangles = loadFinEdgeList(faces, positions);
+    const furLengths = 
+    [
+        0.2, 0.7, 0.3, 0.1,    // front
+        0.2, 0.7, 0.3, 0.1,    // back
+        0.2, 0.7, 0.3, 0.1,     // top
+        0.2, 0.7, 0.3, 0.1,     // bottom
+        0.2, 0.7, 0.3, 0.1,     // right
+        0.2, 0.7, 0.3, 0.1,     // left
+    ];
+
 
     return {
         position: positions,
         normal: normals,
-        face: faces,
-        texCoord: texCoords,
-        furLength: furLengths,
-        sharedTriangle: sharedTriangles
+        face: indices,
+        texCoord: tex_coords,
+        furLength: furLengths
     }
 }
