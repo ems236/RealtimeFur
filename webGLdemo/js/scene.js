@@ -100,6 +100,7 @@ class Scene
         this.alphaBlendAllFins = sceneSettings.shouldDrawAllFins;
         this.finLengthMultiplier = sceneSettings.finLengthMultiplier * 1.0;
         this.sillhouetteEdgeThreshold = sceneSettings.sillhouetteEdgeThreshold * 1.0;
+        this.subfinCount = sceneSettings.subfinCount;
 
         this.colorNoiseFactor = sceneSettings.colorNoiseMixingRatio * 1.0;
         this.minShadowFactor = sceneSettings.minSelfShadowFactor * 1.0;
@@ -553,7 +554,7 @@ class Scene
             , this.objectData.sharedTriangle
             , this.objectData
             , this.alphaBlendAllFins
-            , this.shellCount
+            , this.subfinCount
             , this.windSource
             , this.windIntensity
             , this.netForce
