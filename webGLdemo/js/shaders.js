@@ -234,10 +234,8 @@ var shellFragmentShader = `
         //gl_FragColor = vec4(abs(wind_vector.x), abs(wind_vector.y), abs(wind_vector.z) , 1.0);
         //gl_FragColor = vec4(abs(normal.x), abs(normal.y), abs(normal.z) , 1.0);
 
-
         gl_FragColor = vec4(color.rgb, alpha);
-        
-        
+
         //gl_FragColor = vec4(1.0, 1.0, 1.0, alpha);
         //gl_FragColor = vec4(texture2D(uShellAlphaTexture, texture_coords).rgb, alpha);
     }

@@ -9,3 +9,22 @@
     flex-grow: 1;
     flex-basis: 0;
 }
+
+.sectionHeader {
+    margin-top: 5%;
+    font-weight: bold;
+}
+
+.subHeader {
+    font-weight: bold;
+}
+
+.miniHeader {
+    margin-top: 2%;
+    font-style: italic;
+}
+
+img {
+    margin: auto;
+    display: block;
+}
