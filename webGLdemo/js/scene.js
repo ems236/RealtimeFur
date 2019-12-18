@@ -113,10 +113,10 @@ class Scene
         this.furDataSize = textureSettings.shellTextureSize;
         this.baseFurData = guassBlur5x5Noise(this.furDataSize);
         this.finTextureSize = textureSettings.finTextureSize;
-        //this.finTextureRaw = finTextureData(this.finTextureSize, textureSettings.finDensity, textureSettings.curliness);
-        this.finTextureRaw = finTextureData(this.finTextureSize, 0.2, textureSettings.curliness);
+        this.finTextureRaw = finTextureData(this.finTextureSize, textureSettings.finDensity, textureSettings.curliness);
+        //this.finTextureRaw = finTextureData(this.finTextureSize, 0.2, textureSettings.curliness);
 
-        //this.shellDensity = textureSettings.shellDensity;
+        this.shellDensity = textureSettings.shellDensity;
         this.initializeFinTexture()
         this.setShellCount(textureSettings.shellCount);
 
@@ -505,10 +505,13 @@ class Scene
 
         this.gl.activeTexture(this.gl.TEXTURE1);
         this.shellTextures = [];
+
+        const base = 127 + (-64 * (this.shellDensity - 0.5));
+        //const max = 182;
+        const max = 192;
         for(var shellNumber = 0; shellNumber < this.shellCount; shellNumber++)
         {
-            const base = 127;
-            const max = 182;
+            
             var limit = base + (max - base) * (shellNumber / this.shellCount);
             var filtered = sampleFur(limit, this.baseFurData);
             this.shellTextures.push(textureFromData(this.gl, padAlphaData(filtered, colorNoise), this.furDataSize));

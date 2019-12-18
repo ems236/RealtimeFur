@@ -273,10 +273,10 @@ function main()
         finProgramInfo: finProgramInfo,
     }
 
-    console.log(programInfo);
+    //console.log(programInfo);
     var sceneSettings = readAllSceneSettings();
     var textureSettings = readAllTextureSettings();
-    console.log(textureSettings);
+    //console.log(textureSettings);
     currentScene = new Scene(gl, objectData, programInfo, sceneSettings, textureSettings);
     //currentScene.redraw();
 }
