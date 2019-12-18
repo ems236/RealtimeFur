@@ -140,21 +140,29 @@ function bindInputEvents()
     $('#objectSelection').change(function() 
     {
         var renderObject = $('#objectSelection').val();
+        var settings = readAllTextureSettings();
+
+        $("#shell-display").html(settings.shellCount);
+        $("#shell-size-display").html(settings.shellTextureSize);
+        $("#fin-size-display").html(settings.finTextureSize);
+
         var objectData;
         switch (renderObject) {
             case 'Dog': 
                 objectData = loadDog();
-                currentScene.objectData = objectData;
-                currentScene.initializeBuffers(currentScene.gl);
-                currentScene.initializeTexture("dog_texture_square.jpg");
-                currentScene.loadFins();
+                currentScene.setObject(objectData, settings);
+                //currentScene.objectData = objectData;
+                //currentScene.initializeBuffers(currentScene.gl);
+                //currentScene.initializeTexture("dog_texture_square.jpg");
+                //currentScene.loadFins();
                 break;
             case 'Sphere': 
                 objectData = loadSphere();
-                currentScene.objectData = objectData;
-                currentScene.initializeBuffers(currentScene.gl);
-                currentScene.initializeTexture("testabstract.jpg");
-                currentScene.loadFins();
+                currentScene.setObject(objectData, settings);
+                //currentScene.objectData = objectData;
+                //currentScene.initializeBuffers(currentScene.gl);
+                //currentScene.initializeTexture("testabstract.jpg");
+                //currentScene.loadFins();
                 break;
         }
 
@@ -272,7 +280,7 @@ function main()
         }
     }
 
-    var objectData = loadSphere();
+    var objectData;
     var renderObject = $('#objectSelection').val();
 
     switch (renderObject) {
@@ -378,7 +386,8 @@ function loadSphere()
         face: faces,
         texCoord: texCoords,
         furLength: furLengths,
-        sharedTriangle: sharedTriangles
+        sharedTriangle: sharedTriangles,
+        texturePath: "testabstract.jpg",
     }
 }
 
@@ -414,7 +423,8 @@ function loadDog()
         face: faces,
         texCoord: texCoords,
         furLength: furLengths,
-        sharedTriangle: sharedTriangles
+        sharedTriangle: sharedTriangles,
+        texturePath: "dog_texture_square.jpg",
     }
 }
 

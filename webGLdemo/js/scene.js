@@ -39,7 +39,7 @@ class Scene
         //this.finTextureRaw = finTextureData(this.finTextureSize, 0.2, 0.0);
         //this.initializeFinTexture()
         //this.setShellCount(10);
-        this.setTextureSettings(textureSettings);
+        //this.setTextureSettings(textureSettings);
 
         //this.colorNoiseFactor = 0.2;
         //this.minShadowFactor = 0.2;
@@ -66,14 +66,25 @@ class Scene
         //this.windIntensity = 0.5;
         //this.baseWindIntensity = 0.5;
 
-
-        this.initializeBuffers(this.gl);
-        this.initializeTexture();
+        this.setObject(objectData, textureSettings);
+        //this.initializeBuffers(this.gl);
+        //this.initializeTexture();
         //this.initializeFinTexture()
         //this.setShellCount(10);
         //this.setTextureSettings(textureSettings);
 
         window.requestAnimationFrame(animateScene);
+    }
+
+    setObject(objectData, textureSettings)
+    {
+        this.shouldDraw = false;
+        this.objectData = objectData;
+
+        this.initializeBuffers(this.gl);
+        this.initializeTexture(this.objectData.texturePath);
+
+        this.setTextureSettings(textureSettings);
     }
 
     setSceneSettings(sceneSettings)
