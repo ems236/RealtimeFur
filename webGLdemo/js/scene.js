@@ -1,11 +1,13 @@
 class Scene
 {
-    constructor(gl, objectData, programInfo)
+    constructor(gl, objectData, programInfo, sceneData)
     {
         this.gl = gl;
         this.objectData = objectData;
         this.programInfo = programInfo;
 
+        this.setSceneSettings(sceneData);
+        
         this.currentTime = 0;
         this.previousVelocity = vec3.fromValues(0, 0, 0);
         this.netForce = vec3.fromValues(0, 0, 0);
@@ -34,14 +36,14 @@ class Scene
         this.finTextureSize = 128;
         this.finTextureRaw = finTextureData(this.finTextureSize, 0.2, 0.0);
 
-        this.colorNoiseFactor = 0.2;
-        this.minShadowFactor = 0.2;
-        this.ka = 1.0;
-        this.ks = 0.5;
-        this.kd = 0.9;
-        this.ns = 10;
-        this.lightIntensity = vec3.fromValues(1.0, 1.0, 1.0);
-        this.ambientIntensity = vec3.fromValues(0.1, 0.1, 0.1);
+        //this.colorNoiseFactor = 0.2;
+        //this.minShadowFactor = 0.2;
+        //this.ka = 1.0;
+        //this.ks = 0.5;
+        //this.kd = 0.9;
+        //this.ns = 10;
+        //this.lightIntensity = vec3.fromValues(1.0, 1.0, 1.0);
+        //this.ambientIntensity = vec3.fromValues(0.1, 0.1, 0.1);
 
         this.finBuffers = {
             position: gl.createBuffer(),
@@ -50,14 +52,14 @@ class Scene
             finTexCoords: gl.createBuffer(),
             colorTexCoords: gl.createBuffer(),
         }
-        this.shouldDrawFins = true;
-        this.shouldDrawShells = true;
-        this.shouldDrawBase = true;
-        this.alphaBlendAllFins = true;
+        //this.shouldDrawFins = true;
+        //this.shouldDrawShells = true;
+        //this.shouldDrawBase = true;
+        //this.alphaBlendAllFins = true;
 
-        this.windSource = vec3.fromValues(0.0, 0.0, 6.0);
-        this.windIntensity = 0.5;
-        this.baseWindIntensity = 0.5;
+        //this.windSource = vec3.fromValues(0.0, 0.0, 6.0);
+        //this.windIntensity = 0.5;
+        //this.baseWindIntensity = 0.5;
 
 
         this.initializeBuffers(this.gl);
@@ -65,10 +67,34 @@ class Scene
         this.initializeFinTexture()
         this.setShellCount(10);
 
-        //Called because alpha blending all fins is the default and fins don't need to be reloaded every time if you do it that way
-        this.loadFins();
-
         window.requestAnimationFrame(animateScene);
+    }
+
+    setSceneSettings(sceneSettings)
+    {
+        this.shouldLoadFins = true;
+
+        this.shouldDrawBase = sceneSettings.shouldDrawBase;
+        this.shouldDrawShells = sceneSettings.shouldDrawShells;
+        this.shouldDrawFins = sceneSettings.shouldDrawFins;
+
+        this.furLengthMultiplier = sceneSettings.furLengthMultiplier * 1.0;
+        
+        this.alphaBlendAllFins = sceneSettings.shouldDrawAllFins;
+        this.finLengthMultiplier = sceneSettings.finLengthMultiplier * 1.0;
+
+        this.colorNoiseFactor = sceneSettings.colorNoiseMixingRatio * 1.0;
+        this.minShadowFactor = sceneSettings.minSelfShadowFactor * 1.0;
+
+        this.ka = sceneSettings.ka * 1.0;
+        this.kd = sceneSettings.kd * 1.0;
+        this.ks = sceneSettings.ks * 1.0;
+        this.ns = sceneSettings.ns * 1.0;
+        this.lightIntensity = sceneSettings.lightIntensity;
+        this.ambientIntensity = sceneSettings.ambientIntensity;
+
+        this.windSource = sceneSettings.windPosition;
+        this.baseWindIntensity = sceneSettings.windIntensity * 1.0;
     }
 
     initializeBuffers(gl)
@@ -400,9 +426,10 @@ class Scene
 
         this.gl.depthMask(false);  
         this.loadFinShaderProgram();
-        if(!this.alphaBlendAllFins || this.windIntensity > 0 || vec3.length(this.netForce) != 0.00)
+        if(this.shouldLoadFins || !this.alphaBlendAllFins || this.windIntensity > 0 || vec3.length(this.netForce) != 0.00)
         {
             this.loadFins();
+            this.shouldLoadFins = false;
         }
   
         this.loadFinAttributeBuffers();

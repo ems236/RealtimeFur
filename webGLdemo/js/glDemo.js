@@ -61,7 +61,7 @@ function readAllSceneSettings()
         shouldDrawFins: $("#draw-fins")[0].checked,
         furLengthMultiplier: $("#fur-multiplier").val(),
         colorNoiseMixingRatio: $("#color-noise").val(), 
-        shouldFilterFins: $("#filter-fins")[0].checked,
+        shouldDrawAllFins: $("#filter-fins")[0].checked,
         finLengthMultiplier: $("#fin-multiplier").val(),
         minSelfShadowFactor: $("#min-self-shadow").val(),
         ka: $("#ka").val(),
@@ -73,12 +73,16 @@ function readAllSceneSettings()
         windPosition: vec3.fromValues($("#wind-x").val(), $("#wind-y").val(), $("#wind-z").val()),
         windIntensity: $("#wind-intensity").val(),
     };
-
-
 }
 
 function bindInputEvents()
 {
+    $(".realtime-scene-control").change(function()
+    {
+        currentScene.setSceneSettings(readAllSceneSettings());
+    })
+
+    /*
     $("#draw-base").change(function()
     {
         currentScene.shouldDrawBase = this.checked;
@@ -106,7 +110,7 @@ function bindInputEvents()
         }
         //currentScene.redraw();
     });
-
+    */
 
 
 //    $('#objectSelection').change(function() {
@@ -245,7 +249,8 @@ function main()
     }
 
     console.log(programInfo);
-    currentScene = new Scene(gl, objectData, programInfo);
+    var sceneSettings = readAllSceneSettings();
+    currentScene = new Scene(gl, objectData, programInfo, sceneSettings);
     //currentScene.redraw();
 }
 
