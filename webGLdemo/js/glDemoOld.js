@@ -28,7 +28,7 @@ function bindMouseEvents(canvas)
                     if(currentScene)
                     {
                         currentScene.mousemove(event.pageX, event.pageY);
-                        //currentScene.redraw();
+                        currentScene.redraw();
                     }
                 });
             }
@@ -53,76 +53,24 @@ function bindMouseEvents(canvas)
     canvas.on("contextmenu", function(event) {event.preventDefault();});
 }
 
-function readAllSceneSettings()
-{
-    return {
-        shouldDrawBase: $("#draw-base")[0].checked,
-        shouldDrawShells: $("#draw-shells")[0].checked,
-        shouldDrawFins: $("#draw-fins")[0].checked,
-        furLengthMultiplier: $("#fur-multiplier").val(),
-        colorNoiseMixingRatio: $("#color-noise").val(), 
-        shouldDrawAllFins: $("#filter-fins")[0].checked,
-        finLengthMultiplier: $("#fin-multiplier").val(),
-        sillhouetteEdgeThreshold: $("#sillhouette-threshold").val(),
-        minSelfShadowFactor: $("#min-self-shadow").val(),
-        ka: $("#ka").val(),
-        kd: $("#kd").val(),
-        ks: $("#ks").val(),
-        ns: $("#ns").val(),
-        lightIntensity: vec3.fromValues($("#light-r").val(), $("#light-g").val(), $("#light-b").val()),
-        ambientIntensity: vec3.fromValues($("#ambient-r").val(), $("#ambient-g").val(), $("#ambient-b").val()),
-        windPosition: vec3.fromValues($("#wind-x").val(), $("#wind-y").val(), $("#wind-z").val()),
-        windIntensity: $("#wind-intensity").val(),
-    };
-}
-
-function readAllTextureSettings()
-{
-    return {
-        shellCount: Math.round($("#shell-count").val() * 1.0),
-        curliness: $("#curliness").val() * 1.0,
-        finDensity: $("#fin-density").val() * 1.0,
-        shellDensity: $("#shell-density").val() * 1.0,
-        shellTextureSize: Math.pow(2, $("#shell-texture-size").val() * 1.0),
-        finTextureSize: Math.pow(2, $("#fin-texture-size").val() * 1.0),
-    }
-}
-
 function bindInputEvents()
 {
-    $(".realtime-scene-control").change(function()
-    {
-        currentScene.setSceneSettings(readAllSceneSettings());
-    });
-
-    $("#regen-textures").click(function()
-    {
-        var settings = readAllTextureSettings();
-
-        $("#shell-display").html(settings.shellCount);
-        $("#shell-size-display").html(settings.shellTextureSize);
-        $("#fin-size-display").html(settings.finTextureSize);
-
-        currentScene.setTextureSettings(settings);
-    });
-
-    /*
     $("#draw-base").change(function()
     {
         currentScene.shouldDrawBase = this.checked;
-        //currentScene.redraw();
+        currentScene.redraw();
     });
 
     $("#draw-shells").change(function()
     {
         currentScene.shouldDrawShells = this.checked;
-        //currentScene.redraw();
+        currentScene.redraw();
     });
 
     $("#draw-fins").change(function()
     {
         currentScene.shouldDrawFins = this.checked;
-        //currentScene.redraw();
+        currentScene.redraw();
     });
 
     $("#filter-fins").change(function()
@@ -132,44 +80,26 @@ function bindInputEvents()
         {
             currentScene.loadFins();
         }
-        //currentScene.redraw();
+        currentScene.redraw();
     });
-    */
 
-
-    $('#objectSelection').change(function() 
-    {
-        var renderObject = $('#objectSelection').val();
-        var settings = readAllTextureSettings();
-
-        $("#shell-display").html(settings.shellCount);
-        $("#shell-size-display").html(settings.shellTextureSize);
-        $("#fin-size-display").html(settings.finTextureSize);
-
-        var objectData;
-        switch (renderObject) {
-            case 'Dog': 
-                objectData = loadDog();
-                currentScene.setObject(objectData, settings);
-                //currentScene.objectData = objectData;
-                //currentScene.initializeBuffers(currentScene.gl);
-                //currentScene.initializeTexture("dog_texture_square.jpg");
-                //currentScene.loadFins();
-                break;
-            case 'Sphere': 
-                objectData = loadSphere();
-                currentScene.setObject(objectData, settings);
-                //currentScene.objectData = objectData;
-                //currentScene.initializeBuffers(currentScene.gl);
-                //currentScene.initializeTexture("testabstract.jpg");
-                //currentScene.loadFins();
-                break;
-        }
-
-        // currentScene = new Scene(gl, objectData, programInfo, "testabstract.jpg");
-        // currentScene.redraw();
-   });
-
+//    $('#objectSelection').change(function() {
+//        var renderObject = $('#objectSelection').val();
+//        var objectData;
+//        switch (renderObject) {
+//            case 'Cube': objectData = loadObject();
+//                break;
+//            case 'Sphere': objectData = loadSphere();
+//                break;
+//            case 'Bunny':
+//                objectData = loadSphere();
+//                console.log("it's a bunny");
+//                break;
+//        }
+//
+//        currentScene.objectData = objectData;
+//        currentScene.redraw();
+//    });
 }
 
 function main()
@@ -203,13 +133,6 @@ function main()
           viewMatrix: gl.getUniformLocation(baseShaderProgram, 'uViewMatrix'),
           normalMatrix: gl.getUniformLocation(baseShaderProgram, 'uNormalMatrix'),
           colorTexture: gl.getUniformLocation(baseShaderProgram, 'uColorTexture'),
-          minShadowFactor: gl.getUniformLocation(baseShaderProgram, 'uMinShadowFactor'),
-          ka: gl.getUniformLocation(baseShaderProgram, 'uKa'),
-          kd: gl.getUniformLocation(baseShaderProgram, 'uKd'),
-          ks: gl.getUniformLocation(baseShaderProgram, 'uKs'),
-          ns: gl.getUniformLocation(baseShaderProgram, 'uNs'),
-          ambientIntensity: gl.getUniformLocation(baseShaderProgram, 'uAmbientIntensity'),
-          lightIntensity: gl.getUniformLocation(baseShaderProgram, 'uLightIntensity'),
         }
     };
 
@@ -234,18 +157,6 @@ function main()
             shellAlphaTexture: gl.getUniformLocation(shellShaderProgram, 'uShellAlphaTexture'),
             shellCount: gl.getUniformLocation(shellShaderProgram, 'uShellCount'),
             currentShell: gl.getUniformLocation(shellShaderProgram, 'uCurrentShell'),
-            windSource: gl.getUniformLocation(shellShaderProgram, 'uWindSource'),
-            windIntensity: gl.getUniformLocation(shellShaderProgram, 'uWindIntensity'),
-            netForce: gl.getUniformLocation(shellShaderProgram, 'uModelForce'),
-            noiseFactor: gl.getUniformLocation(shellShaderProgram, 'uColorNoiseFactor'),
-            furLengthMultiplier: gl.getUniformLocation(shellShaderProgram, 'uFurLengthMultiplier'),
-            minShadowFactor: gl.getUniformLocation(shellShaderProgram, 'uMinShadowFactor'),
-            ka: gl.getUniformLocation(shellShaderProgram, 'uKa'),
-            kd: gl.getUniformLocation(shellShaderProgram, 'uKd'),
-            ks: gl.getUniformLocation(shellShaderProgram, 'uKs'),
-            ns: gl.getUniformLocation(shellShaderProgram, 'uNs'),
-            ambientIntensity: gl.getUniformLocation(shellShaderProgram, 'uAmbientIntensity'),
-            lightIntensity: gl.getUniformLocation(shellShaderProgram, 'uLightIntensity'),
         }
     };
 
@@ -269,26 +180,10 @@ function main()
             colorTexture: gl.getUniformLocation(finShaderProgram, 'uColorTexture'),
             finTexture: gl.getUniformLocation(finShaderProgram, 'uFinTexture'),
             shouldBlendFins: gl.getUniformLocation(finShaderProgram, 'uShouldModifyFinAlpha'),
-            noiseFactor: gl.getUniformLocation(finShaderProgram, 'uColorNoiseFactor'),
-            minShadowFactor: gl.getUniformLocation(finShaderProgram, 'uMinShadowFactor'),
-            ka: gl.getUniformLocation(finShaderProgram, 'uKa'),
-            kd: gl.getUniformLocation(finShaderProgram, 'uKd'),
-            ks: gl.getUniformLocation(finShaderProgram, 'uKs'),
-            ns: gl.getUniformLocation(finShaderProgram, 'uNs'),
-            ambientIntensity: gl.getUniformLocation(finShaderProgram, 'uAmbientIntensity'),
-            lightIntensity: gl.getUniformLocation(finShaderProgram, 'uLightIntensity'),
         }
     }
 
-    var objectData;
-    var renderObject = $('#objectSelection').val();
-
-    switch (renderObject) {
-        case 'Dog': objectData = loadDog();
-            break;
-        case 'Sphere': objectData = loadSphere();
-            break;
-    }
+    var objectData = loadSphere();
 
     const programInfo = 
     {
@@ -297,28 +192,9 @@ function main()
         finProgramInfo: finProgramInfo,
     }
 
-    //console.log(programInfo);
-    var sceneSettings = readAllSceneSettings();
-    var textureSettings = readAllTextureSettings();
-    //console.log(textureSettings);
-    currentScene = new Scene(gl, objectData, programInfo, sceneSettings, textureSettings);
-    //currentScene.redraw();
-}
-
-var previousTime = Date.now();
-function animateScene(timestamp)
-{
-    displayFPS(timestamp);
-    currentScene.redraw(timestamp);
-}
-
-function displayFPS(currentTime)
-{
-    var difference = currentTime - previousTime;
-    previousTime = currentTime;
-
-    var FPS = 1000 / difference;
-    $("#fps-counter").html(FPS.toFixed(1));
+    console.log(programInfo);
+    currentScene = new Scene(gl, objectData, programInfo);
+    currentScene.redraw();
 }
 
 function loadSphere()
@@ -386,48 +262,9 @@ function loadSphere()
         face: faces,
         texCoord: texCoords,
         furLength: furLengths,
-        sharedTriangle: sharedTriangles,
-        texturePath: "testabstract.jpg",
+        sharedTriangle: sharedTriangles
     }
 }
-
-
-function loadDog()
-{
-    var object = getDog();
-
-    var positions = object.positions;
-    var faces = object.faces;
-    var normals = object.normals;
-    var texCoords = object.texCoords;
-
-    var furLengths = new Array(positions.length / 3);
-
-    //sphere definition is 1 indexed
-    //webgl is 0 indexed
-    for(var vertexIndexIndex = 0; vertexIndexIndex < faces.length; vertexIndexIndex++)
-    {
-        faces[vertexIndexIndex] -= 1;
-    }
-
-    for(var vertexIndex = 0; vertexIndex < positions.length / 3; vertexIndex++)
-    {
-        furLengths[vertexIndex] = 0.08;
-    }
-
-    sharedTriangles = loadFinEdgeList(faces, positions);
-
-    return {
-        position: positions,
-        normal: normals,
-        face: faces,
-        texCoord: texCoords,
-        furLength: furLengths,
-        sharedTriangle: sharedTriangles,
-        texturePath: "dog_texture_square.jpg",
-    }
-}
-
 
 function loadFinEdgeList(faces, positions)
 {
@@ -574,4 +411,121 @@ function setTexCoord(u, v, index, texCoords)
     startIndex = 2 * index;
     texCoords[startIndex] = clamp(u, 0, 1);
     texCoords[startIndex + 1] = clamp(v, 0, 1);
+}
+
+function loadObject() 
+{
+    const positions = [
+        // front
+        -1.0, -1.0, 1.0,
+        1.0, -1.0, 1.0,
+        1.0, 1.0, 1.0,
+        -1.0, 1.0, 1.0,
+
+        // back
+        -1.0, -1.0, -1.0,
+        1.0, -1.0, -1.0,
+        1.0, 1.0, -1.0,
+        -1.0, 1.0, -1.0,
+
+        // Top face
+        -1.0, 1.0, -1.0,
+        -1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0,
+        1.0, 1.0, -1.0,
+
+        // Bottom face
+        -1.0, -1.0, -1.0,
+        1.0, -1.0, -1.0,
+        1.0, -1.0, 1.0,
+        -1.0, -1.0, 1.0,
+
+        // right
+        1.0, -1.0, -1.0,
+        1.0, -1.0, 1.0,
+        1.0, 1.0, 1.0,
+        1.0, 1.0, -1.0,
+
+        // left
+        -1.0, -1.0, -1.0,
+        -1.0, -1.0, 1.0,
+        -1.0, 1.0, 1.0,
+        -1.0, 1.0, -1.0
+    ];
+
+    const normals = [
+        // front
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+
+        // back
+        0.0, 0.0, -1.0,
+        0.0, 0.0, -1.0,
+        0.0, 0.0, -1.0,
+        0.0, 0.0, -1.0,
+
+        // Top face
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+
+        // Bottom face
+        0.0, -1.0, 0.0,
+        0.0, -1.0, 0.0,
+        0.0, -1.0, 0.0,
+        0.0, -1.0, 0.0,
+
+        // right
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+        1.0, 0.0, 0.0,
+
+        // left
+        -1.0, 0.0, 0.0,
+        -1.0, 0.0, 0.0,
+        -1.0, 0.0, 0.0,
+        -1.0, 0.0, 0.0,
+    ];
+
+    const indices = [
+        0, 1, 2, 0, 2, 3,    // front
+        4, 5, 6, 4, 6, 7,    // back
+        8, 9, 10, 8, 10, 11,   // top
+        12, 13, 14, 12, 14, 15,   // bottom
+        16, 17, 18, 16, 18, 19,   // right
+        20, 21, 22, 20, 22, 23,   // left
+    ];
+
+    const tex_coords = 
+    [
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,    // front
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,    // back
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,     // top
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,     // bottom
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,     // right
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,     // left
+    ];
+
+    const furLengths = 
+    [
+        0.2, 0.7, 0.3, 0.1,    // front
+        0.2, 0.7, 0.3, 0.1,    // back
+        0.2, 0.7, 0.3, 0.1,     // top
+        0.2, 0.7, 0.3, 0.1,     // bottom
+        0.2, 0.7, 0.3, 0.1,     // right
+        0.2, 0.7, 0.3, 0.1,     // left
+    ];
+
+
+    return {
+        position: positions,
+        normal: normals,
+        face: indices,
+        texCoord: tex_coords,
+        furLength: furLengths
+    }
 }

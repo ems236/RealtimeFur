@@ -1,0 +1,13 @@
+# Blender MTL File: 'None'
+# Material Count: 1
+
+newmtl 01_-_Default
+Ns 18.000005
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 2.000000 2.000000 2.000000
+Ke 0.0 0.0 0.0
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd dog_kurtshaar_grey.tga

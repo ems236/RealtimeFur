@@ -163,15 +163,15 @@ function finTextureData(size, density, curliness)
 
         var curlDeviation = mat2.create();
         //By last particle cast, the angle will have deviated to 2PI / curliness
-        mat2.fromRotation(curlDeviation, sign * (2 * 3.1415 * curliness) / size);
+        mat2.fromRotation(curlDeviation, sign * (3.1415 / 2.0  * curliness) / size);
 
         //As soon as it rotates by PI / 2, it's covered all the distance it's going to cover. 
         //need to modify particle distance so the texture fills all the way to the end
         var castDistance = 1;
-        if(curliness > 0.25)
+        /*if(curliness > 0.25)
         {
             castDistance = 4 * (1 / curliness);
-        }
+        }*/
 
         //this essentially needs to rasterize which is not nice
 

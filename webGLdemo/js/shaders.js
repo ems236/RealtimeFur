@@ -94,6 +94,7 @@ var shellVertexShader = `
     uniform float uWindIntensity;
     uniform vec3 uModelForce;
     uniform float uMinShadowFactor;
+    uniform float uFurLengthMultiplier;
 
 
     varying vec2 texture_coords;
@@ -157,12 +158,12 @@ var shellVertexShader = `
         vec2 displacementMultipliers = shellDisplacement(vertexForceVector, normal); 
         //vec2 displacementMultipliers = vec2(0.0, uCurrentShell);
         //displacement_amounts = normalize(displacementMultipliers);
-        float shellDistance = aFurLength / uShellCount;
+        float shellDistance = aFurLength * uFurLengthMultiplier / uShellCount;
 
         vec3 displacement = normalize(totalForce) * shellDistance * displacementMultipliers.x + normal * shellDistance * displacementMultipliers.y;
         furDirection = normalize(displacement);
 
-        vec4 oldDisplacement = vec4(normalize(normal) * aFurLength * (uCurrentShell / uShellCount), 0.0);
+        //vec4 oldDisplacement = vec4(normalize(normal) * aFurLength * (uCurrentShell / uShellCount), 0.0);
 
         //gl_Position = uProjectionMatrix * (base_position + oldDisplacement);
         gl_Position = uProjectionMatrix * (base_position + vec4(displacement, 0.0));
@@ -233,10 +234,8 @@ var shellFragmentShader = `
         //gl_FragColor = vec4(abs(wind_vector.x), abs(wind_vector.y), abs(wind_vector.z) , 1.0);
         //gl_FragColor = vec4(abs(normal.x), abs(normal.y), abs(normal.z) , 1.0);
 
-
         gl_FragColor = vec4(color.rgb, alpha);
-        
-        
+
         //gl_FragColor = vec4(1.0, 1.0, 1.0, alpha);
         //gl_FragColor = vec4(texture2D(uShellAlphaTexture, texture_coords).rgb, alpha);
     }

@@ -1,4 +1,4 @@
-function generateFins(eyeVec, sharedTriangles, objectData, shouldRenderAll, subFinCount, windPosition, windIntensity, movementForce)
+function generateFins(eyeVec, sharedTriangles, objectData, shouldRenderAll, subFinCount, windPosition, windIntensity, movementForce, sillhouetteThreshold, finLengthModifier)
 {
     var finVertices = [];
     var finFaces = [];
@@ -27,9 +27,9 @@ function generateFins(eyeVec, sharedTriangles, objectData, shouldRenderAll, subF
         var norm1DotEye = vec4.dot(norm1, eyeVec);
         var norm2DotEye = vec4.dot(norm2, eyeVec);
         
-        if(shouldRenderAll || isSillhouette(norm1DotEye, norm2DotEye))
+        if(shouldRenderAll || isSillhouette(norm1DotEye, norm2DotEye, sillhouetteThreshold))
         {
-            extrudeEdge(sharedTriangle, finData, objectData, subFinCount, windPosition, windIntensity, movementForce);
+            extrudeEdge(sharedTriangle, finData, objectData, subFinCount, windPosition, windIntensity, movementForce, finLengthModifier);
         }
     }
 
@@ -42,14 +42,13 @@ function generateFins(eyeVec, sharedTriangles, objectData, shouldRenderAll, subF
     }
 }
 
-function isSillhouette(norm1DotEye, norm2DotEye)
+function isSillhouette(norm1DotEye, norm2DotEye, sillhouetteThreshold)
 {
-    const SILLHOUETTE_THRESHOLD = 0.15;
-    var isEitherBelowThreshold = Math.abs(norm1DotEye) < SILLHOUETTE_THRESHOLD || Math.abs(norm2DotEye) < SILLHOUETTE_THRESHOLD;
+    var isEitherBelowThreshold = Math.abs(norm1DotEye) < sillhouetteThreshold || Math.abs(norm2DotEye) < sillhouetteThreshold;
     return norm1DotEye > 0 != norm2DotEye > 0 || isEitherBelowThreshold;
 }
 
-function extrudeEdge(sharedTriangle, finData, objectData, subFinCount, windPosition, windIntensity, movementForce)
+function extrudeEdge(sharedTriangle, finData, objectData, subFinCount, windPosition, windIntensity, movementForce, finLengthModifier)
 {
     //Fins look longer than shells because they don't really fade so much, so shorten them a bit.
     const FIN_LENGTH_MODIFIER = 0.75;
@@ -64,8 +63,8 @@ function extrudeEdge(sharedTriangle, finData, objectData, subFinCount, windPosit
     vec3.normalize(v2Normal, v2Normal);
 
 
-    v1Locations = subFinDisplacementsFor(v1, v1Normal, windPosition, windIntensity, movementForce, subFinCount, objectData.furLength[sharedTriangle.sharedv1] * FIN_LENGTH_MODIFIER);
-    v2Locations = subFinDisplacementsFor(v2, v2Normal, windPosition, windIntensity, movementForce, subFinCount, objectData.furLength[sharedTriangle.sharedv2] * FIN_LENGTH_MODIFIER);
+    v1Locations = subFinDisplacementsFor(v1, v1Normal, windPosition, windIntensity, movementForce, subFinCount, objectData.furLength[sharedTriangle.sharedv1] * finLengthModifier);
+    v2Locations = subFinDisplacementsFor(v2, v2Normal, windPosition, windIntensity, movementForce, subFinCount, objectData.furLength[sharedTriangle.sharedv2] * finLengthModifier);
 
     var utexCoords = uTexCoordsFor(v1, v2);
     var currentColorTexCoords = {
